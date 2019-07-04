@@ -79,6 +79,12 @@ Getting a warning?
 
 You can run your own free peer with these [1-click deploy](https://github.com/amark/gun#deploy) instructions.
 
+Then add your peer(s) to JOY like so:
+
+```html
+<body peers="http://localhost:8765/gun, https://gunjs.herokuapp.com/gun">
+```
+
  # Netlify
 
 You'll soon be able to create your JOY app with Netfliy's `addons` command. Check back soon for the launch!
