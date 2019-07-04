@@ -14,7 +14,7 @@ First, create an `index.html` file and add JOY to it:
 <script src="https://cdn.jsdelivr.net/npm/joydb/joy.min.js"></script>
 
 <div name="app">
-	<h1>{{ message }}</h1>
+  <h1>{{ message }}</h1>
   <input name="message" placeholder="type a message here"/>
 </div>
 ```
