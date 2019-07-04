@@ -1,9 +1,11 @@
 {
   "name": "joydb",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "JOY database is an enterprise ready decentralized application framework with military grade security.",
   "main": "index.js",
   "scripts": {
+    "start": "node start.js",
+    "build": "cat ./node_modules/gun/examples/jquery.js ./node_modules/gun/gun.js ./node_modules/gun/sea.js ./node_modules/gun/as.js > joy.min.js && cp ./node_modules/gun/examples/style.css ./joy.css",
     "test": "mocha"
   },
   "repository": {
@@ -27,5 +29,10 @@
   "bugs": {
     "url": "https://github.com/eraeco/joydb/issues"
   },
-  "homepage": "https://github.com/eraeco/joydb#readme"
+  "homepage": "https://github.com/eraeco/joydb#readme",
+  "dependencies": {
+    "gun": "~>0.2019.612",
+    "text-encoding": "^0.7.0",
+    "node-webcrypto-ossl": "^1.0.47"
+  }
 }

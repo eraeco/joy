@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../joy.css">
+<script src="../joy.min.js"></script>
+<title>Best of</title>
+</head>
+<body class="black whitet" peers="http://localhost:8765/gun">
+<style>
+	@import url('https://fonts.googleapis.com/css?family=Raleway');
+	html, body {
+		font-family: "Raleway", sans-serif;
+	}
+</style>
+
+<div id="best" name="best" class="hold full hue center">
+	<style>
+		#best .bg {
+			position: absolute;
+			width: 100%; height: 100%; top: 0; left: 0;
+			background-size: cover;
+			background-repeat: no-repeat;
+			transition: all 0.3s;
+			filter: brightness(90%);
+		}
+		#best .img:hover > .bg {
+			filter: brightness(100%);
+		}
+		#best .top {
+			height: 66vh;
+		}
+		#best .split {
+			width: 50%; height: 100%;
+		}
+		#best div {
+			transition: all 0.3s;
+		}
+	</style>
+	<div name="1" class="top img focus row">
+		<div class="bg" style="background-image: url({{ see }}); background-position: {{ x || 50 }}% {{ y || 50 }}%;"></div>
+		<div class="focus row gap">
+			<p class="left loud">BEST of <small><u>TODAY</u>:</small></p>
+		</div>
+	</div>
+	<div class="focus row" style="height: 34vh; line-height: 34vh;">
+		<div name="2" class="top2 img split left center">
+			<div class="bg" style="background-image: url({{ see }}); background-position: {{ x || 50 }}% {{ y || 50 }}%;"></div>
+			<p name="what" contenteditable="true">Woah</p>
+		</div
+		><div name="3" class="top3 img split right center">
+			<div class="bg" style="background-image: url({{ see }}); background-position: {{ x || 50 }}% {{ y || 50 }}%;"></div>
+			<p name="what" contenteditable="true">What</p>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
