@@ -1,7 +1,7 @@
 {
   "name": "joydb",
   "version": "1.0.0",
-  "description": "JOY database is an enterprise ready decentralized application framework with military grade security.",
+  "description": "JOY is a JavaScript framework for building user interfaces and progressive applications.",
   "main": "index.js",
   "scripts": {
     "start": "node start.js",
