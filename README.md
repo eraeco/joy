@@ -2,7 +2,7 @@
 
 JOY is a JavaScript framework for building user interfaces and progressive applications.
 
-<p><img width="100%" src="https://gun.eco/see/joy.gif"/></p>
+<p><a href="https://youtu.be/68FSKeNT-3U"><img width="100%" src="https://gun.eco/see/joy.gif" title="Click to Watch Intro Video"/></a></p>
 
  > Note: Currently, JOY is meant for [Netlify](https://netlify.com/) users who want to add dynamic data to their static sites. See [#JAMstack](https://jamstack.org/) for more information.
 
@@ -32,6 +32,8 @@ By default, top level namespaces are global and public, meaning anyone can edit 
 If you want your app to **only be editable by you**, you need to create an authenticated namespace.
 
 On a JOY enabled app, open up the browser console (right-click on page -> inspect -> console) and type:
+
+ > Note: There is **NO** password reset ability, so back it up somewhere safe.
 
 ```javascript
 JOY.auth('username', 'passphrase', true);
