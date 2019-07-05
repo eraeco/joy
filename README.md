@@ -2,6 +2,8 @@
 
 JOY is a JavaScript framework for building user interfaces and progressive applications.
 
+<p><img width="100%" src="https://gun.eco/see/joy.gif"/></p>
+
  > Note: Currently, JOY is meant for [Netlify](https://netlify.com/) users who want to add dynamic data to their static sites. See [#JAMstack](https://jamstack.org/) for more information.
 
  # Getting Started
