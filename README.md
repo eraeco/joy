@@ -1,6 +1,8 @@
  # What is JOY?
 
-JOY is a JavaScript framework for building user interfaces and progressive applications.
+JOY is a JavaScript UI framework that includes the fully decentralized [Gun](https://gun.eco/docs/Introduction) database and [SEA](https://gun.eco/docs/SEA) user authentication libraries.
+
+JOY allows you to build fully realized, progressive applications with [offline first](http://offlinefirst.org/) functionality and an almost magical [noBackend](http://nobackend.org/) experience, all with client-side Javascript.
 
 <p><a href="https://youtu.be/68FSKeNT-3U"><img width="100%" src="https://gun.eco/see/joy.gif" title="Click to Watch Intro Video"/></a></p>
 
