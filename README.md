@@ -88,8 +88,13 @@ You can run your own free peer with these [1-click deploy](https://github.com/am
 Then add your peer(s) to JOY like so:
 
 ```html
-<body peers="http://localhost:8765/gun, https://gunjs.herokuapp.com/gun">
+<head>
+	<link type="peer" href="https://gunjs.herokuapp.com/gun">
+	<link type="peer" href="http://localhost:8765/gun">
+</head>
 ```
+
+ > Why in the head as a link tag? So that way JOY can start syncing with those peers before the DOM is even loaded, resulting in a faster render time!
 
  # Netlify
 
