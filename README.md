@@ -89,8 +89,8 @@ Then add your peer(s) to JOY like so:
 
 ```html
 <head>
-	<link type="peer" href="https://gunjs.herokuapp.com/gun">
-	<link type="peer" href="http://localhost:8765/gun">
+  <link type="peer" href="https://gunjs.herokuapp.com/gun">
+  <link type="peer" href="http://localhost:8765/gun">
 </head>
 ```
 
