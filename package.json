@@ -1,6 +1,6 @@
 {
   "name": "joydb",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JOY is a JavaScript framework for building user interfaces and progressive applications.",
   "main": "index.js",
   "scripts": {
