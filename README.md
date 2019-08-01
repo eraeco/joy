@@ -1,8 +1,6 @@
  # What is JOY?
 
-JOY is a JavaScript UI framework that includes the fully decentralized [Gun](https://gun.eco/docs/Introduction) database and [SEA](https://gun.eco/docs/SEA) user authentication libraries.
-
-JOY allows you to build fully realized, progressive applications with [offline first](http://offlinefirst.org/) functionality and an almost magical [noBackend](http://nobackend.org/) experience, all with client-side Javascript.
+A software bundle for perfectionists with deadlines!
 
 <p><a href="https://youtu.be/68FSKeNT-3U"><img width="100%" src="https://gun.eco/see/joy.gif" title="Click to Watch Intro Video"/></a></p>
 
@@ -28,6 +26,8 @@ JOY will bind the template, such as `{{ message }}`, to data on `app.message` ba
 There you have it, your first joyDB app! Everything is **reactive** and **persistent** across reload and different devices. Try typing into the `input` field, and your app will update with only the differences re-rendered.
 
  # Namespace
+
+A namespace controls who has read or write permission to the data.
 
 By default, top level namespaces are global and public, meaning anyone can edit data on them.
 
@@ -63,9 +63,9 @@ Copy and paste everything starting with and including the `~` and paste it into 
 
 Now your app, and all data underneath it, can only be edited by you when you are logged in.
 
- # Schema
+ # Types
 
-You will be able to declare your app's data types inline, with your HTML template, and it will automatically enforce and validate input.
+You will be able to declare your app's data types and schema inline, with your HTML template, and it will automatically enforce and validate input.
 
 This feature is not yet available.
 
@@ -111,6 +111,14 @@ Have questions?
 Want to vote on feature requests?
 
 Then check out our [community chat](https://gitter.im/amark/gun)!
+
+ # Philosophy
+ 
+JOY allows you to build fully realized, progressive applications with [offline first](http://offlinefirst.org/) functionality with an almost magical [noBackend](http://nobackend.org/) experience, all using client-side Javascript!
+
+ # Dependencies
+
+JOY is a JavaScript UI framework that includes the fully decentralized [Gun](https://gun.eco/docs/Introduction) database and [SEA](https://gun.eco/docs/SEA) user authentication libraries.
 
  # License
 
