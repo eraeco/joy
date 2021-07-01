@@ -1,14 +1,15 @@
  # What is JOY?
 
-A software bundle for perfectionists with deadlines!
+JOY is JavaScript UI framework for building **reactive** and **persistent** progressive web apps. It uses [GUN](https://github.com/amark/gun) as a type of headless CMS but without the need for a backend. 
 
+Click image to watch intro video.
 <p><a href="https://youtu.be/68FSKeNT-3U"><img width="100%" src="https://gun.eco/see/joy.gif" title="Click to Watch Intro Video"/></a></p>
 
- > Note: Currently, JOY is meant for [Netlify](https://netlify.com/) users who want to add dynamic data to their static sites. See [#JAMstack](https://jamstack.org/) for more information.
+ > Note: Currently, JOY can be deployed to any CDN but was conceived for [Netlify](https://netlify.com/) users who need dynamic data to their static sites. See [#JAMstack](https://jamstack.org/) for more information.
 
  # Getting Started
 
-You can use JOY along side React, Vue, vanilla JS, or others. It can be adopted in full, or in part, depending upon your organization's needs.
+You can use JOY along side React, Vue, vanilla JS, and other frameworks. It can be adopted in full, or in part, depending upon your needs.
 
 First, create an `index.html` file and add JOY to it:
 
@@ -21,7 +22,7 @@ First, create an `index.html` file and add JOY to it:
 </div>
 ```
 
-JOY will bind the template, such as `{{ message }}`, to data on `app.message` based on the HTML `name` attribute hierarchy.
+JOY will bind the template, such as `{{ message }}`, to data on `app.message` based on the HTML `name` attribute hierarchy. If this isn't making sense click the image above and watch the video.
 
 There you have it, your first joyDB app! Everything is **reactive** and **persistent** across reload and different devices. Try typing into the `input` field, and your app will update with only the differences re-rendered.
 
@@ -89,16 +90,12 @@ Then add your peer(s) to JOY like so:
 
 ```html
 <head>
-  <link type="peer" href="https://gunjs.herokuapp.com/gun">
+  <link type="peer" href="https://gun-us.herokuapp.com/gun">
   <link type="peer" href="http://localhost:8765/gun">
 </head>
 ```
 
  > Why in the head as a link tag? So that way JOY can start syncing with those peers before the DOM is even loaded, resulting in a faster render time!
-
- # Netlify
-
-You'll soon be able to create your JOY app with Netfliy's `addons` command. Check back soon for the launch!
 
  # Community
 
@@ -110,7 +107,7 @@ Have questions?
 
 Want to vote on feature requests?
 
-Then check out our [community chat](https://gitter.im/amark/gun)!
+Then check out our [community chat](http://chat.gun.eco/)!
 
  # Philosophy
  
