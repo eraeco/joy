@@ -1,0 +1,359 @@
+<script class="SecureRender" src="./content.js">
+
+the.start = the.start || (async () => {
+
+	// fill with color
+	// fill with linear pattern
+	// fill with text // in order
+	// fill with views // in order
+	// fill with shape //
+	// fill with particle
+	// fill shape with colored particles
+	//welcome = the.view({fill: [0,0,0], size: [[5,'~'],[1,'~']]}).begin()
+	//welcome = the.view({fill: [1,0,0], size: [[1,'~',1,'~'],[1,'~']]}).begin()
+	//return;
+
+	list = [async () => {
+		
+		the.view = "Hello " + (await the.player.name || "World") + "!"
+
+		talk(the.view)
+		next()
+
+	},() => {
+
+		type(talk(begin = "In the beginning, there was a view. It hoped to be alive, yet it was empty. So it reached out and grabbed information from the sky, and dripped this data into the center of the view along a line. It grew and grew until it became so big it had to flow like water into a scroll."), next)
+
+	},() => {
+
+		the.view = begin += " More and more it came, like a Latin thunderstorm clapping."
+		next(1.5)
+
+	},() => {
+
+		the.view = begin + (lorem = " Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+		next(0.25)
+
+	},() => {
+
+		the.view = begin + lorem + lorem
+		next(0.25)
+
+	},() => {
+
+		the.view = begin + lorem + lorem + lorem + lorem
+		next(3)
+
+	},() => {
+
+		the.view = ""
+		next()
+
+	},() => {
+
+		type.speed = 10
+		type.on = welcome = the.view({fill: "", flow: ['>','v'], drip: 0}).begin()
+		type(water = "It flowed in many ways. Left to right, top to bottom. Or opposite in any direction. Dripping from the start of a line, the end, or center. Information lives on a line. And so the view became alive.", next);
+		talk(water)
+
+	},() => {
+
+		welcome.drip = 1
+		welcome.flow = ['v','>']
+		type(water, () => { next(0.9) })
+
+	},() => {
+
+		welcome.flow = ['v','<']
+		type(water, () => { next(0.9) })
+
+	},() => {
+
+		welcome.flow = ['^','>']
+		type(water, () => { next(0.9) })
+
+	},() => {
+
+		welcome.flow = ['^','<']
+		type(water, () => { next(0.9) })
+
+	},() => {
+
+		welcome.drip = -1
+		welcome.flow = ['>','v']
+		type(water, () => { next(2) })
+
+	},() => {
+
+		type.speed = 1
+		type.on = ""
+		the.view.place(welcome).after()
+		the.view = welcome = ""
+		next(0.5)
+
+	},() => {
+		type(talk("It was good."), next)
+
+	},() => {
+
+		type(talk("The view wanted to share this goodness, but it was alone."), next)
+
+	},() => {
+
+		the.view = welcome = ""
+		next(4)
+
+	},() => {
+
+		welcome = the.view({size: [[100,'%']]}).into()
+		red = the.view.place({size: [[4,'~'],[3,'~']]}).into(welcome)
+		green = the.view.place({size: [[3,'~'],[2,'~']]}).into(welcome)
+		blue = the.view.place({size: [[2,'~'],[1,'~']]}).into(welcome)
+		the.view({fill: ""}).into()
+		type.on = the.view({fill: "", drip: 0}).into()
+		type(talk("So it took its infinite line, and divided it up into 3.\nFilling each with a magnificent color."), ()=>{ next(0.2) })
+		next(0.1)
+
+	},() => {
+
+		welcome.time = 2
+		welcome.fill = [0,0,0]
+		next(1.5)
+
+	},() => {
+
+		red.fill = [1,0,0]
+		next(0.5)
+
+	},() => {
+
+		green.fill = [0,1,0]
+		next(0.5)
+
+	},() => {
+
+		blue.fill = [0,0,1]
+
+	},() => {
+
+		type(talk("Then it started to dance with them, resizing to see how they would flow."), next)
+		next(1)
+
+	},() => {
+
+		welcome.size = [[8,'~',8,'~'],[0,'~',5,'~']]
+
+	},() => {
+
+		type(talk("Having the colors drip from the center of the line. Or..."), ()=>{ next(0.1) })
+		next(2)
+
+	},() => {
+
+		welcome.time = 2
+		welcome.size = [[12,'~',12,'~'],[0,'~',5,'~']]
+
+	},() => {
+
+		type(talk("From the start,"), ()=>{ next(0) })
+		welcome.time = 1
+		welcome.drip = 1
+		welcome.size = [[8,'~',8,'~'],[0,'~',5,'~']]
+
+	},() => {
+
+		welcome.size = [[12,'~',12,'~'],[0,'~',5,'~']]
+		next()
+
+	},() => {
+
+		type(talk("Or end."))
+		next(0.5)
+
+	},() => {
+
+		welcome.drip = -1
+		next(0.5)
+
+	},() => {
+
+		welcome.size = [[8,'~',8,'~'],[0,'~',5,'~']]
+		next(1.5)
+
+	},() => {
+
+		welcome.size = [[12,'~',12,'~'],[0,'~',5,'~']]
+		next(1.25)
+
+	},() => {
+
+		welcome.size = [[0,'~',12,'~'],[9,'~',9,'~']]
+		type(talk("Flowing down & scrolling right, dripping from the center."), next)
+		next(0.25)
+
+	},() => {
+
+		welcome.drip = 0
+		welcome.flow = ['v','>']
+		next(2)
+
+	},() => {
+
+		welcome.size = [[0,'~',12,'~'],[0,'~',5,'~']]
+
+	},() => {
+
+		type(talk("Flowing down & left."))
+		next()
+
+	},() => {
+
+		welcome.flow = ['v','<']
+		next()
+
+	},() => {
+
+		type(talk("From start..."))
+		next(0.7)
+
+	},() => {
+
+		welcome.drip = 1
+		next(1.5)
+
+	},() => {
+
+		welcome.size = [[0,'~',12,'~'],[12,'~',12,'~']]
+		next()
+
+	},() => {
+
+		type(talk("Or from the end."))
+		next()
+
+	},() => {
+
+		welcome.drip = -1
+		next()
+
+	},() => {
+
+		welcome.size = [[0,'~',12,'~'],[0,'~',5,'~']]
+		next()
+
+	},() => {
+
+		type(talk("Flowing up..."))
+		next()
+
+	},() => {
+
+		welcome.flow = ['^','<']
+		next()
+
+	},() => {
+
+		type(talk("And then dripping from the center of the vertical line."), next)
+		next(1.5)
+
+	},() => {
+
+		welcome.drip = 0
+
+	},() => {
+
+		type(talk("Or from the start..."), next)
+		next(0.9)
+
+	},() => {
+
+		welcome.drip = 1
+
+	},() => {
+
+		type(talk("Or then, the scroll flowing to the right."), next)
+		next(1.3)
+
+	},() => {
+
+		welcome.flow = ['^','>']
+
+	},() => {
+
+		type(talk("They played and played, dancing in turn."))
+		next(0.5)
+
+	},() => {
+
+		welcome.time = 3
+		welcome.drip = 0
+		welcome.flow = ['>','v']
+		welcome.size = [[12,'~',12,'~'],[0,'~',5,'~']]
+		next(2)
+
+	},() => {
+
+		red.time = 5
+		red.turn = [1]
+		next(0.5)
+
+	},() => {
+
+		green.time = 3
+		green.zoom = [0.5,0.5,0.5]
+		next(2)
+		next(3)
+
+	},() => {
+
+		blue.time = 2
+		blue.grab = ['-5em','-5em','0em']
+		next(2)
+
+	},() => {
+
+		green.zoom = [1,1,1]
+
+	},() => {
+
+		blue.grab = ['0em','0em','0em']
+		next()
+
+	},() => {
+
+		type("... To be continued ...")
+
+	}];
+
+	/* ------------- ANIMATION UTILITIES BELOW -------------- */
+	talk = (say) => {
+	  postMessage({how: 'say', text: say, rate: talk.rate || 1.05, pitch: talk.pitch || 1});
+	  return say;
+	}
+	talk.pitch = 0.1
+
+	type = (text,done,i) => {
+		var tmp = text.slice(0,i = i||1);
+		if(type.on){ type.on.fill = tmp } else { the.view = tmp }
+		if(i > text.length){ return done && done() }
+		setTimeout(() => { type(text, done, ++i) }, (('.' === (tmp = text[i-1]) || ',' === tmp)? 300 : Math.random() * 100) / type.speed);
+	}
+	type.speed = 1
+
+	no = () => {}
+	next = (wait) => { setTimeout(list[++at] || no, (wait*1000) || 1000) }
+	
+	list[at = 0]() // start animation!
+
+	// drip
+	// flow
+	// away
+	// sort
+	// size
+	// fill
+	// turn
+	// grab
+	// zoom
+
+})()
+</script>

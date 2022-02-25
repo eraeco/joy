@@ -1,0 +1,181 @@
+html, body {
+	margin: 0;
+	padding: 0;
+  width: 100vw;
+  min-height: 100vh;
+  line-height: 100vh;
+	position: relative;
+  text-align: center;
+  vertical-align: middle;
+
+  b-ackground: black;
+  c-olor: white;
+  font-size: 18pt;
+}
+
+* { out-line: 1px dashed black; }
+
+body > div {
+  width: 100%;
+  ov-erflow: auto;
+}
+
+
+div, ul, ol, li, p, span, form, button, input, textarea, img, line, text {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: middle;
+  text-align: center;
+  line-height: normal;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+a, button, input, textarea {
+  background: inherit;
+  border: inherit;
+  color: inherit;
+  text-decoration: inherit;
+  outline: none;
+}
+input:not([type=button]):not([type=submit]), textarea {
+	width: 100%;
+}
+
+a:focus, button:focus, input[type=button]:focus, input[type=submit]:focus {
+  animation: pulse 2s infinite;
+}
+
+ul, li {
+  list-style: none;
+}
+
+p, text {
+  line-height: 1.5;
+  text-align: left;
+  text-align: initial;
+  text-align: start;
+  v-ertical-align: baseline;
+  max-width: 48em;
+  padding: 0 0.4em;
+}
+p + p, text + text {
+  padding-top: 0;
+}
+
+[contenteditable=true]:empty:before {
+  content: attr(placeholder);
+}
+::placeholder, .hint {
+  color: inherit;
+  opacity: 0.3;
+}
+
+.model, .none { display: none }
+.hide {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+}
+
+.full {
+  width: 100%;
+  min-height: 100vh;
+}
+.max {
+  max-width: 48em;
+}
+.min {
+  min-width: 12em;
+}
+.pad {
+  width: 95%;
+  margin: 5% auto;
+  max-width: 48em;
+  min-width: 12em;
+}
+
+.row {
+  width: 100%;
+}
+.row::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.col {
+  max-width: 24em;
+  min-width: 12em;
+}
+
+.center {
+  text-align: center;
+  vertical-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+}
+.right {
+  float: right;
+  text-align: right;
+}
+.left {
+  float: left;
+  text-align: left;
+}
+.mid { 
+  margin-left: auto;
+  margin-right: auto; 
+}
+.top {
+  vertical-align: top;
+}
+.low {
+  vertical-align: bottom;
+}
+
+.rim { margin: 1%; }
+.gap {
+  padding: 3%;
+  padding: clamp(0.5em, 3%, 1.5em);
+}
+.stack { line-height: 0; }
+.crack { margin-bottom: 1%; }
+.sit { margin-bottom: 0; }
+
+.focus {
+  margin-left: auto;
+  margin-right: auto;
+  float: none;
+  clear: both;
+}
+
+.leak { overflow: visible; }
+.hold { overflow: hidden; }
+
+.act {
+  /*display: block;*/
+  font-weight: normal;
+  text-decoration: none;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.unit, .symbol {
+  display: inline-block;
+  vertical-align: inherit;
+}
+
+.shade { background: rgba(0%, 0%, 0%, 0.1); }
+.tint { background: rgba(100%, 100%, 100%, 0.1); }
+
+.pulse {
+  animation: pulse 2s infinite;
+} @keyframes pulse {
+  0% {opacity: 1;}
+  50% {opacity: 0.5;}
+  100% {opacity: 1;}
+}

@@ -1,0 +1,55 @@
+{
+  "manifest_version": 2,
+  "name": "the",
+  "description": "the anti-monopoly game engine for the web",
+  "version": "0.2021.1016",
+  "browser_action": {
+    "default_icon": "media/icon.png",
+    "default_title": "the"
+  },
+  "icons": {
+    "16": "media/icon16.png",
+    "48": "media/icon48.png",
+    "128": "media/icon.png"
+  },
+  "permissions": [
+    "activeTab",
+    "unlimitedStorage",
+    "declarativeContent",
+    "tabs"
+  ],
+  "offline_enabled": true,
+  "background": {
+    "scripts": [
+      "./background.js"
+    ],
+    "persistent": true
+  },
+  "content_security_policy": "default-src 'self';",
+  "content_scripts": [
+   {
+     "matches": ["<all_urls>", "*://*/*"],
+     "all_frames": true,
+     "run_at": "document_start",
+     "js": ["content.js"]
+   }
+  ],
+  "web_accessible_resources": ["enclave.html", "sandbox.html"],
+  "sandbox": {
+     "pages": ["sandbox.html", "sandbox.js"],
+     "content_security_policy": "sandbox allow-scripts allow-popups allow-downloads allow-pointer-lock; script-src 'self'; default-src data: blob: mediastream: filesystem:; style-src 'self' 'unsafe-inline'; child-src 'self' blob:; worker-src blob: 'self';",
+    "cross_origin_embedder_policy": {
+      "value": "require-corp"
+    },
+    "cross_origin_opener_policy": {
+      "value": "same-origin"
+    }
+  },
+  "cross_origin_embedder_policy": {
+    "value": "require-corp"
+  },
+  "cross_origin_opener_policy": {
+    "value": "same-origin"
+  },
+  "update_url": "https://securerender.org/updates.xml"
+}
