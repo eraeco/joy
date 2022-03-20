@@ -70,6 +70,7 @@ sr.how = {
         what.turn = [0,0,0];
         what.grab = [0,0,0];
         what.zoom = [1,1,1];
+	what.unit = { turn: [], zoom: [], grab: [] };
         what.contentEditable = 'true';
       }
       if(u !== (put = change.time)){
@@ -149,6 +150,7 @@ sr.how = {
         tmp = what.grab;
         var j = -1, l = put.length; while(++j < l){
           tmp[j] = put[j] || tmp[j] || 0;
+	  what.unit.grab[j] = "~";
         }
         change.t = 1;
       }
@@ -167,7 +169,7 @@ sr.how = {
         change.t = 1;
       }
       if(change.t){
-        what.style.transform = "translate3d("+what.grab+") rotateZ("+what.turn[0]+"turn) " + "rotateX("+what.turn[1]+"turn) " + "rotateY("+what.turn[2]+"turn) scale3d("+what.zoom+")";
+        what.style.transform = "translate3d("+what.grab.join(place[what.unit.grab[0]] + ",")+") rotateZ("+what.turn[0]+"turn) " + "rotateX("+what.turn[1]+"turn) " + "rotateY("+what.turn[2]+"turn) scale3d("+what.zoom+")";
       }
     }
     function is(){}
@@ -392,6 +394,23 @@ breathe(function now(){
 		share.set('tap_x', eve.pageX);
 		share.set('tap_y', eve.pageY);
 	}
+	var keys = {};
+	window.onkeydown = function (eve) {
+		var key = "key_" + eve.code;
+		if (keys[key]) {
+			return;
+		}
+		var now = +new Date();
+		share.set(key, (keys[key] = now));
+		key = "key_" + eve.which;
+		share.set(key, (keys[key] = now));
+	};
+	window.onkeyup = function (eve) {
+		var key = "key_" + eve.code;
+		share.set(key, (keys[key] = 0));
+		key = "key_" + eve.which;
+		share.set(key, (keys[key] = 0));
+	};
 	// TODO: Add more than just mousemove, lol!
 }());
 
