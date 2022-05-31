@@ -423,6 +423,7 @@ var Numbers = Float32Array;
 see.dot = function(){/*
 attribute vec4 dot;
 attribute vec2 grab;
+attribute vec4 hue;
 uniform float scroll;
 varying vec4 fill;
 void main() {
@@ -432,7 +433,7 @@ void main() {
     vec4(0, 0, 1, 0),
     vec4(grab, 0, 1));
   gl_Position = move * (dot + vec4(0,scroll,0,0));
-  fill = vec4(1.0, 0.0, 0.0, 1.0);
+  fill = hue;
 }
 */}
 see.fill = function(){/*
@@ -502,14 +503,20 @@ see.view = function(dots, fills, name){
   gl.describe(view.dot, 2, gl.FLOAT, false, 0, 0); // out of the selected buffer.
   // ^ "Each dot is 2 numbers at a time, no normalizing, ? + ?"
 
+  var bytes = Numbers.BYTES_PER_ELEMENT;
   view.buff = gl.createBuffer();
-  view.update = new Numbers([0,0]);
+  view.update = new Numbers([]);
   gl.select(gl.ARRAY_BUFFER, view.buff);
-  gl.load(gl.ARRAY_BUFFER, view.update, gl.DYNAMIC_DRAW);  
+  gl.load(gl.ARRAY_BUFFER, view.update, gl.DYNAMIC_DRAW);
   view.grab = gl.find(view, 'grab');
   gl.focus(view.grab);
-  gl.describe(view.grab, 2, gl.FLOAT, false, 0, 0);
+  gl.describe(view.grab, 2, gl.FLOAT, false, 6*bytes, 0); // (x,y r,g,b,a) = 6 floats of 4 bytes
   gl.many && gl.many.vertexAttribDivisorANGLE(view.grab, 1);
+  view.hue = gl.find(view, 'hue');
+  gl.focus(view.hue);
+  gl.describe(view.hue, 4, gl.FLOAT, false, 6*bytes, 2*bytes); // rgba = 4 items, 6 floats per box, the colors start at 2*bytes into the list (grab is the first 2*bytes).
+  gl.many && gl.many.vertexAttribDivisorANGLE(view.hue, 1);
+  //gl.many.drawArraysInstancedANGLE(gl.TRIANGLES, 0, 6, instances);
 };
 see.code = function(fn){ return fn.toString().slice(14, -4) };
 see.create();
@@ -526,8 +533,8 @@ function render(list){
     if(!(what = map.get(name))){
       map.set(name, what = {i: see.all});
       box.s = (box.s || 0) + 1;
-      see.all += 2;
-      (tmp = new Numbers(box.update.length + 2)).set(box.update, 0); box.update = tmp;
+      see.all += 6;
+      (tmp = new Numbers(box.update.length + 6)).set(box.update, 0); box.update = tmp;
       gl.select(gl.ARRAY_BUFFER, box.buff);
       gl.load(gl.ARRAY_BUFFER, box.update, gl.DYNAMIC_DRAW); 
       if(!text){
@@ -558,9 +565,16 @@ function render(list){
       box.update[i+0] = what.grab[0] = put[0]/50; // this is the gl X coordinate of the box
       box.update[i+1] = what.grab[1] = (put[1]/50) + (see.scroll); // this is the gl Y coordinate of the box.
     }
+    if(u !== (put = change.fill)){
+      box.update[i+2] = what.fill[0] = put[0];
+      box.update[i+3] = what.fill[1] = put[1];
+      box.update[i+4] = what.fill[2] = put[2];
+      box.update[i+5] = what.fill[3] = put[3]||1;
+    }
   }
   gl.select(gl.ARRAY_BUFFER, box.buff);
   gl.modify(gl.ARRAY_BUFFER, 0, box.update);
+  //console.log("?", box.update);
   gl.many.drawArraysInstancedANGLE(gl.TRIANGLES, 0, 6, box.s); // TODO: enable fallback!
   return;
 }
@@ -579,10 +593,10 @@ function scroll(){
   var y = window.scrollY, r = y / h, d = y - _y; _y = y;
   see.scroll = y/see.tall;
   if(d > 0){
-    s.height = (h += i*0.05)+'px';
+    s.height = (h += i*0.1*r)+'px';
   } else
-  if(r < 0.5 & (i*10) < h){
-    s.height = (h -= i*0.05)+'px';
+  if(r < 0.75 && (i*10) < h){
+    s.height = (h -= i*0.1)+'px';
   }
   render.scroll();
 }
