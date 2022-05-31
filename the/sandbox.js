@@ -217,9 +217,9 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
 
 var breathe = function(){
   var time = perf.now();
-	var change = Array.from(share.keys());
-	push.apply(change, Array.from(share.values()));
-	share = new Map;
+  var change = Array.from(share.keys());
+  push.apply(change, Array.from(share.values()));
+  share = new Map;
   var s = sr.workers, l = Array.from(s.keys()), i = 0, c = change.length, w;
   while(w = l[i++]){
     if((w = s.get(w)) && c || (time - w.last) > w.rate){
@@ -410,52 +410,185 @@ map.set(1, window);
 
 
 ;(function(){
-return; // TODO: TEST GETTING SHADERS WORKING FOR FILL...
 
-var canvas = document.querySelector("canvas");
-var gl = canvas.getContext("webgl");
 
-// Compile the vertex shader.
-var vertex = gl.createShader(gl.VERTEX_SHADER);
-gl.shaderSource(vertex, document.querySelector("#vertex").textContent);
-gl.compileShader(vertex);
-if (!gl.getShaderParameter(vertex, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(vertex));
+return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
+var see = {};
+var map = new Map;
+var Numbers = Float32Array;
 
-// Compile the fragment shader.
-var frag = gl.createShader(gl.FRAGMENT_SHADER);
-gl.shaderSource(frag, document.querySelector("#frag").textContent);
-gl.compileShader(frag);
-if (!gl.getShaderParameter(frag, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(frag));
+//attribute vec4 hue;
+//uniform mat4 mat;
+//gl_Position = mat * move * dot;
+see.dot = function(){/*
+attribute vec4 dot;
+attribute vec2 grab;
+uniform float scroll;
+varying vec4 fill;
+void main() {
+  mat4 move = mat4(
+    vec4(1, 0, 0, 0),
+    vec4(0, 1, 0, 0),
+    vec4(0, 0, 1, 0),
+    vec4(grab, 0, 1));
+  gl_Position = move * (dot + vec4(0,scroll,0,0));
+  fill = vec4(1.0, 0.0, 0.0, 1.0);
+}
+*/}
+see.fill = function(){/*
+precision mediump float;
+varying vec4 fill;
+void main() {
+  gl_FragColor = fill;
+}
+*/}
 
-// Link and use the link.
-var link = gl.createProgram();
-gl.attachShader(link, vertex);
-gl.attachShader(link, frag);
-gl.linkProgram(link);
-if (!gl.getProgramParameter(link, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(link));
-gl.useProgram(link);
+see.create = function(){
+  if(see.DOM){ return }
+  var w = window, c = document.createElement('canvas'), tmp;
+  c.width = w.innerWidth, c.height = see.tall = w.innerHeight;
+  (tmp = c.style).position = 'fixed'; tmp.left = tmp.top = 0;
+  SecureRender.appendChild(see.DOM = c);
+  var gl = see.gl = c.getContext('webgl');
+  gl.goto = gl.useProgram;
+  gl.select = gl.bindBuffer;
+  gl.load = gl.bufferData;
+  gl.modify = gl.bufferSubData;
+  gl.find = gl.getAttribLocation;
+  gl.focus = gl.enableVertexAttribArray;
+  gl.describe = gl.vertexAttribPointer;
+  gl.many = gl.getExtension('ANGLE_instanced_arrays');
 
-// Define the positions.
-var buff = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, buff);
+  see.view(see.code(see.dot), see.code(see.fill), 'box');
+  sr.how.view = render;
+}
+see.view = function(dots, fills, name){
+  var gl = see.gl, err = gl.COMPILE_STATUS;
+  // Compile the vertex shader:
+  var dot = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(dot, dots);
+  gl.compileShader(dot);
+  if(!gl.getShaderParameter(dot, err)){ throw new Error(gl.getShaderInfoLog(dot)) }
 
-var tri = new Float32Array([-1,1,  1,-1,  -1,-1]);
+  // Compile the fragment shader:
+  var fill = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fill, fills);
+  gl.compileShader(fill);
+  if(!gl.getShaderParameter(fill, err)){ throw new Error(gl.getShaderInfoLog(fill)) }
 
-// Bind the position buffer to the position attribute.
-var pos = gl.getAttribLocation(link, "pos");
-gl.enableVertexAttribArray(pos);
-gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  // Link the view to use it.
+  var view = see.view[name || Math.random()] = gl.createProgram();
+  gl.attachShader(view, dot);
+  gl.attachShader(view, fill);
+  gl.linkProgram(view);
+  if(!gl.getProgramParameter(view, gl.LINK_STATUS)){ throw new Error(gl.getProgramInfoLog(view)) }
+  gl.goto(view);
 
-// Draw it every frame!
-var frame = window.requestAnimationFrame;
-frame(function now(){
+  // The view needs to know where every dot/corner of a 3D/2D/1D shape model will be:
+  view.box = gl.createBuffer(); // This is like saying `var box = new Array;` in JS.
+  // However, when we want to modify it, gl does not know our variable name...
+  gl.select(gl.ARRAY_BUFFER, view.box); // so we have to select it
+  gl.load(gl.ARRAY_BUFFER, new Float32Array([ // in order to modify
+    -0.1,-0.1,
+     0.1,-0.1,
+    -0.1, 0.1,
+    -0.1, 0.1,
+     0.1,-0.1,
+     0.1, 0.1
+  ]), gl.STATIC_DRAW);
+  // Now we need to explain how the data is laid out in the matrix.
+  view.dot = gl.find(view, 'dot'); // The dots/corners are at this place.
+  gl.focus(view.dot); // Now let's explain how to extract just this variable
+  gl.describe(view.dot, 2, gl.FLOAT, false, 0, 0); // out of the selected buffer.
+  // ^ "Each dot is 2 numbers at a time, no normalizing, ? + ?"
+
+  view.buff = gl.createBuffer();
+  view.update = new Numbers([0,0]);
+  gl.select(gl.ARRAY_BUFFER, view.buff);
+  gl.load(gl.ARRAY_BUFFER, view.update, gl.DYNAMIC_DRAW);  
+  view.grab = gl.find(view, 'grab');
+  gl.focus(view.grab);
+  gl.describe(view.grab, 2, gl.FLOAT, false, 0, 0);
+  gl.many && gl.many.vertexAttribDivisorANGLE(view.grab, 1);
+};
+see.code = function(fn){ return fn.toString().slice(14, -4) };
+see.create();
+see.all = 0;
+
+//function grow(a, x, r){ return (r = new Numbers(a.length + (x||100))).set(a, 0), r } // however much bigger you want it. Delete this, just inline it!
+function render(list){
+  var gl = see.gl, box = see.view.box;
+  var change, i = 0, u;
+  while(change = list[i++]){ each(change) }
+  function each(change, name, what, has, put, text, tmp){
+    if(!(name = change.name)){ return }
+    text = ('string' == typeof change.fill);
+    if(!(what = map.get(name))){
+      map.set(name, what = {i: see.all});
+      box.s = (box.s || 0) + 1;
+      see.all += 2;
+      (tmp = new Numbers(box.update.length + 2)).set(box.update, 0); box.update = tmp;
+      gl.select(gl.ARRAY_BUFFER, box.buff);
+      gl.load(gl.ARRAY_BUFFER, box.update, gl.DYNAMIC_DRAW); 
+      if(!text){
+        //what.style.minWidth = '1'+place['cs'];
+        //what.style.minHeight = '1'+place['cs'];
+        var i = what.i;
+        box.update[i+0] = 0;
+        box.update[i+1] = 0;
+      }
+      what.id = 'v'+name.replace(aZ09,'');
+      //what.size = [1,1,1]
+      what.turn = [0,0,0];
+      what.grab = [0,0,0];
+      what.zoom = [1,1,1];
+      what.fill = [0,0,0];
+      what.away;
+      what.drip;
+      what.flow;
+      what.sort;
+      what.unit = { turn: [], zoom: [], grab: [] };
+    }
+    var i = what.i;
+    if(u !== (put = change.size)){
+      //console.log(name, "should be size", put[0], put[1]);
+      //gl.uniform2fv(gl.size, [(put[0][0] || put[0])/4, (put[1][0] || put[1])/4 ]);
+    }
+    if(u !== (put = change.grab)){
+      box.update[i+0] = what.grab[0] = put[0]/50; // this is the gl X coordinate of the box
+      box.update[i+1] = what.grab[1] = (put[1]/50) + (see.scroll); // this is the gl Y coordinate of the box.
+    }
+  }
+  gl.select(gl.ARRAY_BUFFER, box.buff);
+  gl.modify(gl.ARRAY_BUFFER, 0, box.update);
+  gl.many.drawArraysInstancedANGLE(gl.TRIANGLES, 0, 6, box.s); // TODO: enable fallback!
   return;
-  frame(now);
-  randomize();
-  gl.bufferData(gl.ARRAY_BUFFER, tri, gl.STATIC_DRAW);
-  gl.drawArrays(gl.TRIANGLES, 0, tri.length/2);
-});
+}
+render.scroll = function(){ // UPGRADE THIS TO VIEW MATRIX TRANSFORM.
+  var gl = see.gl, box = see.view.box;
+  box.scroll = gl.getUniformLocation(box, 'scroll'); // THIS IS THE SLOW WAY TO DO THIS, REFACTOR TO viewspace/translation
+  gl.uniform1f(box.scroll, see.scroll); // out of the selected buffer.
+  render([]);
+}
+
+see.scroll = 0;
+;(function(){ // TMP! DELTE! // NOTE: Why is this with GL? It should work with both. But for now, we're working on GL, so ... we hacked it in here.
+var s = document.body.style, i = window.innerHeight, h = i, _y;
+s.height = (h *= 10)+'px';
+function scroll(){
+  var y = window.scrollY, r = y / h, d = y - _y; _y = y;
+  see.scroll = y/see.tall;
+  if(d > 0){
+    s.height = (h += i*0.05)+'px';
+  } else
+  if(r < 0.5 & (i*10) < h){
+    s.height = (h -= i*0.05)+'px';
+  }
+  render.scroll();
+}
+window.onwheel = scroll;
 }());
 
+}());
 
 }());
