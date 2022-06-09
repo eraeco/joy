@@ -13,6 +13,7 @@ TO LEARN MORE ABOUT THESE LIMITATIONS, PLEASE READ SECURERENDER.ORG
 HOW SECURE RENDER WORKS: APP -> [ IFRAME SHIELD -> [SECURE RENDER] <-> USER DATA ]
 AN APP ONLY EVER FEEDS IN VIEW LOGIC. DATA IS NEVER SENT BACK UP! */
 sr = {browser: (window.browser || window.chrome)};
+try{ !sr.browser && navigator.serviceWorker.register('./service.js') }catch(e){};
 
 (function start(i){
   // TODO: talk to cloudflare about enforcing integrity meanwhile?
@@ -50,5 +51,9 @@ sr.how = {
     }
   }
 }
+
+window.addEventListener('storage', function(a,b,c,d,e,f){
+  console.log("enclave", a,b,c,d,e,f);
+});
 
 }());
