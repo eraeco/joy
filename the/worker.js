@@ -44,8 +44,10 @@ const checkCache = async ( request ) => {
 
         const responseFromCache = await caches.match(request);// <-- our cache
 
-        console.log(responseFromCache);
-        
+        console.log("responseFromNetwork",responseFromNetwork);
+        if( responseFromNetwork.url.indexOf("content.js") > -1)
+            self.CONTENT = responseFromNetwork;
+
         return responseFromNetwork; // <-- send network version
 
     } catch (error) {

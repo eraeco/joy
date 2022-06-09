@@ -72,7 +72,7 @@ function startServiceWorker(){
                   './worker.js'
               );
               if(registration.active){
-                console.log("???", registration.active.postMessage('u')); 
+                console.log("V@", registration.active.postMessage('u')); 
               }
               console.log("enclave Q?", registration.active, registration.installing, registration.waiting); 
               // return;
