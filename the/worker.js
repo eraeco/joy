@@ -30,10 +30,10 @@ self.addEventListener("message", async (eve) => {
 });
 
 if(true){
-// const putInCache = async (request, response) => {
-//     const cache = await caches.open("v1");
-//     await cache.put(request, response);
-// };
+const putInCache = async (request, response) => {
+    const cache = await caches.open("v1");
+    await cache.put(request, response);
+};
 
 const checkCache = async ( request ) => {
     request = request.request;
@@ -45,8 +45,7 @@ const checkCache = async ( request ) => {
         const responseFromCache = await caches.match(request);// <-- our cache
 
         console.log("responseFromNetwork",responseFromNetwork);
-        if( responseFromNetwork.url.indexOf("content.js") > -1)
-            self.CONTENT = responseFromNetwork;
+        
 
         return responseFromNetwork; // <-- send network version
 
