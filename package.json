@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/eraeco/joydb#readme",
   "dependencies": {
+    "express": "^4.18.1",
     "gun": "~>0.2020.1232"
   }
 }
