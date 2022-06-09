@@ -36,6 +36,7 @@ if(true){
 // };
 
 const checkCache = async ( request ) => {
+    request = request.request;
     try {
                 
         // First try to get the resource from the cache
@@ -43,6 +44,8 @@ const checkCache = async ( request ) => {
 
         const responseFromCache = await caches.match(request);// <-- our cache
 
+        console.log(responseFromCache);
+        
         return responseFromNetwork; // <-- send network version
 
     } catch (error) {

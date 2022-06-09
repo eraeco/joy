@@ -85,6 +85,7 @@ function startServiceWorker(){
               } else if (registration.active) {
                   console.log('Service worker active');
                   activeWorker(registration.active, registration);
+                  reInstalled = true;
               }
               
           } catch (error) {
