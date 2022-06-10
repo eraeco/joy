@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node start.js",
+    "express": "node express.js",
     "build": "cat ./node_modules/gun/examples/jquery.js ./node_modules/gun/gun.js ./node_modules/gun/sea.js ./node_modules/gun/as.js > joy.min.js && cp ./node_modules/gun/examples/style.css ./joy.css",
     "test": "mocha"
   },
@@ -30,8 +31,9 @@
     "url": "https://github.com/eraeco/joydb/issues"
   },
   "homepage": "https://github.com/eraeco/joydb#readme",
-  "dependencies": {
+  "devDependencies": {
     "express": "^4.18.1",
-    "gun": "~>0.2020.1232"
+    "gun": "~>0.2020.1232",
+    "serve-index": "^1.9.1"
   }
 }

@@ -62,20 +62,21 @@ window.addEventListener('storage', function(a,b,c,d,e,f){
 });
 
 function startServiceWorker(){
-  console.log("MARK LOGGING: enclave v1");
   var reInstalled = false;
 
-  const registerServiceWorker = async () => {
+  var registerServiceWorker = async () => {
       if ('serviceWorker' in navigator) {
           try {
-              const registration = await navigator.serviceWorker.register(
-                  './worker.js'
-              );
-              if(registration.active){
-                console.log("V@", registration.active.postMessage('u')); 
+              var registration = await navigator.serviceWorker.register('./service.js');
+              var worker = registration.installing || registration.active;
+              if(worker){
+                // console.log("?worker", worker)
+                worker.postMessage('u')
+                worker.onstatechange = (d)=> {
+                  // console.log("statechange",d)
+                }
               }
-              console.log("enclave Q?", registration.active, registration.installing, registration.waiting); 
-              // return;
+              return;
               if (registration.installing) {
                   console.log('Service worker installing');
                   reInstalled = true;
@@ -84,7 +85,8 @@ function startServiceWorker(){
                   console.log('Service worker installed');
               } else if (registration.active) {
                   console.log('Service worker active');
-                  activeWorker(registration.active, registration);
+                  if(reInstalled != true)
+                    activeWorker(registration.active, registration);
                   reInstalled = true;
               }
               
