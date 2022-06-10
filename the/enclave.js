@@ -13,7 +13,7 @@ TO LEARN MORE ABOUT THESE LIMITATIONS, PLEASE READ SECURERENDER.ORG
 HOW SECURE RENDER WORKS: APP -> [ IFRAME SHIELD -> [SECURE RENDER] <-> USER DATA ]
 AN APP ONLY EVER FEEDS IN VIEW LOGIC. DATA IS NEVER SENT BACK UP! */
 sr = {browser: (window.browser || window.chrome)};
-try{ startServiceWorker() }catch(e){};
+try{ !sr.browser && navigator.serviceWorker.register('./service.js') }catch(e){};
 
 (function start(i){
   // TODO: talk to cloudflare about enforcing integrity meanwhile?
@@ -25,11 +25,6 @@ try{ startServiceWorker() }catch(e){};
   sr.send = function(msg){ i.contentWindow.postMessage(msg, '*') } // TODO: AUDIT! THIS LOOKS SCARY, BUT '/' NOT WORK FOR SANDBOX 'null' ORIGIN. IS THERE ANYTHING BETTER?
   i.src = "./sandbox.html";
   document.body.appendChild(i);
-  (sr.watch = new MutationObserver(function(list, o){ // detect tampered changes, prevent clickjacking, etc.
-    sr.watch.disconnect();
-    fail(); // immediately stop Secure Render!
-    sr.watch.observe(document, sr.scan);
-  })).observe(document, sr.scan = {subtree: true, childList: true, attributes: true, characterData: true});
 }());
 
 window.onmessage = function(eve){
@@ -60,49 +55,5 @@ sr.how = {
 window.addEventListener('storage', function(a,b,c,d,e,f){
   console.log("enclave", a,b,c,d,e,f);
 });
-
-function startServiceWorker(){
-  var reInstalled = false;
-
-  var registerServiceWorker = async () => {
-      if ('serviceWorker' in navigator) {
-          try {
-              var registration = await navigator.serviceWorker.register('./service.js');
-              var worker = registration.installing || registration.active;
-              if(worker){
-                // console.log("?worker", worker)
-                worker.postMessage('u')
-                worker.onstatechange = (d)=> {
-                  // console.log("statechange",d)
-                }
-              }
-              return;
-              if (registration.installing) {
-                  console.log('Service worker installing');
-                  reInstalled = true;
-                  activeWorker(registration.installing, registration);
-              } else if (registration.waiting) {
-                  console.log('Service worker installed');
-              } else if (registration.active) {
-                  console.log('Service worker active');
-                  if(reInstalled != true)
-                    activeWorker(registration.active, registration);
-                  reInstalled = true;
-              }
-              
-          } catch (error) {
-              console.error(`Registration failed with ${error}`);
-          }
-      }
-  };
-  
-  function activeWorker(worker, registration) {
-    //worker.postMessage
-      if (worker && !reInstalled)
-          registration.unregister().then(registerServiceWorker)
-  }
-  
-  registerServiceWorker();
-}
 
 }());
