@@ -1,6 +1,6 @@
 ;(function(){
 	// update temporarily for Secure Render:
-	require('http').createServer(require('gun').serve(__dirname));
+	require('http').createServer(require('gun').serve(__dirname)).listen(8769);
 	return;
 	var gun = require('gun/examples/http');
 	if(!gun.back){ return } // http example auto spawns subprocess
