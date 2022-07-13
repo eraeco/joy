@@ -4,7 +4,7 @@
   "description": "the anti-monopoly game engine for the web",
   "main": "index.js",
   "repository": {
-    "type": "git",
+    "type": "git"
   },
   "keywords": [
     "sea",
@@ -18,5 +18,10 @@
     "securerender",
     "browser"
   ],
-  "author": "ERA"
+  "author": "ERA",
+  "integrity": {
+    "content.js": "Okg/45bSuN+sbZAl09sZEBzPpEqMbs7wL4O9GUd3sCA=",
+    "enclave.html": "kym+PG/tbN9UUxzzNCGOBkdcL99JqU5x/fDk0SJc/2Q=",
+    "enclave.js": "AvQTHnsHSBKrXrF6Wl359U0xc0f6dim0jB2j8IJUjkc="
+  }
 }
