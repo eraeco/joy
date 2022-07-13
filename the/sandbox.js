@@ -38,6 +38,15 @@ sr.run = function(msg, eve){
   worker.addEventListener('message', window.onmessage);
 }
 
+;(function(){
+  function load(src, cb){
+    var script = document.createElement('script');
+    script.onload = cb; script.src = src;
+    document.head.appendChild(script);
+  }
+  load('trial/write.js')
+}());
+
 var view;
 sr.how = {}; // RPC
 sr.how.html = function(msg){
@@ -422,17 +431,18 @@ var Numbers = Float32Array;
 //gl_Position = mat * move * dot;
 see.dot = function(){/*
 attribute vec4 dot;
-attribute vec2 grab;
+attribute vec3 grab;
 attribute vec4 hue;
+attribute vec3 size;
 uniform float scroll;
 varying vec4 fill;
 void main() {
   mat4 move = mat4(
-    vec4(1, 0, 0, 0),
-    vec4(0, 1, 0, 0),
+    vec4(size.x, 0, 0, 0),
+    vec4(0, size.y, 0, 0),
     vec4(0, 0, 1, 0),
-    vec4(grab, 0, 1));
-  gl_Position = move * (dot + vec4(0,scroll,0,0));
+    vec4(grab, 1));
+  gl_Position = move * (dot + vec4(0.0,scroll,0,0));
   fill = hue;
 }
 */}
@@ -503,20 +513,25 @@ see.view = function(dots, fills, name){
   gl.describe(view.dot, 2, gl.FLOAT, false, 0, 0); // out of the selected buffer.
   // ^ "Each dot is 2 numbers at a time, no normalizing, ? + ?"
 
-  var bytes = Numbers.BYTES_PER_ELEMENT;
+  var bytes = Numbers.BYTES_PER_ELEMENT, has = view.has = 10;
+  view.update = new Numbers([0,0,0, 1,0,0,1, 2,3,1]); // [x,y,z r,g,b,a, w,h,d] // 10 floats per box.
   view.buff = gl.createBuffer();
-  view.update = new Numbers([]);
   gl.select(gl.ARRAY_BUFFER, view.buff);
   gl.load(gl.ARRAY_BUFFER, view.update, gl.DYNAMIC_DRAW);
   view.grab = gl.find(view, 'grab');
   gl.focus(view.grab);
-  gl.describe(view.grab, 2, gl.FLOAT, false, 6*bytes, 0); // (x,y r,g,b,a) = 6 floats of 4 bytes
+  gl.describe(view.grab, 3, gl.FLOAT, false, has*bytes, 0); // [x,y,z ...]
   gl.many && gl.many.vertexAttribDivisorANGLE(view.grab, 1);
   view.hue = gl.find(view, 'hue');
   gl.focus(view.hue);
-  gl.describe(view.hue, 4, gl.FLOAT, false, 6*bytes, 2*bytes); // rgba = 4 items, 6 floats per box, the colors start at 2*bytes into the list (grab is the first 2*bytes).
+  gl.describe(view.hue, 4, gl.FLOAT, false, has*bytes, 3*bytes); // [..., r,g,b,a, ...]
   gl.many && gl.many.vertexAttribDivisorANGLE(view.hue, 1);
-  //gl.many.drawArraysInstancedANGLE(gl.TRIANGLES, 0, 6, instances);
+  view.size = gl.find(view, 'size');
+  gl.focus(view.size);
+  gl.describe(view.size, 3, gl.FLOAT, false, has*bytes, 7*bytes); // [..., w,h,d]
+  gl.many && gl.many.vertexAttribDivisorANGLE(view.size, 1);
+  console.log(view.update);
+  //gl.many.drawArraysInstancedANGLE(gl.TRIANGLES, 0, 6, 1);
 };
 see.code = function(fn){ return fn.toString().slice(14, -4) };
 see.create();
@@ -524,6 +539,7 @@ see.all = 0;
 
 //function grow(a, x, r){ return (r = new Numbers(a.length + (x||100))).set(a, 0), r } // however much bigger you want it. Delete this, just inline it!
 function render(list){
+  //return;
   var gl = see.gl, box = see.view.box;
   var change, i = 0, u;
   while(change = list[i++]){ each(change) }
@@ -533,8 +549,9 @@ function render(list){
     if(!(what = map.get(name))){
       map.set(name, what = {i: see.all});
       box.s = (box.s || 0) + 1;
-      see.all += 6;
-      (tmp = new Numbers(box.update.length + 6)).set(box.update, 0); box.update = tmp;
+      see.all += box.has;
+      //console.log("new box, need...", box.has);
+      (tmp = new Numbers(box.update.length + box.has)).set(box.update, 0); box.update = tmp;
       gl.select(gl.ARRAY_BUFFER, box.buff);
       gl.load(gl.ARRAY_BUFFER, box.update, gl.DYNAMIC_DRAW); 
       if(!text){
@@ -545,7 +562,7 @@ function render(list){
         box.update[i+1] = 0;
       }
       what.id = 'v'+name.replace(aZ09,'');
-      //what.size = [1,1,1]
+      what.size = [1,1,1];
       what.turn = [0,0,0];
       what.grab = [0,0,0];
       what.zoom = [1,1,1];
@@ -557,19 +574,22 @@ function render(list){
       what.unit = { turn: [], zoom: [], grab: [] };
     }
     var i = what.i;
-    if(u !== (put = change.size)){
-      //console.log(name, "should be size", put[0], put[1]);
-      //gl.uniform2fv(gl.size, [(put[0][0] || put[0])/4, (put[1][0] || put[1])/4 ]);
-    }
     if(u !== (put = change.grab)){
       box.update[i+0] = what.grab[0] = put[0]/50; // this is the gl X coordinate of the box
       box.update[i+1] = what.grab[1] = (put[1]/50) + (see.scroll); // this is the gl Y coordinate of the box.
+      box.update[i+2] = what.grab[2]; // this is the gl Y coordinate of the box.
     }
     if(u !== (put = change.fill)){
-      box.update[i+2] = what.fill[0] = put[0];
-      box.update[i+3] = what.fill[1] = put[1];
-      box.update[i+4] = what.fill[2] = put[2];
-      box.update[i+5] = what.fill[3] = put[3]||1;
+      box.update[i+3] = what.fill[0] = put[0];
+      box.update[i+4] = what.fill[1] = put[1];
+      box.update[i+5] = what.fill[2] = put[2];
+      box.update[i+6] = what.fill[3] = put[3]||1;
+    }
+    if(u !== (put = change.size)){ tmp = what.size;
+      //gl.uniform2fv(gl.size, [(put[0][0] || put[0])/4, (put[1][0] || put[1])/4 ]);
+      box.update[i+7] = what.size[0] = put[0][0];
+      box.update[i+8] = what.size[1] = put[1][0];
+      //box.update[i+8] = what.size[2] = ((put||'')[2]||tmp[2])[0] || (put||tmp[2])[2];
     }
   }
   gl.select(gl.ARRAY_BUFFER, box.buff);
@@ -601,6 +621,7 @@ function scroll(){
   render.scroll();
 }
 window.onwheel = scroll;
+if('ontouchstart' in window){ window.onscroll = scroll }
 }());
 
 }());
