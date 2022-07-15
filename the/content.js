@@ -32,6 +32,10 @@ window.addEventListener("load", function(){
 });
 
 function frame(i){
+  i = document.createElement('meta');
+  i.name = 'viewport';
+  i.content = 'width=device-width, initial-scale=1';
+  document.head.appendChild(i);
   i = sr.i = document.createElement('iframe');
   i.className = 'SecureRender';
   i.onload = function(){ sr.send({put: sr.html, how: 'html'}) }
