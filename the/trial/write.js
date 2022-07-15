@@ -12,10 +12,10 @@ function load(src, cb){
     document.head.appendChild(script);
 }
 
-
 load('trial/jquery.js', () => {
   load('trial/meta.js', commands)
 })
+load('trial/esprima.js');
 
 var sr = window.SecureRender;
 
@@ -28,13 +28,12 @@ function commands() {
     }
   }),
   meta.edit({
-    name: "Code",
-    combo: ["C"],
+    name: "Edit",
+    combo: ["E"],
     on: function () {
-      console.log("Code")
+      console.log("Edit Code")
     }
   })
-
 
   meta.edit({
     name: "Add",
@@ -68,38 +67,50 @@ function commands() {
       console.log(name)
       if (name !== "") {
         console.log("Fill")
-        // window.onmessage({data: [{name: name, fill: [Math.random(), Math.random(), Math.random()]}]});
+        window.onmessage({data: [{name: name, fill: [Math.random(), Math.random(), Math.random()]}]});
       }
     }
   })
 
   meta.edit({
     name: "Hear",
-    combo: ["C", "H"],
+    combo: ["E", "H"],
 
   })
   meta.edit({
     name: "Say",
-    combo: ["C", "S"],
+    combo: ["E", "S"],
 
   })
   meta.edit({
     name: "Look",
-    combo: ["C", "L"],
+    combo: ["E", "L"],
 
   })
   meta.edit({
-    combo: ["C", "G"]
+    combo: ["E", "G"]
   })
   meta.edit({
     name: "Hand",
-    combo: ["C", "G","H"],
+    combo: ["E", "G","H"],
 
   })
   meta.edit({
     name: "Run",
-    combo: ["C", "G","R"],
+    combo: ["E", "G","R"],
 
+  })
+  meta.edit({
+    name: "Open",
+    combo: ["E", "O"],
+    on: function () {
+      console.log("import");
+      meta.ask("paste in code", function(data){
+        console.log("paste", data);
+        var syntax = esprima.parse(data);
+        console.log('pasted:', syntax);
+      })
+    }
   })
 
 }
