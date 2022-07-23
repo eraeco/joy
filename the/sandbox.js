@@ -6,13 +6,13 @@ sr.up = function(msg){ window.parent.postMessage(msg, '*'); }  // TODO: AUDIT! T
 function fail(){ fail.yes = 1; document.body.innerHTML = "<center>SecureRender has detected an external threat trying to tamper with the security of your application.<br/>Please reload to restore security. If you still have problems, search for a more trusted source to load the application from.</center>" }
 
 ;(function(){
-	sr.fail = "Blocked a script from leaking secure data (sandbox).";
-	sr.ban = new Map;
-	var tmp = window;
-	while(tmp !== tmp.parent && (tmp = tmp.parent)){
-		sr.ban.set(tmp, 1);
-		sr.ban.set(tmp.postMessage, 1);
-	}
+  sr.fail = "Blocked a script from leaking secure data (sandbox).";
+  sr.ban = new Map;
+  var tmp = window;
+  while(tmp !== tmp.parent && (tmp = tmp.parent)){
+    sr.ban.set(tmp, 1);
+    sr.ban.set(tmp.postMessage, 1);
+  }
 }());
 
 window.onmessage = function(eve){ // hear from app, enclave, and workers.
@@ -39,6 +39,7 @@ sr.run = function(msg, eve){
 }
 
 ;(function(){
+  return;
   function load(src, cb){
     var script = document.createElement('script');
     script.onload = cb; script.src = src;
@@ -85,16 +86,16 @@ sr.how.say = function(msg){
 }
 
 function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
-	if(this.the){ return the }
-	this.the = the;
+  if(this.the){ return the }
+  this.the = the;
   the.aim = the.aim || {};
   the.key = the.key || {};
   onmessage = async function(eve){
     var msg = eve.data;
     if(view !== the.view){
-    	place(stay).into(view);
-    	place(the.view).into(stay);
-    	the.view = view;
+      place(stay).into(view);
+      place(the.view).into(stay);
+      the.view = view;
     }
     if(!msg){ return }
     if(u !== msg.length){
@@ -241,29 +242,37 @@ var perf = window.performance || {now: function(){ return +new Date }};
 setInterval(breathe,0);
 
 ;(function(){
-	// This module needs to serialize various web events
-	// so they are accessible in the web worker
-	window.onmousemove = function(eve){
-		share.set('aim_x', eve.pageX);
-		share.set('aim_y', eve.pageY);
-	}
-	var keys = {};
-	window.onkeydown = function (eve) {
-		var key = "key_" + eve.code.replace('Key','');
-		if (keys[key]) {
-			return;
-		}
-		var now = +new Date();
-		share.set(key, (keys[key] = now));
-		key = "key_" + eve.which;
-		share.set(key, (keys[key] = now));
-	};
-	window.onkeyup = function (eve) {
-		var key = "key_" + eve.code.replace('Key','');
-		share.set(key, (keys[key] = 0));
-		key = "key_" + eve.which;
-		share.set(key, (keys[key] = 0));
-	};
+  // This module needs to serialize various web events
+  // so they are accessible in the web worker
+  var w = window;
+  function mousemove(eve){ // TODO: BUG! Needs to be viewport x/y/z, not html.
+    share.set('aim_x', eve.pageX);
+    share.set('aim_y', eve.pageY);
+    share.set('aim_z', eve.pageZ || 0); // VR!
+  }
+  w.onmousemove = mousemove;
+  w.ontouchmove = function(eve){
+    var multi = eve.touches || [{}], t = multi[0];
+    for(var k in t){ if(undefined === eve[k]){ eve[k] = t[k] } }
+    mousemove(eve);
+  }
+  var keys = {};
+  w.onkeydown = function (eve) {
+    var key = "key_" + eve.code.replace('Key','');
+    if (keys[key]) {
+      return;
+    }
+    var now = +new Date();
+    share.set(key, (keys[key] = now));
+    key = "key_" + eve.which;
+    share.set(key, (keys[key] = now));
+  };
+  w.onkeyup = function (eve) {
+    var key = "key_" + eve.code.replace('Key','');
+    share.set(key, (keys[key] = 0));
+    key = "key_" + eve.which;
+    share.set(key, (keys[key] = 0));
+  };
   /* JOY
     LS move: [WASD]
       tap (or quick charge): jump (standing), leap (moving), hurdle/climb (obstacle), rebound (wall). [WW,AA,SS,DD]
@@ -300,12 +309,14 @@ sr.how.view = function(list){
         what.style.minWidth = '1'+place['cs'];
         what.style.minHeight = '1'+place['cs'];
       }
+      what.name = name;
       what.id = 'v'+name.replace(aZ09,'');
       what.turn = [0,0,0];
       what.grab = [0,0,0];
       what.zoom = [1,1,1];
+      what.size = change.size || [[1, '~'], [1, '~'], [1, '~']];
       what.unit = { turn: [], zoom: [], grab: [] };
-      what.contentEditable = 'true';
+      //what.contentEditable = 'true';
     }
     if(u !== (put = change.time)){
       what.style.transitionDuration = put+'s';
@@ -339,6 +350,7 @@ sr.how.view = function(list){
       change.drip = (u === (tmp = change.drip))? what.drip : tmp;
     }
     if(u !== (put = change.size)){
+      what.size = put; // TODO: Handle units
       if(text){
         what.style.fontSize = (put[0] || put)*100+'%';
       } else {
@@ -365,7 +377,7 @@ sr.how.view = function(list){
     if(u !== (tmp = change.sort)){
       // A dot on a line is at a defined place, but it might stretch up to a max.
       has = tmp[0][0] || tmp[0];
-      put = map.get(tmp[1]) || '';
+      put = map.get(tmp[1] || 'SecureRender') || '';
       if((tmp = what.nextSibling) && 'BR' === tmp.tagName){ tmp.remove() }
       if(put){ put.insertAdjacentElement(place[has], what) }
       if(text){

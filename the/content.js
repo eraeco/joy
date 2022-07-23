@@ -36,6 +36,7 @@ function frame(i){
   i.name = 'viewport';
   i.content = 'width=device-width, initial-scale=1';
   document.head.appendChild(i);
+  document.body.style = "overscroll-behavior-y: contain;";
   i = sr.i = document.createElement('iframe');
   i.className = 'SecureRender';
   i.onload = function(){ sr.send({put: sr.html, how: 'html'}) }
