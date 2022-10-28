@@ -39,7 +39,7 @@ sr.run = function(msg, eve){
 }
 
 ;(function(){
-  return;
+  return; // MUST NOT BE COMMENTED FOR PRs!
   function load(src, cb){
     var script = document.createElement('script');
     script.onload = cb; script.src = src;
@@ -88,8 +88,8 @@ sr.how.say = function(msg){
 function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   if(this.the){ return the }
   this.the = the;
-  the.aim = the.aim || {};
-  the.key = the.key || {};
+  the.aim = the.aim || {};//function(){};
+  the.key = the.key || {};//function(){};
   onmessage = async function(eve){
     var msg = eve.data;
     if(view !== the.view){
@@ -152,7 +152,6 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
 
   var pid = Math.random().toString(32).slice(-4), pi = 0;
   var view = function(what){
-    what.C = (what.C||0)+1;
     return places.get(what) ||
       (what && place === what.place && what) ||
       (places.set(what, what = new Proxy(what, place.ing)) && what)
@@ -244,11 +243,15 @@ setInterval(breathe,0);
 ;(function(){
   // This module needs to serialize various web events
   // so they are accessible in the web worker
-  var w = window;
-  function mousemove(eve){ // TODO: BUG! Needs to be viewport x/y/z, not html.
-    share.set('aim_x', eve.pageX);
-    share.set('aim_y', eve.pageY);
-    share.set('aim_z', eve.pageZ || 0); // VR!
+  var w = window, the = {};
+  Math.mix = function (a,b,m) { m = m || 0; return a + (b-a) * m }
+  Math.remix = function(a,b,m){ m = m || 0; return (m - a) / (b - a) }
+
+  var aim = the.aim = function(){}, tap = the.tap = function(){};
+  function mousemove(eve){ // Needs to be viewport x/y/z, not html.
+    share.set('aim_x', tap.x = Math.mix(-1, 1, Math.remix(0, w.innerWidth, eve.clientX)));
+    share.set('aim_y', tap.y = -Math.mix(-1, 1, Math.remix(0, w.innerHeight, eve.clientY)));
+    share.set('aim_z', tap.z = 0); // VR!
   }
   w.onmousemove = mousemove;
   w.ontouchmove = function(eve){
@@ -256,23 +259,24 @@ setInterval(breathe,0);
     for(var k in t){ if(undefined === eve[k]){ eve[k] = t[k] } }
     mousemove(eve);
   }
-  var keys = {};
-  w.onkeydown = function (eve) {
-    var key = "key_" + eve.code.replace('Key','');
+  var keys = the.keys = function(){};
+  w.onkeydown = function(eve){
+    var key = clean(eve.code);
     if (keys[key]) {
       return;
     }
     var now = +new Date();
-    share.set(key, (keys[key] = now));
-    key = "key_" + eve.which;
-    share.set(key, (keys[key] = now));
+    share.set("key_"+key, (keys[key] = now));
+    key = eve.which;
+    share.set("key_"+key, (keys[key] = now));
   };
-  w.onkeyup = function (eve) {
-    var key = "key_" + eve.code.replace('Key','');
-    share.set(key, (keys[key] = 0));
-    key = "key_" + eve.which;
-    share.set(key, (keys[key] = 0));
+  w.onkeyup = function(eve){
+    var key = clean(eve.code);
+    share.set("key_"+key, (keys[key] = 0));
+    key = eve.which;
+    share.set("key_"+key, (keys[key] = 0));
   };
+  function clean(code){ return code.replace('Key','').replace('Arrow','').replace('Digit') }
   /* JOY
     LS move: [WASD]
       tap (or quick charge): jump (standing), leap (moving), hurdle/climb (obstacle), rebound (wall). [WW,AA,SS,DD]
@@ -314,6 +318,7 @@ sr.how.view = function(list){
       what.turn = [0,0,0];
       what.grab = [0,0,0];
       what.zoom = [1,1,1];
+      //what.fill = [0,0,0,0];
       what.size = change.size || [[1, '~'], [1, '~'], [1, '~']];
       what.unit = { turn: [], zoom: [], grab: [] };
       //what.contentEditable = 'true';
@@ -386,9 +391,11 @@ sr.how.view = function(list){
       }
     }
     if(u !== (tmp = change.fill)){
+      what.fill = tmp;
       var i = -1, l = tmp.length; while(++i < l){ tmp[i] = (tmp[i]*100)+'%' }
       what.style[text?'color':'background'] = "rgba("+tmp+")";
     }
+    // /*tmp! delete*/ if(!what.innerText && what.fill){ what.style.color = '#FFF'; what.style.padding = '0.25em'; } // TODO: DELETE!
     if(u !== (put = change.away)){
       what.style.verticalAlign = (-put[0])+place[put[1]]; // TODO
     }
@@ -422,7 +429,7 @@ sr.how.view = function(list){
   
 };
 
-map = new Map, place = {'-1':'beforebegin', '-0.1': 'afterbegin', '0.1':'beforeend', '1': 'afterend', '%':'%', '~':'em', '.':'px'}, aZ09 = /\W/ig;
+map = new Map, place = {'-1':'beforebegin', '-0.1': 'afterbegin', '0.1':'beforeend', '1': 'afterend', '%':'%', '~':'em', '.':'px', comfort: 50}, aZ09 = /\W/ig;
 function endline(tmp){ tmp.insertAdjacentElement(place[1], document.createElement('br')); }
 map.set('SecureRender', document.getElementById('SecureRender'));
 map.set(1, window);
@@ -447,6 +454,7 @@ attribute vec3 grab;
 attribute vec4 hue;
 attribute vec3 size;
 uniform float scroll;
+uniform mat4 projection;
 varying vec4 fill;
 void main() {
   mat4 move = mat4(
@@ -454,7 +462,7 @@ void main() {
     vec4(0, size.y, 0, 0),
     vec4(0, 0, 1, 0),
     vec4(grab, 1));
-  gl_Position = move * (dot + vec4(0.0,scroll,0,0));
+  gl_Position = projection * (move * (dot + vec4(0.0,scroll,0,0)));
   fill = hue;
 }
 */}
@@ -549,6 +557,28 @@ see.code = function(fn){ return fn.toString().slice(14, -4) };
 see.create();
 see.all = 0;
 
+window.onresize = function(){
+  var gl = see.gl;
+  var w = window.innerWidth, h = window.innerHeight;
+  gl.viewport(0, 0, w, h);
+  M = [
+    2/(w/h),0,0,0,
+    0,2,0,0,
+    0,0,2,0,
+    0,0,0,2
+  ]
+
+  var box = see.view.box;
+  var loc = gl.getUniformLocation(box, 'projection');
+  gl.uniformMatrix4fv(loc, false, M);
+  console.log("projection:", loc, M);
+
+  //
+  // = Math.mix(-1, 1, Math.remix(0, w.innerWidth, eve.clientX));
+  // = -Math.mix(-1, 1, Math.remix(0, w.innerHeight, eve.clientY));
+}
+window.onresize();
+
 //function grow(a, x, r){ return (r = new Numbers(a.length + (x||100))).set(a, 0), r } // however much bigger you want it. Delete this, just inline it!
 function render(list){
   //return;
@@ -562,10 +592,15 @@ function render(list){
       map.set(name, what = {i: see.all});
       box.s = (box.s || 0) + 1;
       see.all += box.has;
-      //console.log("new box, need...", box.has);
       (tmp = new Numbers(box.update.length + box.has)).set(box.update, 0); box.update = tmp;
       gl.select(gl.ARRAY_BUFFER, box.buff);
-      gl.load(gl.ARRAY_BUFFER, box.update, gl.DYNAMIC_DRAW); 
+      gl.load(gl.ARRAY_BUFFER, box.update, gl.DYNAMIC_DRAW);
+
+      var line = what.line = (box.lines||(box.lines=[{}]))[0]; // TODO: make this dynamic.
+      (line.sub||(line.sub = {}))[name] = what;
+      line.y = 0;
+      line.size = [];
+
       if(!text){
         //what.style.minWidth = '1'+place['cs'];
         //what.style.minHeight = '1'+place['cs'];
@@ -584,11 +619,16 @@ function render(list){
       what.flow;
       what.sort;
       what.unit = { turn: [], zoom: [], grab: [] };
+
+      what.x_off = ((box.prev||'').x_off||0) + ((((box.prev||'').size||'')[0]||0)/2);
+      box.prev = what;
     }
     var i = what.i;
     if(u !== (put = change.grab)){
+      //console.log("?????", put, what.size[0], what.x_off);
       box.update[i+0] = what.grab[0] = put[0]/50; // this is the gl X coordinate of the box
-      box.update[i+1] = what.grab[1] = (put[1]/50) + (see.scroll); // this is the gl Y coordinate of the box.
+      //box.update[i+0] = what.grab[0] = put[0]/place.comfort + what.x_off; // this is the gl X coordinate of the box
+      box.update[i+1] = what.grab[1] = (put[1]/place.comfort) + (see.scroll); // this is the gl Y coordinate of the box.
       box.update[i+2] = what.grab[2]; // this is the gl Y coordinate of the box.
     }
     if(u !== (put = change.fill)){
