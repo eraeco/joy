@@ -11,7 +11,7 @@ body {
 
 	/* background: black; */
 	co-lor: white;
-	font-size: 16pt;
+	font-size: clamp(1rem, 2vw, 2rem);
 }
 
 * {

@@ -37,6 +37,7 @@ var render = function (o) {
 };
 app.get("who").on((is) => {
 	if (!is) return;
+	console.log("GUN WHO IS: ", is);
 	render({
 		name: "who",
 		fill: emoji("king", is),
@@ -45,6 +46,7 @@ app.get("who").on((is) => {
 });
 app.get("move").on((move) => {
 	if (!move) return;
+	console.log("GUN MOVE IS: ", move);
 	[start, end] = move.split("-");
 	console.log("moved: ", start, end);
 });
