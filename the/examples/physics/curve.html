@@ -1,4 +1,4 @@
-<script class="SecureRender" src="../content.js">
+<script class="SecureRender" src="../../content.js">
     var utils = {
         norm: function (value, min, max) {
             return (value - min) / (max - min);
@@ -290,20 +290,20 @@
         return Math.random() * (max - min) + min;
     }
     the.start = the.start || (async () => {
-        world = the.view({ size: [[800, '.'], [640, '.']] }).into()
+        world = the.view({ size: [[25, '~'], [20, '~']] }).into()
         w = world.size[0][0]
         h = world.size[1][0]
         p0 = {
             x: -w / 2,
-            y: -100,
+            y: -h / 2,
         }
         p1 = {
-            x: 0,
-            y: 100,
+            x: w / 2,
+            y: -h,
         }
         p2 = {
-            x: w / 2,
-            y: 0,
+            x: -w,
+            y: h,
         }
         p3 = {
             x: getRandom(-w, w),
@@ -311,22 +311,13 @@
         }
         pFinal = {}
         time = 0
-        offset = 0.001
-        for (var t = 0; t < 1; t += 0.001) {
+        offset = 0.01
+        for (var t = 0; t < 1; t += 0.01) {
             pFinal = utils.quadraticCurve(p0, p1, p2, t, pFinal)
-            box = the.view({ fill: [0, 0, 0], size: [[0.1, '.'], [0.1, '.']], grab: [pFinal.x + 'px', pFinal.y + 'px'] }).into(world)
-            box.grab = [pFinal.x + 'px', pFinal.y + 'px']
+            box = the.view({ fill: [0, 0, 0], size: [[0.1, '~'], [0.1, '~']], grab: [pFinal.x, pFinal.y] }).into(world)
         }
-        // world.size = [[40, '~'], [20, '~']]
         utils.quadraticCurve(p0, p1, p2, time, pFinal)
-        another = the.view({ fill: [0, 0, 0], size: [[5, '.'], [5, '.']] }).begin(world)
-        another.grab = [pFinal.x + 'px', pFinal.y + 'px']
+
     })();
-    utils.quadraticCurve(p0, p1, p2, time, pFinal)
-    another.grab = [pFinal.x + 'px', pFinal.y + 'px']
-    time += offset
-    console.log(pFinal)
-    if (time > 1 || time < 0) {
-        offset = -offset
-    }
+
 </script>

@@ -1,4 +1,4 @@
-<script class="SecureRender" src="../content.js">
+<script class="SecureRender" src="../../content.js">
     var utils = {
         norm: function (value, min, max) {
             return (value - min) / (max - min);
@@ -148,14 +148,15 @@
     }
 
     the.start = the.start || (async () => {
-        world = the.view({ fill: [0, 0, 0], size: [[20, '~'], [20, '~']] }).into()
-
+        world = the.view({ fill: [0, 0, 0], size: [[25, '~'], [25, '~']] }).into()
+        width = world.size[0][0]
+        height = world.size[1][0]
         ship = particle.create(0, 0, 0.01, -Math.PI / 2);
-        ship.friction = 0.9;
         thrust = vector.create(0, 0)
-        angle = -Math.PI / 2;
-        unit = the.view({ fill: [1, 1, 1], size: [[2, '~'], [1, '~']], drip: -1, flow: ['^', '>'] })
-        head = the.view({ fill: [0, 0.4, 1], size: [1, 1] })
+        ship.friction = 0.99
+        angle = Math.PI / 2;
+        unit = the.view({ fill: [1, 1, 1], size: [[1, '~'], [1, '~']], drip: -1, flow: ['^', '>'] })
+        head = the.view({ fill: [0, 0.4, 1], size: [[1, '~'], [1, '~']] })
         unit.into(world)
         head.into(unit)
     })();
@@ -173,6 +174,8 @@
     if (the.key.Up && the.key.Up - now < 100) {
         boost = true
     }
+
+
     if (left) {
         angle -= 0.1
     }

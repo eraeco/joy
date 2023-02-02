@@ -1,4 +1,4 @@
-<script class="SecureRender" src="../content.js">
+<script class="SecureRender" src="../../content.js">
     var utils = {
         norm: function (value, min, max) {
             return (value - min) / (max - min);
@@ -406,7 +406,7 @@
         world.y = world.h - world.h / 2
         p = physics.create(2, -1, 0, 0, 0)
         player = the.view({ fill: [1, 1, 1], size: [[1, '~'], [1, '~']], grab: [`-1em`, `0em`] })
-        platform = the.view({ fill: [1, 0, 1], size: [[world.w, '~'], [1, '~']], grab: [`0em`, `${world.h / 2}em`] })
+        platform = the.view({ size: [[world.w, '~'], [1, '~']], grab: [`0em`, `${world.h / 2}em`] })
         platform.begin(world)
         p.w = player.size[0][0]
         p.h = player.size[1][0]
@@ -419,12 +419,12 @@
         p.y += dy.y
         p.vy = 0
     }
-    if (the.key.ArrowLeft) {
+    if (the.key.Left) {
         p.accelerate(-0.01, 0)
     } else {
         p.accelerate(0, 0)
     }
-    if (the.key.ArrowRight) {
+    if (the.key.Right) {
         p.accelerate(0.01, 0)
     }
     else {

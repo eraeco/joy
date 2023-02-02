@@ -1,4 +1,4 @@
-<script class="SecureRender" src="../content.js">
+<script class="SecureRender" src="../../content.js">
     var vector = {
         _x: 1,
         _y: 0,
@@ -70,6 +70,7 @@
         position: null,
         velocity: null,
         gravity: null,
+        mass: 1,
 
         create: function (x, y, speed, direction, grav) {
             var obj = Object.create(this);
@@ -87,26 +88,69 @@
             this.velocity.addTo(this.gravity);
             this.position.addTo(this.velocity);
         },
+        angleTo: function (p2) {
+            return Math.atan2(p2.position.getY() - this.position.getY(), p2.position.getX() - this.position.getX());
+        },
+        distanceTo: function (p2) {
+            var dx = p2.position.getX() - this.position.getX(),
+                dy = p2.position.getY() - this.position.getY();
+            return Math.sqrt(dx * dx + dy * dy);
+        },
+        gravitateTo: function (p2) {
+            var grav = vector.create(0, 0),
+                dist = this.distanceTo(p2);
+            grav.setLength(p2.mass / (dist * dist));
+            grav.setAngle(this.angleTo(p2));
+            this.velocity.addTo(grav);
+        }
     }
 
     the.start = the.start || (async () => {
-        world = the.view({ fill: [0, 0, 0], size: [[20, '~'], [20, '~']] }).into()
-        particles = [];
-        for (let i = 0; i < 50; i++) {
-            let p = particle.create(0, -10, Math.random(), Math.random() * Math.PI * 2, 0.2);
-            let u = the.view({ fill: [Math.random(), Math.random(), Math.random()], size: [[0.2, '~'], [0.2, '~']] });
-            u.grab = [p.position.getX(), p.position.getY()];
-            u.into(world)
-            p.view = u
-            particles.push(p);
-        }
+        solar = the.view({ fill: [0, 0, 0], size: [[100, '%'], [25, '~']] }).into()
+        width = solar.size[0][0]
+        height = solar.size[1][0]
+        s = particle.create(0, 0, 0, 0)
+        m = particle.create(60, 0, 1.4, -Math.PI / 2)
+        v = particle.create(120, 0, 0.9, -Math.PI / 2)
+        e = particle.create(150, 0, 0.9, -Math.PI / 2)
+        s.mass = 100
+        m.mass = 0.7
+        v.mass = 0.6
+        e.mass = 0.9
+        // m.mass = 0.01
+        solar.zoom = [1, 1, 1]
+        sun = the.view({ fill: [1, 1, 0], size: [[40, '.'], [40, '.']], grab: [s.position.getX(), s.position.getY()] })
+
+        mercury = the.view({ fill: [0, 0.5, 1], size: [[5, '.'], [5, '.']], grab: [m.position.getX(), m.position.getY()] })
+        venus = the.view({ fill: [1, 0.5, 0], size: [[7, '.'], [7, '.']], grab: [v.position.getX(), v.position.getY()] })
+        earth = the.view({ fill: [0, 0.2, 1], size: [[12, '.'], [12, '.']], grab: [e.position.getX(), e.position.getY()] })
+
+        sun.into(solar)
+        venus.into(solar)
+        mercury.into(solar)
+        earth.into(solar)
+
     })();
-    for (let i = 0; i < particles.length; i++) {
-        let p = particles[i];
-        p.update();
-        unit = p.view
-        unit.time = 100 * i;
-        unit.grab = [p.position.getX(), p.position.getY()]
-        unit.turn = [p.position.getX(), p.position.getY()]
-    }
+    // world.zoom = [1.6]
+    m.gravitateTo(s)
+    e.gravitateTo(s)
+    v.gravitateTo(s)
+    e.update()
+    v.update()
+    m.update()
+
+    ex = e.position.getX() / 16
+    ey = e.position.getY() / 16
+    vx = v.position.getX() / 16
+    vy = v.position.getY() / 16
+    mx = m.position.getX() / 16
+    my = m.position.getY() / 16
+
+
+    earth.grab = [ex, ey]
+    mercury.grab = [mx, my]
+    venus.grab = [vx, vy]
+    console.log(ex, ey)
+    // solar.time = 1000
+    // solar.zoom = [solar.zoom[0] - 0.005, solar.zoom[1] - 0.005, solar.zoom[2] - 0.005]
 </script>
