@@ -1,0 +1,20 @@
+<script class="SecureRender" src="../../content.js">
+
+    the.start = the.start || (async () => {
+        sentence = "Hello world this is a simple sentence".split("");
+        sentence.forEach((letter, index) => {
+            x = Math.mix(0, Math.PI * 2, index / (sentence.length - 1));
+            console.log(x, index)
+            y = Math.sin(x) * 5;
+            // y = Math.remix(0, sentence.length - 1, index);
+            pos = the.view({ fill: `${letter}`, size: [[0.5, '~'], [0.5, '~']] })
+            dot = the.view({
+                size: [1, 1],
+                grab: [x, y],
+                // turn: [Math.mix(-1, 1, Math.atan(x, y) / Math.PI / 4), 0] 
+            }).into()
+            pos.into(dot)
+        })
+    })();
+
+</script>
