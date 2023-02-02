@@ -1,0 +1,332 @@
+<script class="SecureRender" src="../content.js">
+    var utils = {
+        norm: function (value, min, max) {
+            return (value - min) / (max - min);
+        },
+
+        lerp: function (norm, min, max) {
+            return (max - min) * norm + min;
+        },
+
+        map: function (value, sourceMin, sourceMax, destMin, destMax) {
+            return utils.lerp(utils.norm(value, sourceMin, sourceMax), destMin, destMax);
+        },
+
+        clamp: function (value, min, max) {
+            return Math.min(Math.max(value, Math.min(min, max)), Math.max(min, max));
+        },
+
+        distance: function (p0, p1) {
+            var dx = p1.x - p0.x,
+                dy = p1.y - p0.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        },
+
+        distanceXY: function (x0, y0, x1, y1) {
+            var dx = x1 - x0,
+                dy = y1 - y0;
+            return Math.sqrt(dx * dx + dy * dy);
+        },
+
+        circleCollision: function (c0, c1) {
+            return utils.distance(c0, c1) <= c0.radius + c1.radius;
+        },
+
+        headInRect: function (x, y, rect) {
+            return utils.inRange(x, rect.x, rect.x + rect.width) &&
+                utils.inRange(y, rect.y, rect.y + rect.height);
+        },
+
+        inRange: function (value, min, max) {
+            return value >= Math.min(min, max) && value <= Math.max(min, max);
+        },
+
+        rangeIntersect: function (min0, max0, min1, max1) {
+            return Math.max(min0, max0) >= Math.min(min1, max1) &&
+                Math.min(min0, max0) <= Math.max(min1, max1);
+        },
+
+        rectIntersect: function (r0, r1) {
+            return utils.rangeIntersect(r0.x, r0.x + r0.width, r1.x, r1.x + r1.width) &&
+                utils.rangeIntersect(r0.y, r0.y + r0.height, r1.y, r1.y + r1.height);
+        },
+        quadraticCurve: function (p0, p1, p2, t, pFinal) {
+            var pFinal = pFinal || {}
+            pFinal.x = Math.pow(1 - t, 2) * p0.x + 2 * (1 - t) * t * p1.x + Math.pow(t, 2) * p2.x;
+            pFinal.y = Math.pow(1 - t, 2) * p0.y + 2 * (1 - t) * t * p1.y + Math.pow(t, 2) * p2.y;
+            return pFinal
+        },
+        cubicCurve: function (p0, p1, p2, p3, t, pFinal) {
+            var pFinal = pFinal || {}
+            pFinal.x = Math.pow(1 - t, 3) * p0.x + 3 * Math.pow(1 - t, 2) * t * p1.x + 3 * (1 - t) * Math.pow(t, 2) * p2.x + Math.pow(t, 3) * p3.x;
+            pFinal.y = Math.pow(1 - t, 3) * p0.y + 3 * Math.pow(1 - t, 2) * t * p1.y + 3 * (1 - t) * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
+            return pFinal
+        },
+
+    }
+    var vector = {
+        _x: 1,
+        _y: 0,
+
+        create: function (x, y) {
+            var obj = Object.create(this);
+            obj.setX(x);
+            obj.setY(y);
+            return obj;
+        },
+
+        setX: function (value) {
+            this._x = value;
+        },
+
+        getX: function () {
+            return this._x;
+        },
+
+        setY: function (value) {
+            this._y = value;
+        },
+
+        getY: function () {
+            return this._y;
+        },
+
+        setAngle: function (angle) {
+            var length = this.getLength();
+            this._x = Math.cos(angle) * length;
+            this._y = Math.sin(angle) * length;
+        },
+
+        getAngle: function () {
+            return Math.atan2(this._y, this._x);
+        },
+
+        setLength: function (length) {
+            var angle = this.getAngle();
+            this._x = Math.cos(angle) * length;
+            this._y = Math.sin(angle) * length;
+        },
+
+        getLength: function () {
+            return Math.sqrt(this._x * this._x + this._y * this._y);
+        },
+
+        add: function (v2) {
+            return vector.create(this._x + v2.getX(), this._y + v2.getY());
+        },
+
+        subtract: function (v2) {
+            return vector.create(this._x - v2.getX(), this._y - v2.getY());
+        },
+
+        multiply: function (val) {
+            return vector.create(this._x * val, this._y * val);
+        },
+
+        divide: function (val) {
+            return vector.create(this._x / val, this._y / val);
+        },
+
+        addTo: function (v2) {
+            this._x += v2.getX();
+            this._y += v2.getY();
+        },
+
+        subtractFrom: function (v2) {
+            this._x -= v2.getX();
+            this._y -= v2.getY();
+        },
+
+        multiplyBy: function (val) {
+            this._x *= val;
+            this._y *= val;
+        },
+
+        divideBy: function (val) {
+            this._x /= val;
+            this._y /= val;
+        }
+    };
+
+    var physics = {
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        mass: 1,
+        radius: 0,
+        bounce: -1,
+        friction: 1,
+        gravity: 0,
+        springs: null,
+        gravitations: null,
+
+        create: function (x, y, speed, direction, grav) {
+            var obj = Object.create(this);
+            obj.x = x;
+            obj.y = y;
+            obj.vx = Math.cos(direction) * speed;
+            obj.vy = Math.sin(direction) * speed;
+            obj.gravity = grav || 0;
+            obj.springs = [];
+            obj.gravitations = [];
+            return obj;
+        },
+
+        addGravitation: function (p) {
+            this.removeGravitation(p);
+            this.gravitations.push(p);
+        },
+
+        removeGravitation: function (p) {
+            for (var i = 0; i < this.gravitations.length; i += 1) {
+                if (p === this.gravitations[i]) {
+                    this.gravitations.splice(i, 1);
+                    return;
+                }
+            }
+        },
+
+        addSpring: function (point, k, length) {
+            this.removeSpring(point);
+            this.springs.push({
+                point: point,
+                k: k,
+                length: length || 0
+            });
+        },
+
+        removeSpring: function (point) {
+            for (var i = 0; i < this.springs.length; i += 1) {
+                if (point === this.springs[i].point) {
+                    this.springs.splice(i, 1);
+                    return;
+                }
+            }
+        },
+
+        getSpeed: function () {
+            return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+        },
+
+        setSpeed: function (speed) {
+            var heading = this.getHeading();
+            this.vx = Math.cos(heading) * speed;
+            this.vy = Math.sin(heading) * speed;
+        },
+
+        getHeading: function () {
+            return Math.atan2(this.vy, this.vx);
+        },
+
+        setHeading: function (heading) {
+            var speed = this.getSpeed();
+            this.vx = Math.cos(heading) * speed;
+            this.vy = Math.sin(heading) * speed;
+        },
+
+        accelerate: function (ax, ay) {
+            this.vx += ax;
+            this.vy += ay;
+        },
+
+        update: function () {
+            this.handleSprings();
+            this.handleGravitations();
+            this.vx *= this.friction;
+            this.vy *= this.friction;
+            this.vy += this.gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+        },
+
+        handleGravitations: function () {
+            for (var i = 0; i < this.gravitations.length; i += 1) {
+                this.gravitateTo(this.gravitations[i]);
+            }
+        },
+
+        handleSprings: function () {
+            for (var i = 0; i < this.springs.length; i += 1) {
+                var spring = this.springs[i];
+                this.springTo(spring.point, spring.k, spring.length);
+            }
+        },
+
+        angleTo: function (p2) {
+            return Math.atan2(p2.y - this.y, p2.x - this.x);
+        },
+
+        distanceTo: function (p2) {
+            var dx = p2.x - this.x,
+                dy = p2.y - this.y;
+
+            return Math.sqrt(dx * dx + dy * dy);
+        },
+
+        gravitateTo: function (p2) {
+            var dx = p2.x - this.x,
+                dy = p2.y - this.y,
+                distSQ = dx * dx + dy * dy,
+                dist = Math.sqrt(distSQ),
+                force = p2.mass / distSQ,
+                ax = dx / dist * force,
+                ay = dy / dist * force;
+
+            this.vx += ax;
+            this.vy += ay;
+        },
+
+        springTo: function (point, k, length) {
+            var dx = point.x - this.x,
+                dy = point.y - this.y,
+                distance = Math.sqrt(dx * dx + dy * dy),
+                springForce = (distance - length || 0) * k;
+            this.vx += dx / distance * springForce,
+                this.vy += dy / distance * springForce;
+        }
+    };
+    const getRandom = (min, max) => {
+        return Math.random() * (max - min) + min;
+    }
+    the.start = the.start || (async () => {
+        world = the.view({ size: [[800, '.'], [640, '.']] }).into()
+        w = world.size[0][0]
+        h = world.size[1][0]
+        p0 = {
+            x: -w / 2,
+            y: -100,
+        }
+        p1 = {
+            x: 0,
+            y: 100,
+        }
+        p2 = {
+            x: w / 2,
+            y: 0,
+        }
+        p3 = {
+            x: getRandom(-w, w),
+            y: getRandom(-h, h),
+        }
+        pFinal = {}
+        time = 0
+        offset = 0.001
+        for (var t = 0; t < 1; t += 0.001) {
+            pFinal = utils.quadraticCurve(p0, p1, p2, t, pFinal)
+            box = the.view({ fill: [0, 0, 0], size: [[0.1, '.'], [0.1, '.']], grab: [pFinal.x + 'px', pFinal.y + 'px'] }).into(world)
+            box.grab = [pFinal.x + 'px', pFinal.y + 'px']
+        }
+        // world.size = [[40, '~'], [20, '~']]
+        utils.quadraticCurve(p0, p1, p2, time, pFinal)
+        another = the.view({ fill: [0, 0, 0], size: [[5, '.'], [5, '.']] }).begin(world)
+        another.grab = [pFinal.x + 'px', pFinal.y + 'px']
+    })();
+    utils.quadraticCurve(p0, p1, p2, time, pFinal)
+    another.grab = [pFinal.x + 'px', pFinal.y + 'px']
+    time += offset
+    console.log(pFinal)
+    if (time > 1 || time < 0) {
+        offset = -offset
+    }
+</script>

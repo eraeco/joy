@@ -1,0 +1,13 @@
+<script class="SecureRender" src="../content.js">
+    the.start = the.start || (async () => {
+        world = the.view({ fill: [0, 0, 0], size: [[90, '%'], [20, '~']], }).into()
+        width = world.size[0][0]
+        height = world.size[1][0]
+
+        dx = 0, dy = 0
+        head = the.view({ fill: [0.5, 0.2, 0.5], size: [[2, '~'], [0, '~']], drip: 1, flow: ['>', 'v'], turn: [0, 0] }).into(world)
+        tail = the.view({ fill: [0, 0.4, 1], size: [[1, '~'], [1, '~']] }).into(head)
+        turn = 0;
+    })();
+
+</script>

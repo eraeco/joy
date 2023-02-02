@@ -1,0 +1,19 @@
+<script class="SecureRender" src="../content.js">
+
+    the.start = the.start || (async () => {
+        world = the.view({ fill: [0, 0, 0], size: [[30, '~'], [30, '~']] }).into()
+        size = 2
+        angle = 0
+        offset = 5
+        speed = 0.05
+        dot = the.view({ fill: [1, 1, 1], size: [[size, '~'], [size, '~']], grab: [0, 0] })
+        dot.into(world)
+    })();
+    y = Math.sin(angle)
+    zoom = Math.sin(size) * offset
+    dot.grab = [dot.grab[0], y * offset]
+    dot.zoom = [zoom, zoom]
+    angle += speed
+    size += speed
+
+</script>
