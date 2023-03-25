@@ -1,0 +1,98 @@
+<script class="SecureRender" src="../../content.js">
+    var vector = {
+        _x: 1,
+        _y: 0,
+        create: function (x, y) {
+            var obj = Object.create(this);
+            obj.setX(x);
+            obj.setY(y);
+            return obj;
+        },
+        setX: function (value) {
+            this._x = value;
+        },
+        setY: function (value) {
+            this._y = value;
+        },
+        getX: function () {
+            return this._x;
+        },
+        getY: function () {
+            return this._y;
+        },
+        setAngle: function (angle) {
+            var length = this.getLength();
+            this._x = Math.cos(angle) * length;
+            this._y = Math.sin(angle) * length;
+        },
+        getAngle: function () {
+            return Math.atan2(this._y, this._x);
+        },
+        setLength: function (length) {
+            var angle = this.getAngle();
+            this._x = Math.cos(angle) * length;
+            this._y = Math.sin(angle) * length;
+        },
+        getLength: function () {
+            return Math.sqrt(this._x * this._x + this._y * this._y);
+        },
+        add: function (v2) {
+            return vector.create(this._x + v2.getX(), this._y + v2.getY());
+        },
+        subtract: function (v2) {
+            return vector.create(this._x - v2.getX(), this._y - v2.getY());
+        },
+        multiply: function (value) {
+            return vector.create(this._x * value, this._y * value);
+        },
+        divide: function (value) {
+            return vector.create(this._x / value, this._y / value);
+        },
+        addTo: function (v2) {
+            this._x += v2.getX();
+            this._y += v2.getY();
+        },
+        subtractFrom: function (v2) {
+            this._x -= v2.getX();
+            this._y -= v2.getY();
+        },
+        multiplyBy: function (value) {
+            this._x *= value;
+            this._y *= value;
+        },
+        divideBy: function (value) {
+            this._x /= value;
+            this._y /= value;
+        }
+    }
+
+    var particle = {
+        position: null,
+        velocity: null,
+        create: function (x, y, speed, direction) {
+            var obj = Object.create(this);
+            obj.position = vector.create(x, y);
+            obj.velocity = vector.create(0, 0);
+            obj.velocity.setLength(speed);
+            obj.velocity.setAngle(direction);
+            return obj;
+        },
+        update: function () {
+            this.position.addTo(this.velocity);
+        },
+    }
+
+    the.start = the.start || (async () => {
+        world = the.view({ fill: [0, 0, 0], size: [[20, '~'], [30, '~']], }).into()
+        position = vector.create(0, 0);
+        velocity = vector.create(0, 0);
+        velocity.setLength(0.1);
+        velocity.setAngle(Math.PI);
+        dot = the.view({ fill: [1, 1, 1], size: [[1, '~'], [1, '~']], grab: [position.getX(), position.getY()] })
+        dot.into(world)
+    })();
+    position.addTo(velocity);
+    dot.grab = [position.getX(), position.getY()]
+    // arrow.time = 1
+    // arrow.grab = [position.getX() + 'em', position.getY() + 'em']
+</script>
