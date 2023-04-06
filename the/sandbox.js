@@ -128,7 +128,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
 
   Math.mix = function (a,b,m) { m = m || 0; return a + (b-a) * m }
   Math.remix = function(a,b,m){ m = m || 0; return (m - a) / (b - a) }
-  
+
   // localStorage is not async, so here is a quick async version for testing.
   // TODO: indexedDB is in webworkers, so maybe that should be encouraged instead, to stick with standards?
   this.localStore = new Proxy({}, {get: function(at,has,put){
@@ -218,7 +218,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   place.before = function(on){ return place(was.what, -1, on) }
   place.into = function(on){ return place(was.what, 0.1, on) }
   //place.text = function(t){ pm.s.push({what: }) }
-  
+
   the.player = this.localStore;
   the.words = "english"; // TODO! Do not hardcode.
   the.unit = {cs: 5, ps: 1}; // TODO! Do not hardcode.
@@ -283,7 +283,7 @@ setInterval(breathe,0);
       hold: drop (standing), slide (moving), dive (in air). [WS,SW]
     RS aim: [pointer]
       tap: grab/toss/interact, bash (double tap), crawl/climb
-      hold: brace/shield (chargeable), 
+      hold: brace/shield (chargeable),
     RT/LT fire/use (secondary, grenade) [space/shift]
     RB/LB switch/inventory [cmd/caps]
   */
@@ -300,6 +300,8 @@ sr.how.view = function(list){
   // size
   // grab
   // sort
+  console.log('**** CSS render(list) ***. List = ', list);
+
   var change, i = 0, u;
   while(change = list[i++]){ each(change) }
   function each(change, name, what, has, put, text, tmp){
@@ -426,7 +428,7 @@ sr.how.view = function(list){
       tmp = what.style.transform = "translate3d("+what.grab.join(place[what.unit.grab[0]] + ",")+") rotateZ("+what.turn[0]+"turn) " + "rotateX("+what.turn[1]+"turn) " + "rotateY("+what.turn[2]+"turn) scale3d("+what.zoom+")";
     }
   }
-  
+
 };
 
 map = new Map, place = {'-1':'beforebegin', '-0.1': 'afterbegin', '0.1':'beforeend', '1': 'afterend', '%':'%', '~':'em', '.':'px', comfort: 50}, aZ09 = /\W/ig;
@@ -439,40 +441,179 @@ map.set(1, window);
 
 ;(function(){
 
-
-return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
+// *WEBGL
+// return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
 var see = {};
-var map = new Map;
-var Numbers = Float32Array;
+var glSceneGraph = new Map;
 
-//attribute vec4 hue;
-//uniform mat4 mat;
-//gl_Position = mat * move * dot;
-see.dot = function(){/*
+const vertexShaderSource = `
 attribute vec4 dot;
-attribute vec3 grab;
+attribute vec4 grab;
+
 attribute vec4 hue;
 attribute vec3 size;
-uniform float scroll;
+
 uniform mat4 projection;
+
 varying vec4 fill;
+
 void main() {
   mat4 move = mat4(
     vec4(size.x, 0, 0, 0),
     vec4(0, size.y, 0, 0),
     vec4(0, 0, 1, 0),
-    vec4(grab, 1));
-  gl_Position = projection * (move * (dot + vec4(0.0,scroll,0,0)));
+    grab
+  );
+
+  gl_Position = projection * move * dot;
   fill = hue;
 }
-*/}
-see.fill = function(){/*
+`;
+
+
+const fragmentShaderSource = `
 precision mediump float;
 varying vec4 fill;
+
 void main() {
   gl_FragColor = fill;
 }
-*/}
+`;
+
+function setupProjectionMatrix(gl, program) {
+  const aspect = gl.canvas.width / gl.canvas.height;
+
+  const M = [
+  2/aspect,0,0,0,
+    0,2,0,0,
+    0,0,2,0,
+    0,0,0,2
+  ];
+
+  const projectionUnifLoc = gl.getUniformLocation(program, 'projection');
+  gl.uniformMatrix4fv(projectionUnifLoc, false, M);
+
+}
+
+function linkAttributesToBuffers(gl, program) {
+  // Bind "dot" attr
+
+  const dotAttrLoc = gl.getAttribLocation(program, "dot");
+  gl.enableVertexAttribArray(dotAttrLoc);
+
+  const dotBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, dotBuffer);
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([ // a single box wireframe
+    0, 0, 1, 0, 1, -1,
+    0, 0, 0, -1, 1, -1
+  ]), gl.STATIC_DRAW);
+
+  var size = 2;          // 2 components per iteration
+  var normalize = false; // don't normalize the data
+
+  gl.vertexAttribPointer(dotAttrLoc, size, gl.FLOAT, normalize, /*stride=*/ 0, /*offset = */ 0);
+
+  // Bind dynamic attributes
+
+  const grabAttrLoc = gl.getAttribLocation(program, "grab");
+  const hueAttrLoc = gl.getAttribLocation(program, "hue");
+  const sizeAttrLoc = gl.getAttribLocation(program, "size");
+
+  gl.enableVertexAttribArray(grabAttrLoc);
+  gl.enableVertexAttribArray(hueAttrLoc);
+  gl.enableVertexAttribArray(sizeAttrLoc);
+
+  gl.many.vertexAttribDivisorANGLE(grabAttrLoc, 1);
+  gl.many.vertexAttribDivisorANGLE(hueAttrLoc, 1);
+  gl.many.vertexAttribDivisorANGLE(sizeAttrLoc, 1);
+
+  const dynAttrBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, dynAttrBuffer);
+
+  const bytes = Float32Array.BYTES_PER_ELEMENT;
+  const nDynAttr = 10;
+
+  const stride = nDynAttr * bytes;
+
+  gl.vertexAttribPointer(grabAttrLoc, 3, gl.FLOAT, normalize, stride, 0);
+  gl.vertexAttribPointer(hueAttrLoc, 4, gl.FLOAT, normalize, stride, 3 * bytes);
+  gl.vertexAttribPointer(sizeAttrLoc, 3, gl.FLOAT, normalize, stride, 7 * bytes);
+
+  return dynAttrBuffer;
+}
+
+function createShader(gl, type, source) {
+  var shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+  if (success) {
+    return shader;
+  }
+
+  console.error(gl.getShaderInfoLog(shader));
+  gl.deleteShader(shader);
+}
+
+function createProgram(gl, vertexShader, fragmentShader) {
+  var program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  var success = gl.getProgramParameter(program, gl.LINK_STATUS);
+  if (success) {
+    return program;
+  }
+
+  console.error(gl.getProgramInfoLog(program));
+  gl.deleteProgram(program);
+}
+
+// boxes: [{ size: [[dx, '~'], [dy, '~']], fill: [r, g, b, a] }]
+// -> [[...grab, ...fill, ...size]]
+function calcOffsets(boxes, cWidth) {
+  const oneTilde = 50;
+
+  let offsetY = 0.;
+  const result = [];
+  let i = 0;
+
+  while (i < boxes.length) {
+    let j = i, lineWidth = 0., maxHeight = 0.;
+
+    while (j < boxes.length) {
+      let [[dx], [dy]] = boxes[j].size;
+      [dx, dy] = [dx / oneTilde, dy / oneTilde];
+
+      if (lineWidth + dx > cWidth) break;
+
+      const fill = boxes[j++].fill;
+      if (fill.length < 4) fill[3] = 1;
+
+      result.push([0, 0, 0, ...fill, dx, dy, 1.]);
+
+      lineWidth += dx;
+      if (dy > maxHeight) maxHeight = dy;
+    }
+
+    let offsetX = 0.5 * (cWidth - lineWidth);
+
+    while (i < j) {
+      result[i][0] = offsetX - 1.;
+      result[i][1] = offsetY;
+      offsetX += result[i++][7];
+    }
+    offsetY += maxHeight;
+  }
+
+  for (let i = 0, h = 0.5 * offsetY; i < result.length; i++) {
+    result[i][1] = h - result[i][1];
+  }
+
+  return result;
+}
+
 
 see.create = function(){
   if(see.DOM){ return }
@@ -481,133 +622,50 @@ see.create = function(){
   (tmp = c.style).position = 'fixed'; tmp.left = tmp.top = 0;
   SecureRender.appendChild(see.DOM = c);
   var gl = see.gl = c.getContext('webgl');
-  gl.goto = gl.useProgram;
-  gl.select = gl.bindBuffer;
-  gl.load = gl.bufferData;
-  gl.modify = gl.bufferSubData;
-  gl.find = gl.getAttribLocation;
-  gl.focus = gl.enableVertexAttribArray;
-  gl.describe = gl.vertexAttribPointer;
   gl.many = gl.getExtension('ANGLE_instanced_arrays');
 
-  see.view(see.code(see.dot), see.code(see.fill), 'box');
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+  const program = see.program = createProgram(gl, vertexShader, fragmentShader);
+  gl.useProgram(program);
+
+  see.mainBuffer = linkAttributesToBuffers(gl, program);
+
   sr.how.view = render;
 }
-see.view = function(dots, fills, name){
-  var gl = see.gl, err = gl.COMPILE_STATUS;
-  // Compile the vertex shader:
-  var dot = gl.createShader(gl.VERTEX_SHADER);
-  gl.shaderSource(dot, dots);
-  gl.compileShader(dot);
-  if(!gl.getShaderParameter(dot, err)){ throw new Error(gl.getShaderInfoLog(dot)) }
 
-  // Compile the fragment shader:
-  var fill = gl.createShader(gl.FRAGMENT_SHADER);
-  gl.shaderSource(fill, fills);
-  gl.compileShader(fill);
-  if(!gl.getShaderParameter(fill, err)){ throw new Error(gl.getShaderInfoLog(fill)) }
-
-  // Link the view to use it.
-  var view = see.view[name || Math.random()] = gl.createProgram();
-  gl.attachShader(view, dot);
-  gl.attachShader(view, fill);
-  gl.linkProgram(view);
-  if(!gl.getProgramParameter(view, gl.LINK_STATUS)){ throw new Error(gl.getProgramInfoLog(view)) }
-  gl.goto(view);
-
-  // The view needs to know where every dot/corner of a 3D/2D/1D shape model will be:
-  view.box = gl.createBuffer(); // This is like saying `var box = new Array;` in JS.
-  // However, when we want to modify it, gl does not know our variable name...
-  gl.select(gl.ARRAY_BUFFER, view.box); // so we have to select it
-  gl.load(gl.ARRAY_BUFFER, new Float32Array([ // in order to modify
-    -0.1,-0.1,
-     0.1,-0.1,
-    -0.1, 0.1,
-    -0.1, 0.1,
-     0.1,-0.1,
-     0.1, 0.1
-  ]), gl.STATIC_DRAW);
-  // Now we need to explain how the data is laid out in the matrix.
-  view.dot = gl.find(view, 'dot'); // The dots/corners are at this place.
-  gl.focus(view.dot); // Now let's explain how to extract just this variable
-  gl.describe(view.dot, 2, gl.FLOAT, false, 0, 0); // out of the selected buffer.
-  // ^ "Each dot is 2 numbers at a time, no normalizing, ? + ?"
-
-  var bytes = Numbers.BYTES_PER_ELEMENT, has = view.has = 10;
-  view.update = new Numbers([0,0,0, 1,0,0,1, 2,3,1]); // [x,y,z r,g,b,a, w,h,d] // 10 floats per box.
-  view.buff = gl.createBuffer();
-  gl.select(gl.ARRAY_BUFFER, view.buff);
-  gl.load(gl.ARRAY_BUFFER, view.update, gl.DYNAMIC_DRAW);
-  view.grab = gl.find(view, 'grab');
-  gl.focus(view.grab);
-  gl.describe(view.grab, 3, gl.FLOAT, false, has*bytes, 0); // [x,y,z ...]
-  gl.many && gl.many.vertexAttribDivisorANGLE(view.grab, 1);
-  view.hue = gl.find(view, 'hue');
-  gl.focus(view.hue);
-  gl.describe(view.hue, 4, gl.FLOAT, false, has*bytes, 3*bytes); // [..., r,g,b,a, ...]
-  gl.many && gl.many.vertexAttribDivisorANGLE(view.hue, 1);
-  view.size = gl.find(view, 'size');
-  gl.focus(view.size);
-  gl.describe(view.size, 3, gl.FLOAT, false, has*bytes, 7*bytes); // [..., w,h,d]
-  gl.many && gl.many.vertexAttribDivisorANGLE(view.size, 1);
-  console.log(view.update);
-  //gl.many.drawArraysInstancedANGLE(gl.TRIANGLES, 0, 6, 1);
-};
-see.code = function(fn){ return fn.toString().slice(14, -4) };
 see.create();
 see.all = 0;
 
 window.onresize = function(){
   var gl = see.gl;
-  var w = window.innerWidth, h = window.innerHeight;
-  gl.viewport(0, 0, w, h);
-  M = [
-    2/(w/h),0,0,0,
-    0,2,0,0,
-    0,0,2,0,
-    0,0,0,2
-  ]
+  gl.viewport(0, 0, window.innerWidth, window.innerHeight);
 
-  var box = see.view.box;
-  var loc = gl.getUniformLocation(box, 'projection');
-  gl.uniformMatrix4fv(loc, false, M);
-  console.log("projection:", loc, M);
-
-  //
-  // = Math.mix(-1, 1, Math.remix(0, w.innerWidth, eve.clientX));
-  // = -Math.mix(-1, 1, Math.remix(0, w.innerHeight, eve.clientY));
+  setupProjectionMatrix(gl, see.program);
 }
 window.onresize();
 
 //function grow(a, x, r){ return (r = new Numbers(a.length + (x||100))).set(a, 0), r } // however much bigger you want it. Delete this, just inline it!
 function render(list){
+  console.log('**** WEBGL render, list', list);
+
   //return;
-  var gl = see.gl, box = see.view.box;
-  var change, i = 0, u;
-  while(change = list[i++]){ each(change) }
-  function each(change, name, what, has, put, text, tmp){
-    if(!(name = change.name)){ return }
-    text = ('string' == typeof change.fill);
-    if(!(what = map.get(name))){
-      map.set(name, what = {i: see.all});
-      box.s = (box.s || 0) + 1;
-      see.all += box.has;
-      (tmp = new Numbers(box.update.length + box.has)).set(box.update, 0); box.update = tmp;
-      gl.select(gl.ARRAY_BUFFER, box.buff);
-      gl.load(gl.ARRAY_BUFFER, box.update, gl.DYNAMIC_DRAW);
+  const gl = see.gl;
+  let nBoxes = glSceneGraph.size;
 
-      var line = what.line = (box.lines||(box.lines=[{}]))[0]; // TODO: make this dynamic.
-      (line.sub||(line.sub = {}))[name] = what;
-      line.y = 0;
-      line.size = [];
+  for (let change of list) {
+    if (!change.name) {
+      console.error('No change.name in render', change);
+      continue;
+    }
 
-      if(!text){
-        //what.style.minWidth = '1'+place['cs'];
-        //what.style.minHeight = '1'+place['cs'];
-        var i = what.i;
-        box.update[i+0] = 0;
-        box.update[i+1] = 0;
-      }
+    const name = change.name;
+    let what = glSceneGraph.get(name);
+
+    if (!what) {
+      glSceneGraph.set(name, what = {});
+
       what.id = 'v'+name.replace(aZ09,'');
       what.size = [1,1,1];
       what.turn = [0,0,0];
@@ -619,62 +677,51 @@ function render(list){
       what.flow;
       what.sort;
       what.unit = { turn: [], zoom: [], grab: [] };
+    }
 
-      what.x_off = ((box.prev||'').x_off||0) + ((((box.prev||'').size||'')[0]||0)/2);
-      box.prev = what;
-    }
-    var i = what.i;
-    if(u !== (put = change.grab)){
-      //console.log("?????", put, what.size[0], what.x_off);
-      box.update[i+0] = what.grab[0] = put[0]/50; // this is the gl X coordinate of the box
-      //box.update[i+0] = what.grab[0] = put[0]/place.comfort + what.x_off; // this is the gl X coordinate of the box
-      box.update[i+1] = what.grab[1] = (put[1]/place.comfort) + (see.scroll); // this is the gl Y coordinate of the box.
-      box.update[i+2] = what.grab[2]; // this is the gl Y coordinate of the box.
-    }
-    if(u !== (put = change.fill)){
-      box.update[i+3] = what.fill[0] = put[0];
-      box.update[i+4] = what.fill[1] = put[1];
-      box.update[i+5] = what.fill[2] = put[2];
-      box.update[i+6] = what.fill[3] = put[3]||1;
-    }
-    if(u !== (put = change.size)){ tmp = what.size;
-      //gl.uniform2fv(gl.size, [(put[0][0] || put[0])/4, (put[1][0] || put[1])/4 ]);
-      box.update[i+7] = what.size[0] = put[0][0];
-      box.update[i+8] = what.size[1] = put[1][0];
-      //box.update[i+8] = what.size[2] = ((put||'')[2]||tmp[2])[0] || (put||tmp[2])[2];
-    }
+    Object.assign(what, change);
   }
-  gl.select(gl.ARRAY_BUFFER, box.buff);
-  gl.modify(gl.ARRAY_BUFFER, 0, box.update);
-  //console.log("?", box.update);
-  gl.many.drawArraysInstancedANGLE(gl.TRIANGLES, 0, 6, box.s); // TODO: enable fallback!
-  return;
-}
-render.scroll = function(){ // UPGRADE THIS TO VIEW MATRIX TRANSFORM.
-  var gl = see.gl, box = see.view.box;
-  box.scroll = gl.getUniformLocation(box, 'scroll'); // THIS IS THE SLOW WAY TO DO THIS, REFACTOR TO viewspace/translation
-  gl.uniform1f(box.scroll, see.scroll); // out of the selected buffer.
-  render([]);
+
+  const boxes = calcOffsets([...glSceneGraph.values()], 2.);
+  const boxAttributes = new Float32Array(boxes.flat());
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, see.mainBuffer);
+
+  if (nBoxes < glSceneGraph.size) {
+    gl.bufferData(gl.ARRAY_BUFFER, boxAttributes, gl.DYNAMIC_DRAW);
+  }
+  else {
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, boxAttributes);
+  }
+
+  gl.many.drawArraysInstancedANGLE(gl.TRIANGLES, 0, 6, boxes.length);
 }
 
-see.scroll = 0;
-;(function(){ // TMP! DELTE! // NOTE: Why is this with GL? It should work with both. But for now, we're working on GL, so ... we hacked it in here.
-var s = document.body.style, i = window.innerHeight, h = i, _y;
-s.height = (h *= 10)+'px';
-function scroll(){
-  var y = window.scrollY, r = y / h, d = y - _y; _y = y;
-  see.scroll = y/see.tall;
-  if(d > 0){
-    s.height = (h += i*0.1*r)+'px';
-  } else
-  if(r < 0.75 && (i*10) < h){
-    s.height = (h -= i*0.1)+'px';
-  }
-  render.scroll();
-}
-window.onwheel = scroll;
-if('ontouchstart' in window){ window.onscroll = scroll }
-}());
+// render.scroll = function(){ // UPGRADE THIS TO VIEW MATRIX TRANSFORM.
+//   var gl = see.gl, box = see.view.box;
+//   box.scroll = gl.getUniformLocation(box, 'scroll'); // THIS IS THE SLOW WAY TO DO THIS, REFACTOR TO viewspace/translation
+//   gl.uniform1f(box.scroll, see.scroll); // out of the selected buffer.
+//   render([]);
+// }
+
+// see.scroll = 0;
+// ;(function(){ // TMP! DELTE! // NOTE: Why is this with GL? It should work with both. But for now, we're working on GL, so ... we hacked it in here.
+// var s = document.body.style, i = window.innerHeight, h = i, _y;
+// s.height = (h *= 10)+'px';
+// function scroll(){
+//   var y = window.scrollY, r = y / h, d = y - _y; _y = y;
+//   see.scroll = y/see.tall;
+//   if(d > 0){
+//     s.height = (h += i*0.1*r)+'px';
+//   } else
+//   if(r < 0.75 && (i*10) < h){
+//     s.height = (h -= i*0.1)+'px';
+//   }
+//   render.scroll();
+// }
+// window.onwheel = scroll;
+// if('ontouchstart' in window){ window.onscroll = scroll }
+// }());
 
 }());
 
