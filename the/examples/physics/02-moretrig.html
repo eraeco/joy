@@ -1,0 +1,18 @@
+<script class="SecureRender" src="../../content.js">
+    the.start = the.start || (async () => {
+        world = the.view({ fill: [0, 0, 0], size: [[20, '~'], [20, '~']] }).into()
+        size = 1
+        angle = 0
+        radius = 10
+        speed = 0.1
+        x = Math.cos(angle) * radius
+        y = Math.sin(angle) * radius
+        dot = the.view({ fill: [1, 1, 1], size: [[size, '~'], [size, '~']] })
+        dot.into(world)
+    })();
+    x = Math.cos(angle) * radius
+    y = Math.sin(angle) * radius
+    dot.grab = [x, y]
+    angle += speed
+
+</script>
