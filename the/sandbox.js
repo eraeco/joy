@@ -71,15 +71,17 @@ sr.how.html = function(msg){
 sr.how.localStore = function(msg, eve){
   var tmp;
   if(tmp = msg.to){
+    if(msg.get){
+      share.set('player_'+msg.get, msg.put);
+      return;
+    }
     (tmp = sr.workers.get(tmp)) && tmp.postMessage(msg);
     return;
   }
   msg.via = eve.target.id;
   sr.up(msg);
 }
-window.addEventListener('storage', function(a,b,c,d,e,f){
-  //console.log("store", a,b,c,d,e,f); // TODO: Implement update.
-});
+
 sr.how.say = function(msg){
   (beep = new SpeechSynthesisUtterance()).text = msg.text;
   beep.rate = msg.rate || 1, beep.pitch = msg.pitch || 1, speechSynthesis.speak(beep);
@@ -135,18 +137,17 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     if(u !== (put = at[has])){ return put }
     put = new Promise(function(res, rej){
       var ack = Math.random(), any = function(v){
+        clearTimeout(ack);
         res(at[has] = v);
         map.delete(ack);
-        clearTimeout(ack);
-      }, to = setTimeout(any, opt.lack || 9000);
+      }, to = setTimeout(function(){any(at[has])}, opt.lack || 9000);
       map.set(ack, any);
       up({how: 'localStore', get: has, ack: ack});
     });
     put.toString = tS;
     return put;
   }, set: function(at,has,put){
-    console.log("store:", has, put);
-    up({how: 'localStore', get: has, put: put});
+    up({how: 'localStore', get: has, put: at[has] = put});
   }});
   function tS(){ return '' };
 
@@ -204,6 +205,8 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     if(place[has]){ return place(at)[has] }
     return at[has];
   }, set: function(at,has,put){
+    if(put === at[has]){ return }
+    if(put instanceof Promise){ return }
     var msg = {name: at.name};
     if(put){
       if(put.then){ at[has] = u; return }
@@ -591,7 +594,8 @@ function calcOffsets(boxes, cWidth) {
       const fill = boxes[j++].fill;
       if (fill.length < 4) fill[3] = 1;
 
-      result.push([0, 0, 0, ...fill, dx, dy, 1.]);
+
+      result.push([0,0,0, ...fill, dx, dy, 1.]);
 
       lineWidth += dx;
       if (dy > maxHeight) maxHeight = dy;
@@ -600,8 +604,8 @@ function calcOffsets(boxes, cWidth) {
     let offsetX = 0.5 * (cWidth - lineWidth);
 
     while (i < j) {
-      result[i][0] = offsetX - 1.;
-      result[i][1] = offsetY;
+      result[i][0] = (offsetX - 1.0) + boxes[i].grab[0];
+      result[i][1] = (offsetY) + boxes[i].grab[1];
       offsetX += result[i++][7];
     }
     offsetY += maxHeight;
@@ -648,7 +652,7 @@ window.onresize();
 
 //function grow(a, x, r){ return (r = new Numbers(a.length + (x||100))).set(a, 0), r } // however much bigger you want it. Delete this, just inline it!
 function render(list){
-  console.log('**** WEBGL render, list', list);
+  //console.log('**** WEBGL render, list', list);
 
   //return;
   const gl = see.gl;
@@ -656,7 +660,7 @@ function render(list){
 
   for (let change of list) {
     if (!change.name) {
-      console.error('No change.name in render', change);
+      //console.error('No change.name in render', change);
       continue;
     }
 

@@ -23,6 +23,7 @@ try{ !sr.browser && navigator.serviceWorker.register('./service.js') }catch(e){}
   i.sandbox = 'allow-scripts allow-popups allow-downloads allow-pointer-lock';
   i.csp = "script-src 'self'; default-src data: blob: mediastream: filesystem:; style-src 'self' 'unsafe-inline'; child-src 'self' blob:; worker-src blob: 'self';";
   sr.send = function(msg){ i.contentWindow.postMessage(msg, '*') } // TODO: AUDIT! THIS LOOKS SCARY, BUT '/' NOT WORK FOR SANDBOX 'null' ORIGIN. IS THERE ANYTHING BETTER?
+  console.log("THIS IS AN EARLY PUBLISHED DEMO WITH 2 UNFINISHED IMPORTANT SECURITY CHECKS, PLEASE DELETE SERVICE WORKER AFTER USE.");
   i.src = "./sandbox.html";
   document.body.appendChild(i);
 }());
@@ -44,16 +45,16 @@ sr.how = {
   // localStorage is not async, so here is a quick async version for testing.
   localStore: function(msg, eve){ var u;
     if(u !== msg.put){
-      localStorage.setItem(msg.get, msg.put);
+      localStorage.setItem(msg.get, JSON.stringify(msg.put));
     } else
     if(msg.get){
-      sr.send({to: msg.via, ack: msg.ack, ask: [localStorage.getItem(msg.get)], how: 'localStore'});
+      sr.send({to: msg.via, ack: msg.ack, ask: [JSON.parse(localStorage.getItem(msg.get))], how: 'localStore'});
     }
   }
 }
 
-window.addEventListener('storage', function(a,b,c,d,e,f){
-  console.log("enclave", a,b,c,d,e,f);
+window.addEventListener('storage', function(msg){
+  sr.send({to: 1, get: msg.key, put: JSON.parse(msg.newValue), how: 'localStore'});
 });
 
 }());
