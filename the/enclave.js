@@ -14,8 +14,6 @@ HOW SECURE RENDER WORKS: APP -> [ IFRAME SHIELD -> [SECURE RENDER] <-> USER DATA
 AN APP ONLY EVER FEEDS IN VIEW LOGIC. DATA IS NEVER SENT BACK UP! */
 sr = {ext: ((window.browser||window.chrome)||'').runtime};
 
-try{ !sr.ext && navigator.serviceWorker.register('./service.js'); }catch(e){ console.log(e) };
-
 (function start(i){
   // TODO: talk to cloudflare about enforcing integrity meanwhile?
   i = sr.i = document.createElement('iframe');
@@ -44,23 +42,41 @@ window.onmessage = function(eve){
   if(!msg){ return }
   //if(eve.origin !== location.origin){ console.log('meow?',eve); return }
   if(eve.source !== sr.i.contentWindow){ return sr.send(msg) }
-  (c = new MessageChannel).port1.onmessage = function(eve){ sr.send(eve.data) }
-  navigator.serviceWorker.controller.postMessage(msg,[c.port2]);
+  try{ (c = new MessageChannel).port1.onmessage = function(eve){ sr.send(eve.data) }
+    navigator.serviceWorker.controller.postMessage(msg,[c.port2]);
+  }catch(e){ sr.i.srcdoc = "<center>Your browser does not support SecureRender yet. Please enable `requestStorageAccess()` in FireFox, temporarily turn Brave Shield off, or try in Google Chrome.</center>" }
+  tmp = sr.how[msg.how];
+  if(!tmp){ return }
+  tmp(msg, eve);
 };
 
+sr.how = {
+  store: function(msg, eve){ var u;
+    if(u !== msg.put){
+      localStorage.setItem(msg.get, JSON.stringify(msg.put));
+    } else
+    if(msg.get){
+      sr.send({to: msg.via, ack: msg.ack, ask: [JSON.parse(localStorage.getItem(msg.get))], how: 'localStore'});
+    }
+  }
+}
 window.addEventListener('storage', function(msg){
-  console.log("encPass:", msg);
   sr.send({to: 1, get: msg.key, put: JSON.parse(msg.newValue), how: 'store'});
 });
 
-!sr.ext && navigator.serviceWorker.addEventListener("message", function(msg){
-  console.log("SW message:", msg);
-  msg = msg.data;
-  if(msg.upgrade){
-    console.log("upgrading sandbox!");
-    localStorage.sandbox = '';
-    return;
+if(!sr.ext){ try{
+  navigator.serviceWorker.register('./service.js');
+  navigator.serviceWorker.addEventListener("message", push);
+  (sr.pushed = new BroadcastChannel('service')).onmessage = push;
+  function push(msg){
+    console.log("SW message:", msg);
+    msg = msg.data;
+    if(msg.upgrade){
+      console.log("upgrading sandbox!");
+      localStorage.sandbox = '';
+      return;
+    }
   }
-});
+}catch(e){ console.log(e) };}
 
 }());

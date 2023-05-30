@@ -70,7 +70,11 @@ function cached(event){ return new Promise(async (resolve) => { try{
 
   recache(req, reply.clone());
   setTimeout(function(){ age = +new Date }, 9000);
-  self.postMessage({upgrade: 1}); // TODO: BUG! I don't think this works.
+
+  try{
+    self.clients.matchAll().then(function(clients){clients.forEach(function(client){client.postMessage({upgrade:1})})});
+    (sr.out = sr.out || new BroadcastChannel('service')).postMessage({upgrade:1});
+  }catch(e){console.log("SW upgrade error:",e)}
 } catch(err){
   resolve(new Response('Network error happened', {
     status: 408,
