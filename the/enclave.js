@@ -56,7 +56,7 @@ sr.how = {
       localStorage.setItem(msg.get, JSON.stringify(msg.put));
     } else
     if(msg.get){
-      sr.send({to: msg.via, ack: msg.ack, ask: [JSON.parse(localStorage.getItem(msg.get))], how: 'localStore'});
+      sr.send({to: msg.via, ack: msg.ack, ask: [JSON.parse(localStorage.getItem(msg.get))], how: 'store'});
     }
   }
 }
