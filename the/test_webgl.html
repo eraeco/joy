@@ -1,24 +1,26 @@
 <script class="SecureRender" rate="2" src="./content.js">
 
-    // the.welcome = the.welcome || the.view({
-    //     flow: ['>', 'v'],
-    //     drip: 1,
-    //     fill: [0, 0, 0],
-    //     size: [[10, '~', 10, '~'], [10, '~', 10, '~'], [10, '~', 10, '~']]
-    // }).into()
+    the.welcome = the.welcome || the.view({
+        flow: ['>', 'v'],
+        drip: 1,
+        fill: [0, 0, 0],
+        size: [[50, '~', 70, '~'], [50, '~', 70, '~'], [10, '~', 10, '~']]
+    }).into()
 
-    the.red = the.view({
+    the.view({
         fill: [1, 0, 0, 1],
         size: [[1 + Math.random(), '~'], [1, '~'], [1, '~']]
-    }).into(/*the.welcome*/)
+    }).into(the.welcome)
 
     the.view({
         fill: [0, 1, 0, 1],
         size: [[1 + Math.random(), '~'], [1, '~'], [1, '~']]
-    }).into(/*the.welcome*/)
+    }).into(the.welcome)
     the.view({
         fill: [0, 0, 1, 1],
         size: [[1 + Math.random(), '~'], [1, '~'], [1, '~']]
-    }).into(/*the.welcome*/)
+    }).into(the.welcome)
+
+    console.log(the.aim, '*****AIM****');
 
 </script>
