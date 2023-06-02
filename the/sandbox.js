@@ -588,6 +588,8 @@ class Box {
     const [cWidth, cHeight] = maxSize;
     const boxes = [...this.children];
 
+    boxes.forEach(child => child.innerLayout());
+
     let offsetY = 0.;
     let i = 0;
     let maxLineWidth = 0.;
@@ -596,7 +598,6 @@ class Box {
       let j = i, lineWidth = 0., maxLineHeight = 0.;
 
       while (j < boxes.length) {
-        boxes[j].innerLayout();
         let [dx, dy] = boxes[j].actualSize;
 
         if (lineWidth + dx > cWidth) break;
@@ -633,6 +634,23 @@ class Box {
     for (let i = 0; i < boxes.length; i++) {
       boxes[i].actualGrab[0] += w;
       boxes[i].actualGrab[1] += h;
+      boxes[i].crop();
+    }
+  }
+
+  crop() {
+    // Crops actualGrab and actualSize to fit within the parent
+    if (!this.parent) return;
+    const parentSize = this.parent.actualSize;
+
+    for (let i = 0; i < 3; i++) {
+      if (this.actualGrab[i] < 0) {
+        this.actualSize[i] += this.actualGrab[i];
+        this.actualGrab[i] = 0;
+      }
+      if (this.actualGrab[i] + this.actualSize[i] > parentSize[i]) {
+        this.actualSize[i] = parentSize[i] - this.actualGrab[i];
+      }
     }
   }
 
@@ -645,7 +663,7 @@ class Box {
     }
 
     for (let child of this.children) {
-      if (child.actualGrab.every((g, i) => g < this.actualSize[i])) {
+      if (child.actualSize.every(d => d > 0)) {
         yield* child.compose(offset);
       }
     }
