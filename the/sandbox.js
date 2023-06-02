@@ -1,7 +1,7 @@
 ;(function(sr){
 
 sr = {};
-sr.up = function(msg){ window.parent.postMessage(msg, '*'); }  // TODO: AUDIT! THIS LOOKS SCARY, BUT '/' NOT WORK FOR SANDBOX 'null' ORIGIN. IS THERE ANYTHING BETTER?
+sr.up = function(msg){ window.parent.postMessage(msg, '*'); }  // NOTE: THIS LOOKS SCARY, BUT INSIDE A SANDBOX 'null' ORIGIN MEANS WE CANNOT USE '/' & ONLY PARENT, NO GRANDPARENT/SIBLINGS, CAN RECEIVE.
 
 function fail(){ fail.yes = 1; document.body.innerHTML = "<center>SecureRender has detected an external threat trying to tamper with the security of your application.<br/>Please reload to restore security. If you still have problems, search for a more trusted source to load the application from.</center>" }
 
@@ -14,6 +14,9 @@ function fail(){ fail.yes = 1; document.body.innerHTML = "<center>SecureRender h
     sr.ban.set(tmp.postMessage, 1);
   }
 }());
+
+// Because ServiceWorker cannot intercept 'null' origin requests, enclave has to scrape sandbox html into localstorage with the JS inlined so it is not loaded externally next times. But this requires we use a srcDoc and allow for inline, which we previously did not need, and it turns out we can turn it off after we run so nobody else can do it later:
+(sr.csp = document.querySelector('meta')).content = (sr.old = sr.csp.content).replace("'unsafe-inline'",'');
 
 window.onmessage = function(eve){ // hear from app, enclave, and workers.
   var msg = eve.data;
@@ -68,7 +71,7 @@ sr.how.html = function(msg){
   }
 }
 
-sr.how.localStore = function(msg, eve){
+sr.how.store = function(msg, eve){
   var tmp;
   if(tmp = msg.to){
     if(msg.get){
@@ -131,9 +134,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   Math.mix = function (a,b,m) { m = m || 0; return a + (b-a) * m }
   Math.remix = function(a,b,m){ m = m || 0; return (m - a) / (b - a) }
 
-  // localStorage is not async, so here is a quick async version for testing.
-  // TODO: indexedDB is in webworkers, so maybe that should be encouraged instead, to stick with standards?
-  this.localStore = new Proxy({}, {get: function(at,has,put){
+  this.store = new Proxy({}, {get: function(at,has,put){
     if(u !== (put = at[has])){ return put }
     put = new Promise(function(res, rej){
       var ack = Math.random(), any = function(v){
@@ -142,12 +143,12 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
         map.delete(ack);
       }, to = setTimeout(function(){any(at[has])}, opt.lack || 9000);
       map.set(ack, any);
-      up({how: 'localStore', get: has, ack: ack});
+      up({how: 'store', get: has, ack: ack});
     });
     put.toString = tS;
     return put;
   }, set: function(at,has,put){
-    up({how: 'localStore', get: has, put: at[has] = put});
+    up({how: 'store', get: has, put: at[has] = put});
   }});
   function tS(){ return '' };
 
@@ -222,7 +223,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   place.into = function(on){ return place(was.what, 0.1, on) }
   //place.text = function(t){ pm.s.push({what: }) }
 
-  the.player = this.localStore;
+  the.player = this.store;
   the.words = "english"; // TODO! Do not hardcode.
   the.unit = {cs: 5, ps: 1}; // TODO! Do not hardcode.
 }
@@ -445,7 +446,7 @@ map.set(1, window);
 ;(function(){
 
 // *WEBGL
-return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
+// return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
 
 class Box {
   constructor(name) {

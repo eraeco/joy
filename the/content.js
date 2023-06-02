@@ -12,7 +12,7 @@ TO LEARN MORE ABOUT THESE LIMITATIONS, PLEASE READ SECURERENDER.ORG
 
 HOW SECURE RENDER WORKS: APP -> [ IFRAME SHIELD -> [SECURE RENDER] <-> USER DATA ]
 AN APP ONLY EVER FEEDS IN VIEW LOGIC. DATA IS NEVER SENT BACK UP! */
-sr = {browser: (window.browser || window.chrome)};
+sr = {ext: ((window.browser||window.chrome)||'').runtime};
 
 function fail(){ document.body.innerHTML = "<center>SecureRender has detected an external threat trying to tamper with the security of your application.<br/>Please reload to restore security. If you still have problems, search for a more trusted source to load the application from.</center>" }
 try{ if(window.self !== window.top){ return fail() } }catch(e){}; // App inside iframe could get clickjacked!
@@ -48,15 +48,14 @@ function frame(i){
   i.style = "position: fixed; border: 0; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0;";
   //i.integrity = "browsers please support this!"; // https://github.com/w3c/webappsec-subresource-integrity/issues/21
   try {
-    i.src = sr.browser.runtime.getURL('') + 'enclave.html'; // try browser
+    i.src = sr.ext.getURL('') + 'enclave.html'; // try browser
   } catch (err) {
-    i.src = sr.polyfill.runtime.getURL('') + 'enclave.html'; // else emulate
+    i.src = sr.polyfill.getURL('') + 'enclave.html'; // else emulate
   }
   document.body.appendChild(i);
 }
 
-console.log("THIS IS AN ALPHA FOR DEVELOPERS, NO POLYFILL HAS BEEN PUBLISHED YET, YOU MUST PROTOTYPE IT AS AN UNPACKED EXTENSION!");
-sr.polyfill = {runtime: {getURL: function(){ return 'https://securerender.org/extension/' } }};
-// sr.polyfill = {runtime: {getURL: function(){ return '/the/' } }}; // for debugging  **THIS MUST HAVE // in front it during PRs
-
+sr.polyfill = {getURL: function(){ return 'https://securerender.org/extension/' } };
+//sr.polyfill = {getURL: function(){ return '/the/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
+//sr.polyfill = {getURL: function(){ return 'http://localhost:8080/the/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
 }());
