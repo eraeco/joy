@@ -42,9 +42,9 @@ window.onmessage = function(eve){
   if(!msg){ return }
   //if(eve.origin !== location.origin){ console.log('meow?',eve); return }
   if(eve.source !== sr.i.contentWindow){ return sr.send(msg) }
-  try{ (c = new MessageChannel).port1.onmessage = function(eve){ sr.send(eve.data) }
+  /*try{ (c = new MessageChannel).port1.onmessage = function(eve){ sr.send(eve.data) }
     navigator.serviceWorker.controller.postMessage(msg,[c.port2]);
-  }catch(e){ sr.i.srcdoc = "<center>Your browser does not support SecureRender yet. Please enable `requestStorageAccess()` in FireFox, temporarily turn Brave Shield off, or try in Google Chrome.</center>" }
+  }catch(e){ sr.i.srcdoc = "<center>Your browser does not support SecureRender yet. Please enable `requestStorageAccess()` in FireFox, temporarily turn Brave Shield off, or try in Google Chrome.</center>" }*/
   tmp = sr.how[msg.how];
   if(!tmp){ return }
   tmp(msg, eve);
