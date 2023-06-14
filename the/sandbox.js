@@ -446,9 +446,233 @@ map.set(1, window);
 ;(function(){
 
 // *WEBGL
-//return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
-var see = {};
-var glSceneGraph = new Map;
+// return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
+
+class Box {
+  constructor(name) {
+    this.name = name;
+    this.id = 'v'+name.replace(aZ09,'');
+    this.size = [1,1,1];
+    this.turn = [0,0,0];
+    this.grab = [0,0,0];
+    this.zoom = [1,1,1];
+    this.fill = [0,0,0,1];
+    this.away;
+    this.drip;
+    this.flow;
+    this.unit = { turn: [], zoom: [], grab: [] };
+
+    this.actualSize = [0.1, 0.1, 0.1];  // In GL units
+    this.actualGrab = [0, 0, 0];  // In GL units
+  }
+
+  *getChildren() {
+    for (let child = this.firstChild; child; child = child.nextSibling) {
+      yield child;
+    }
+  }
+
+  get children () {
+    return this.getChildren();
+  }
+
+  remove() {
+    if (this === rootBox) return null;
+    name2box.delete(this.name);
+
+    const prev = this.previousSibling;
+    const next = this.nextSibling;
+
+    if (!prev) {
+      this.parent.firstChild = next;
+    }
+    else {
+      prev.nextSibling = next;
+    }
+
+    if (!next) {
+      this.parent.lastChild = prev;
+    }
+    else {
+      next.previousSibling = prev;
+    }
+  }
+
+  insertAdjacent(where, what) {
+    switch (where) {
+      case 'beforebegin':
+        if (this === rootBox) {
+          return what.remove();
+        }
+
+        const prev = this.previousSibling;
+
+        what.nextSibling = this;
+        what.previousSibling = prev;
+        what.parent = this.parent;
+        this.previousSibling = what;
+
+        if (!prev) {
+          this.parent.firstChild = what;
+        }
+        else {
+          prev.nextSibling = what;
+        }
+        break;
+
+      case 'afterend':
+        if (this === rootBox) {
+          return what.remove();
+        }
+
+        const next = this.nextSibling;
+
+        what.nextSibling = next;
+        what.previousSibling = this;
+        what.parent = this.parent;
+        this.nextSibling = what;
+
+        if (!next) {
+          this.parent.lastChild = what;
+        }
+        else {
+          next.previousSibling = what;
+        }
+        break;
+
+      case 'afterbegin':
+        const first = this.firstChild;
+
+        what.parent = this;
+        what.nextSibling = first;
+        this.firstChild = what;
+
+        if (first) {
+          first.previousSibling = what;
+        }
+        else {
+          this.lastChild = what;
+        }
+        break;
+
+      case 'beforeend':
+        const last = this.lastChild;
+
+        what.parent = this;
+        what.previousSibling = last;
+        this.lastChild = what;
+
+        if (last) {
+          last.nextSibling = what;
+        }
+        else {
+          this.firstChild = what;
+        }
+        break;
+
+      default:
+        return console.error('Cannot insert here:', where);
+    }
+    name2box.set(what.name, what);
+  }
+
+  // Calculates actualGrab for all children (relative to this), and this.actualSize
+  innerLayout() {
+    const oneTilde = 50;
+
+    // TODO: deal with other units
+    const minSize = this.actualSize = this.size.map(d => (d[0] || d) / oneTilde);
+    if (!this.firstChild) return;
+
+    const maxSize = this.size.map(d => (d[2] || d[0] || d) / oneTilde);
+    const [cWidth, cHeight] = maxSize;
+    const boxes = [...this.children];
+
+    boxes.forEach(child => child.innerLayout());
+
+    let offsetY = 0.;
+    let i = 0;
+    let maxLineWidth = 0.;
+
+    while (i < boxes.length) {
+      let j = i, lineWidth = 0., maxLineHeight = 0.;
+
+      while (j < boxes.length) {
+        let [dx, dy] = boxes[j].actualSize;
+
+        if (lineWidth + dx > cWidth) break;
+        j++;
+        lineWidth += dx;
+        if (dy > maxLineHeight) maxLineHeight = dy;
+      }
+
+      let offsetX = 0.5 * (cWidth - lineWidth);
+      if (lineWidth > maxLineWidth) maxLineWidth = lineWidth;
+
+      while (i < j) {
+        boxes[i].actualGrab = [
+          offsetX + boxes[i].grab[0] / oneTilde,
+          offsetY + boxes[i].grab[1] / oneTilde,
+          0
+        ]
+        offsetX += boxes[i++].actualSize[0];
+      }
+      offsetY += maxLineHeight;
+    }
+
+    this.actualSize = [
+      Math.max(minSize[0], maxLineWidth),
+      Math.max(minSize[1], Math.min(cHeight, offsetY)),
+      1
+    ];
+
+    const [w, h] = [
+      0.5 * (this.actualSize[0] - cWidth),
+      0.5 * Math.max(minSize[1] - offsetY, 0.)
+    ];
+
+    for (let i = 0; i < boxes.length; i++) {
+      boxes[i].actualGrab[0] += w;
+      boxes[i].actualGrab[1] += h;
+      boxes[i].crop();
+    }
+  }
+
+  crop() {
+    // Crops actualGrab and actualSize to fit within the parent
+    if (!this.parent) return;
+    const parentSize = this.parent.actualSize;
+
+    for (let i = 0; i < 3; i++) {
+      if (this.actualGrab[i] < 0) {
+        this.actualSize[i] += this.actualGrab[i];
+        this.actualGrab[i] = 0;
+      }
+      if (this.actualGrab[i] + this.actualSize[i] > parentSize[i]) {
+        this.actualSize[i] = parentSize[i] - this.actualGrab[i];
+      }
+    }
+  }
+
+  *compose(corner) {
+    const grabFlow = [1, -1, 1];
+    const offset = this.actualGrab.map((g, i) => corner[i] + grabFlow[i] * g);
+
+    if (this !== rootBox) {
+      yield [...offset, ...this.fill, ...this.actualSize];
+    }
+
+    for (let child of this.children) {
+      if (child.actualSize.every(d => d > 0)) {
+        yield* child.compose(offset);
+      }
+    }
+  }
+}
+
+var see = { allocatedBoxes: 0 };
+var rootBox = new Box('SecureRender');
+var name2box = new Map([['SecureRender', rootBox]]);
 
 const vertexShaderSource = `
 attribute vec4 dot;
@@ -488,8 +712,8 @@ function setupProjectionMatrix(gl, program) {
   const aspect = gl.canvas.width / gl.canvas.height;
 
   const M = [
-  2/aspect,0,0,0,
-    0,2,0,0,
+  2,0,0,0,
+    0,2*aspect,0,0,
     0,0,2,0,
     0,0,0,2
   ];
@@ -574,57 +798,12 @@ function createProgram(gl, vertexShader, fragmentShader) {
   gl.deleteProgram(program);
 }
 
-// boxes: [{ size: [[dx, '~'], [dy, '~']], fill: [r, g, b, a] }]
-// -> [[...grab, ...fill, ...size]]
-function calcOffsets(boxes, cWidth) {
-  const oneTilde = 50;
-
-  let offsetY = 0.;
-  const result = [];
-  let i = 0;
-
-  while (i < boxes.length) {
-    let j = i, lineWidth = 0., maxHeight = 0.;
-
-    while (j < boxes.length) {
-      let [[dx], [dy]] = boxes[j].size;
-      [dx, dy] = [dx / oneTilde, dy / oneTilde];
-
-      if (lineWidth + dx > cWidth) break;
-
-      const fill = boxes[j++].fill;
-      if (fill.length < 4) fill[3] = 1;
-
-
-      result.push([0,0,0, ...fill, dx, dy, 1.]);
-
-      lineWidth += dx;
-      if (dy > maxHeight) maxHeight = dy;
-    }
-
-    let offsetX = 0.5 * (cWidth - lineWidth);
-
-    while (i < j) {
-      result[i][0] = (offsetX - 1.0) + boxes[i].grab[0];
-      result[i][1] = (offsetY) + boxes[i].grab[1];
-      offsetX += result[i++][7];
-    }
-    offsetY += maxHeight;
-  }
-
-  for (let i = 0, h = 0.5 * offsetY; i < result.length; i++) {
-    result[i][1] = h - result[i][1];
-  }
-
-  return result;
-}
-
-
 see.create = function(){
   if(see.DOM){ return }
   var w = window, c = document.createElement('canvas'), tmp;
-  c.width = w.innerWidth, c.height = see.tall = w.innerHeight;
+  c.width = w.innerWidth, c.height = w.innerHeight;
   (tmp = c.style).position = 'fixed'; tmp.left = tmp.top = 0;
+  tmp.height = tmp.width = '100%';
   SecureRender.appendChild(see.DOM = c);
   var gl = see.gl = c.getContext('webgl');
   gl.many = gl.getExtension('ANGLE_instanced_arrays');
@@ -644,20 +823,34 @@ see.create();
 see.all = 0;
 
 window.onresize = function(){
-  var gl = see.gl;
-  gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+  const gl = see.gl;
+  const c = gl.canvas;
+
+  const dpr = window.devicePixelRatio;
+
+  const {width, height} = c.getBoundingClientRect();
+  const displayWidth  = Math.round(width * dpr);
+  const displayHeight = Math.round(height * dpr);
+
+  if (c.width != displayWidth || c.height != displayHeight) {
+    c.width  = displayWidth;
+    c.height = displayHeight;
+  }
+
+  gl.viewport(0, 0, c.width, c.height);
 
   setupProjectionMatrix(gl, see.program);
+
+  rootBox.size = [100, 100, 100];    // TODO: what does really has to be here?
 }
 window.onresize();
 
 //function grow(a, x, r){ return (r = new Numbers(a.length + (x||100))).set(a, 0), r } // however much bigger you want it. Delete this, just inline it!
 function render(list){
-  //console.log('**** WEBGL render, list', list);
+  // console.log('**** WEBGL render, list', list);
 
   //return;
   const gl = see.gl;
-  let nBoxes = glSceneGraph.size;
 
   for (let change of list) {
     if (!change.name) {
@@ -666,34 +859,40 @@ function render(list){
     }
 
     const name = change.name;
-    let what = glSceneGraph.get(name);
+    let what = name2box.get(name);
 
     if (!what) {
-      glSceneGraph.set(name, what = {});
+      if (!change.sort) {
+        console.error('Missing insert sort location in render', change)
+        continue;
+      }
+      const [where, relName] = change.sort;
+      const rel = name2box.get(relName);
 
-      what.id = 'v'+name.replace(aZ09,'');
-      what.size = [1,1,1];
-      what.turn = [0,0,0];
-      what.grab = [0,0,0];
-      what.zoom = [1,1,1];
-      what.fill = [0,0,0];
-      what.away;
-      what.drip;
-      what.flow;
-      what.sort;
-      what.unit = { turn: [], zoom: [], grab: [] };
+      if (!rel || !(where in place)) {
+        console.error('Invalid sort location', change.sort);
+        continue;
+      }
+
+      what = new Box(name);
+      rel.insertAdjacent(place[where], what)
     }
 
     Object.assign(what, change);
+
+    if (what.fill.length < 4) what.fill[3] = 1;
   }
 
-  const boxes = calcOffsets([...glSceneGraph.values()], 2.);
+  rootBox.innerLayout();
+
+  const boxes = [...rootBox.compose([-1, 1, 0])];
   const boxAttributes = new Float32Array(boxes.flat());
 
   gl.bindBuffer(gl.ARRAY_BUFFER, see.mainBuffer);
 
-  if (nBoxes < glSceneGraph.size) {
+  if (see.allocatedBoxes < boxes.length) {
     gl.bufferData(gl.ARRAY_BUFFER, boxAttributes, gl.DYNAMIC_DRAW);
+    see.allocatedBoxes = boxes.length;
   }
   else {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, boxAttributes);
