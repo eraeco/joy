@@ -628,7 +628,7 @@ class Box {
 
     const [w, h] = [
       0.5 * (this.actualSize[0] - cWidth),
-      0.5 * Math.max(minSize[1] - offsetY, 0.)
+      0.5 * (this.actualSize[1] - offsetY)
     ];
 
     for (let i = 0; i < boxes.length; i++) {
