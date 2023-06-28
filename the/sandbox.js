@@ -612,7 +612,7 @@ class Box {
       while (i < j) {
         boxes[i].actualGrab = [
           offsetX + boxes[i].grab[0] / oneTilde,
-          offsetY + boxes[i].grab[1] / oneTilde,
+          offsetY + boxes[i].grab[1] / oneTilde + 0.5 * (maxLineHeight - boxes[i].actualSize[1]),
           0
         ]
         offsetX += boxes[i++].actualSize[0];
@@ -628,7 +628,7 @@ class Box {
 
     const [w, h] = [
       0.5 * (this.actualSize[0] - cWidth),
-      0.5 * Math.max(minSize[1] - offsetY, 0.)
+      0.5 * (this.actualSize[1] - offsetY)
     ];
 
     for (let i = 0; i < boxes.length; i++) {
