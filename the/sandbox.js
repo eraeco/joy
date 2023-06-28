@@ -612,7 +612,7 @@ class Box {
       while (i < j) {
         boxes[i].actualGrab = [
           offsetX + boxes[i].grab[0] / oneTilde,
-          offsetY + boxes[i].grab[1] / oneTilde,
+          offsetY + boxes[i].grab[1] / oneTilde + 0.5 * (maxLineHeight - boxes[i].actualSize[1]),
           0
         ]
         offsetX += boxes[i++].actualSize[0];
