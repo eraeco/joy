@@ -581,11 +581,16 @@ class Box {
     const oneTilde = 50;
 
     // TODO: deal with other units
-    const minSize = this.actualSize = this.size.map(d => (d[0] || d) / oneTilde);
+    this.actualSize = this.size.map(d => (d[0] || d) / oneTilde);
     if (!this.firstChild) return;
 
-    const maxSize = this.size.map(d => (d[2] || d[0] || d) / oneTilde);
-    const [cWidth, cHeight] = maxSize;
+    const flow = this.flow?.map(f => '><v^'.indexOf(f)) || [0, 2, 4];
+    if (flow.length < 3) flow[2] = 4;
+    const actual2logical = v => flow.map(f => v[f >> 1]);
+    const logical2actual = v => v.reduce((acc, a, i) => Object.assign(acc, {[flow[i] >> 1]: a}), []);
+
+    const [cWidth, cHeight] = actual2logical(this.size.map(d => (d[2] || d[0] || d) / oneTilde));
+
     const boxes = [...this.children];
 
     boxes.forEach(child => child.innerLayout());
@@ -598,7 +603,7 @@ class Box {
       let j = i, lineWidth = 0., maxLineHeight = 0.;
 
       while (j < boxes.length) {
-        let [dx, dy] = boxes[j].actualSize;
+        let [dx, dy] = boxes[j].logicalSize = actual2logical(boxes[j].actualSize);
 
         if (lineWidth + dx > cWidth) break;
         j++;
@@ -610,30 +615,47 @@ class Box {
       if (lineWidth > maxLineWidth) maxLineWidth = lineWidth;
 
       while (i < j) {
-        boxes[i].actualGrab = [
-          offsetX + boxes[i].grab[0] / oneTilde,
-          offsetY + boxes[i].grab[1] / oneTilde + 0.5 * (maxLineHeight - boxes[i].actualSize[1]),
+        const logicalGrab_i = actual2logical(boxes[i].grab);
+
+        boxes[i].logicalGrab = [
+          offsetX + logicalGrab_i[0] / oneTilde,
+          offsetY + logicalGrab_i[1] / oneTilde + 0.5 * (maxLineHeight - boxes[i].logicalSize[1]),
           0
         ]
-        offsetX += boxes[i++].actualSize[0];
+        offsetX += boxes[i++].logicalSize[0];
       }
       offsetY += maxLineHeight;
     }
 
-    this.actualSize = [
+    const minSize = actual2logical(this.actualSize);
+
+    const thisLogicalSize = [
       Math.max(minSize[0], maxLineWidth),
       Math.max(minSize[1], Math.min(cHeight, offsetY)),
       1
     ];
 
+    this.actualSize = logical2actual(thisLogicalSize);
+
     const [w, h] = [
-      0.5 * (this.actualSize[0] - cWidth),
-      0.5 * (this.actualSize[1] - offsetY)
+      0.5 * (thisLogicalSize[0] - cWidth),
+      0.5 * (thisLogicalSize[1] - offsetY)
     ];
 
     for (let i = 0; i < boxes.length; i++) {
-      boxes[i].actualGrab[0] += w;
-      boxes[i].actualGrab[1] += h;
+      boxes[i].logicalGrab[0] += w;
+      boxes[i].logicalGrab[1] += h;
+
+      for (let k of [0, 1]) {
+        if (flow[k] & 1) {
+          boxes[i].logicalGrab[k] = thisLogicalSize[k] - boxes[i].logicalGrab[k] - boxes[i].logicalSize[k];
+        }
+      }
+
+      boxes[i].actualGrab = logical2actual(boxes[i].logicalGrab);
+      delete boxes[i].logicalGrab;
+      delete boxes[i].logicalSize;
+
       boxes[i].crop();
     }
   }
