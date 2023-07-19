@@ -458,7 +458,7 @@ class Box {
     this.zoom = [1,1,1];
     this.fill = [0,0,0,1];
     this.away;
-    this.drip;
+    this.drip = [0,0,0];
     this.flow;
     this.unit = { turn: [], zoom: [], grab: [] };
 
@@ -589,6 +589,8 @@ class Box {
     const actual2logical = v => flow.map(f => v[f >> 1]);
     const logical2actual = v => v.reduce((acc, a, i) => Object.assign(acc, {[flow[i] >> 1]: a}), []);
 
+    const drip = Array.isArray(this.drip) ? this.drip : [this.drip, this.drip, this.drip];
+
     const [cWidth, cHeight] = actual2logical(this.size.map(d => (d[2] || d[0] || d) / oneTilde));
 
     const boxes = [...this.children];
@@ -611,8 +613,8 @@ class Box {
         if (dy > maxLineHeight) maxLineHeight = dy;
       }
 
-      let offsetX = 0.5 * (cWidth - lineWidth);
       if (lineWidth > maxLineWidth) maxLineWidth = lineWidth;
+      let offsetX = 0;
 
       while (i < j) {
         const logicalGrab_i = actual2logical(boxes[i].grab);
@@ -621,7 +623,9 @@ class Box {
           offsetX + logicalGrab_i[0] / oneTilde,
           offsetY + logicalGrab_i[1] / oneTilde + 0.5 * (maxLineHeight - boxes[i].logicalSize[1]),
           0
-        ]
+        ];
+        boxes[i].lineWidth = lineWidth;
+
         offsetX += boxes[i++].logicalSize[0];
       }
       offsetY += maxLineHeight;
@@ -637,16 +641,16 @@ class Box {
 
     this.actualSize = logical2actual(thisLogicalSize);
 
-    const [w, h] = [
-      0.5 * (thisLogicalSize[0] - cWidth),
-      0.5 * (thisLogicalSize[1] - offsetY)
-    ];
-
     for (let i = 0; i < boxes.length; i++) {
-      boxes[i].logicalGrab[0] += w;
-      boxes[i].logicalGrab[1] += h;
+      const dripShift = [
+        0.5 * (thisLogicalSize[0] - boxes[i].lineWidth),
+        0.5 * (thisLogicalSize[1] - offsetY),
+        0
+      ];
 
       for (let k of [0, 1]) {
+        boxes[i].logicalGrab[k] += dripShift[k] * (1 - drip[k]);
+
         if (flow[k] & 1) {
           boxes[i].logicalGrab[k] = thisLogicalSize[k] - boxes[i].logicalGrab[k] - boxes[i].logicalSize[k];
         }
@@ -655,6 +659,7 @@ class Box {
       boxes[i].actualGrab = logical2actual(boxes[i].logicalGrab);
       delete boxes[i].logicalGrab;
       delete boxes[i].logicalSize;
+      delete boxes[i].lineWidth;
 
       boxes[i].crop();
     }
