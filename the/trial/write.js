@@ -20,7 +20,7 @@
 var x = 10;
 
 // let declaration
-let y = 'Afomia';
+let y = 'Hello World!';
 
 // const declaration
 const z = true;
@@ -83,7 +83,7 @@ const square = n => n * n;
 // const { name, age, gender = 'Female' } = person;
 
 // // Array destructuring
-// const numbers = [1, 2, 3];
+const numbers = [1, 2, 3];
 // const [first, second, third] = numbers;
 
 // // Rest and Spread Operators
@@ -104,64 +104,64 @@ const square = n => n * n;
 // // Control Flow Statements
 
 // // If-else statement
-// if (x > 5) {
-//     console.log('x is greater than 5');
-// } else {
-//     console.log('x is less than or equal to 5');
-// }
+if (x > 5) {
+    console.log('x is greater than 5');
+} else {
+    console.log('x is less than or equal to 5');
+}
 
 // // Switch statement
-// switch (y) {
-//     case 'Hello':
-//         console.log('Greeting detected');
-//         break;
-//     case 'Goodbye':
-//         console.log('Farewell detected');
-//         break;
-//     default:
-//         console.log('Unknown message');
-// }
+switch (y) {
+    case 'Hello':
+        console.log('Greeting detected');
+        break;
+    case 'Goodbye':
+        console.log('Farewell detected');
+        break;
+    default:
+        console.log('Unknown message');
+}
 
-// // For loop
-// for (let i = 0; i < 5; i++) {
-//     console.log('For loop iteration:', i);
-// }
+// For loop
+for (let i = 0; i < 5; i++) {
+    console.log('For loop iteration:', i);
+}
 
 // // While loop
-// let count = 0;
-// while (count < 3) {
-//     console.log('While loop count:', count);
-//     count++;
-// }
+let count = 0;
+while (count < 3) {
+    console.log('While loop count:', count);
+    count++;
+}
 
 // // Do-while loop
-// do {
-//     console.log('Do-while loop count:', count);
-//     count--;
-// } while (count > 0);
+do {
+    console.log('Do-while loop count:', count);
+    count--;
+} while (count > 0);
 
 // // For...in loop (enumerate object properties)
-// for (const key in person) {
-//     if (person.hasOwnProperty(key)) {
-//         console.log('Property:', key, 'Value:', person[key]);
-//     }
-// }
+for (const key in person) {
+    if (person.hasOwnProperty(key)) {
+        console.log('Property:', key, 'Value:', person[key]);
+    }
+}
 
 // // For...of loop (iterate over iterable objects)
-// for (const num of numbers) {
-//     console.log('Number:', num);
-// }
+for (const num of numbers) {
+    console.log('Number:', num);
+}
 
 // // Exception Handling
 
 // // Try-catch-finally block
 try {
   console.log('Try block executed');
-    throw new Error('An error occurred');
+  throw new Error('An error occurred');
 } catch (error) {
-    console.error('Caught error:', error.message);
+  console.error('Caught error:', error.message);
 } finally {
-    console.log('Finally block executed');
+  console.log('Finally block executed');
 }
 
 // // Classes and Inheritance
