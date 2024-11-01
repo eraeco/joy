@@ -4,7 +4,7 @@ html, body {
   position: relative;
   line-height: 1.5;
   font-size: 18pt;
-  f-ont-size: max(18pt, 2?vw);
+  f-ont-size: max(18pt, 2vw);
 }
 
 div, ul, ol, li, p, span, form, button, input, textarea, img {

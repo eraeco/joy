@@ -1,3 +1,17 @@
 <script class="SecureRender" src="../content.js">
-the.view = "Hello World!"
+// the.view = "Hello World!"
+the.start = the.start || (async () => {
+    // the.player.book = "Hello World!"
+    // code = the.view({
+    //     fill: the.player && the.player.code ? the.player.code : "No Code!!",
+    // }).into()
+    
+    the.player.ast.then(ast => {
+        the.view({
+            fill: ast,
+        }).into()
+    })
+    // console.log(await the.player.book)
+})();
+
 </script>
