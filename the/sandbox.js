@@ -42,13 +42,13 @@ sr.run = function(msg, eve){
 }
 
 ;(function(){
-  return; // MUST NOT BE COMMENTED FOR PRs!
+  // return; // MUST NOT BE COMMENTED FOR PRs!
   function load(src, cb){
     var script = document.createElement('script');
     script.onload = cb; script.src = src;
     document.head.appendChild(script);
   }
-  load('trial/write.js')
+  load('trial/toy.js')
 }());
 
 var view;
@@ -304,7 +304,7 @@ sr.how.view = function(list){
   // size
   // grab
   // sort
-  console.log('**** CSS render(list) ***. List = ', list);
+//   console.log('**** CSS render(list) ***. List = ', list);
 
   var change, i = 0, u;
   while(change = list[i++]){ each(change) }
@@ -397,8 +397,11 @@ sr.how.view = function(list){
       }
     }
     if(u !== (tmp = change.fill)){
-      what.fill = tmp;
-      var i = -1, l = tmp.length; while(++i < l){ tmp[i] = (tmp[i]*100)+'%' }
+		what.fill = tmp;
+		if (Array.isArray(tmp)) {
+			var i = -1, l = tmp.length; while (++i < l) { tmp[i] = (tmp[i] * 100) + '%' }
+		}
+	  
       what.style[text?'color':'background'] = "rgba("+tmp+")";
     }
     // /*tmp! delete*/ if(!what.innerText && what.fill){ what.style.color = '#FFF'; what.style.padding = '0.25em'; } // TODO: DELETE!
@@ -435,7 +438,7 @@ sr.how.view = function(list){
 
 };
 
-map = new Map, place = {'-1':'beforebegin', '-0.1': 'afterbegin', '0.1':'beforeend', '1': 'afterend', '%':'%', '~':'em', '.':'px', comfort: 50}, aZ09 = /\W/ig;
+var map = new Map, place = {'-1':'beforebegin', '-0.1': 'afterbegin', '0.1':'beforeend', '1': 'afterend', '%':'%', '~':'em', '.':'px', comfort: 50}, aZ09 = /\W/ig;
 function endline(tmp){ tmp.insertAdjacentElement(place[1], document.createElement('br')); }
 map.set('SecureRender', document.getElementById('SecureRender'));
 map.set(1, window);
@@ -446,7 +449,7 @@ map.set(1, window);
 ;(function(){
 
 // *WEBGL
-// return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
+return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
 
 class Box {
   constructor(name) {
