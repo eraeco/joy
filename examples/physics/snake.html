@@ -1,15 +1,15 @@
-<script class="SecureRender" src="../../content.js">
+<script class="SecureRender" src="../../the/content.js">
     var utils = {
-        mix: function (a, b, m) {
-            return (m - a) / (b - a);
+        norm: function (value, min, max) {
+            return (value - min) / (max - min);
         },
 
-        remix: function (a, b, m) {
-            return (b - a) * m + a;
+        lerp: function (norm, min, max) {
+            return (max - min) * norm + min;
         },
 
         map: function (value, sourceMin, sourceMax, destMin, destMax) {
-            return utils.remix(destMin, destMax, utils.mix(sourceMin, sourceMax, value));
+            return utils.lerp(utils.norm(value, sourceMin, sourceMax), destMin, destMax);
         },
 
         clamp: function (value, min, max) {
@@ -29,8 +29,8 @@
         },
 
         headInRect: function (x, y, rect) {
-            return utils.inRange(x, rect.x - rect.w, rect.x) &&
-                utils.inRange(y, rect.y - rect.h, rect.y + rect.h);
+            return utils.inRange(x, rect.x, rect.x + rect.w) &&
+                utils.inRange(y, rect.y, rect.y + rect.h);
         },
 
         inRange: function (value, min, max) {
@@ -275,36 +275,78 @@
         return x >= -w / 2 && x + ow <= w / 2 && y - oh / 2 >= -h / 2 && y + oh / 2 <= h / 2;
     }
 
+    const getRandom = (min, max) => {
+        return Math.random() * (max - min) + min;
+    }
 
+    const generateEnemy = (space) => {
+        var col = Math.floor(getRandom(-1, 1) * space.w / 2 - 1)
+        var row = Math.floor(getRandom(-1, 1) * space.h / 2 - 1)
+        console.log(col, row)
+        var f = { x: Math.floor(col), y: Math.floor(row) }
+        return f
+    }
 
     the.start = the.start || (async () => {
-        the.world = the.view({ fill: [1, 1, 1], size: [[100, '%'], [30, '~']], }).into()
-        the.angle = 0;
-        the.boxes = []
-        the.h = utils.map(Math.sin(the.angle), -1, 1, -10, 10)
-        for (var i = 0; i < 70; i += 3) {
-            let c = Math.remix(1, 40, i) * 0.4
-            let box = the.view({ fill: [c, c, c], size: [[0.5, '~'], [0.5, '~']] })
-            box.zoom = [1, 0]
-            // box.turn = [0, 0, the.h]
-            the.boxes.push(box)
-            box.into(the.world)
-        }
+        world = the.view({ fill: [0, 0, 0], size: [[20, '~'], [20, '~']], }).into()
+        tails = []
+        angle = 0
+        offset = 1
+        size = 1
+        a = 0
+        e = generateEnemy({ w: 40, h: 20 })
+        enemy = the.view({ fill: [1, 0.3, 0], size: [[size, '~'], [size, '~']], grab: [e.x, e.y] })
+        enemy.into(world)
+        // console.log(generateEnemy({ w: 40, h: 20 }))
+        s = physics.create(0, 0, 0.05, a, 0)
+        snake = the.view({ size: [[1, '~'], [1, '~']], drip: 1 })
+        snake.into(world)
+        the.view.place(head = { fill: [0, 0.5, 1], size: [[1, '~'], [1, '~']] }).into(snake)
     })();
-    offset = 0
-    for (var i = 0; i < the.boxes.length; i++) {
-        let a = the.angle + offset
-        let h = utils.map(Math.sin(a), -1, 1, -1, 16)
-        let box = the.boxes[i]
 
-        box.time = 0.5
-        box.zoom = [1, 1, h]
-        box.grab = [0, 0, h * 2]
-        box.turn = [h / 16]
-        console.log(h)
-        offset += 0.1
+    s.update()
+    now = +new Date();
+    if (the.key.Left && the.key.Left - now < 50) {
+        a -= 0.05
+        console.log('left')
     }
-    the.angle += 0.05;
+    if (the.key.Right && the.key.Right - now < 50) {
+        a += 0.05
+        console.log('right')
+    }
+    s.setHeading(a)
+    snake.turn = [a * 0.159155]
+    if (utils.headInRect(s.x, s.y, { x: e.x, y: e.y, w: size + offset, h: size + offset })) {
+        console.log("hit")
+        enemy.time = 0
+        e = generateEnemy({ w: 40, h: 20 })
+        last = tails.length > 1 ? tails[-1] : head
 
+        tails.push(t = the.view({ fill: [0, 1, 0.7], size: [[1, '~'], [1, '~']] }))
+        t.before(head)
+        console.log(last)
+        // t.grab = [last.grab[0] - 1, last.grab[1] - 1]
+        enemy.grab = [e.x, e.y]
+    }
 
+    tails.forEach((tail, index) => {
+        // x = Math.mix(0, Math.PI * 2, a);
+        // // console.log(x, index)
+        // y = Math.sin(x) * 5;
+        // y = Math.remix(0, sentence.length - 1, index);
+        // pos = the.view({ fill: `${letter}`, size: [0.5, 0.5] })
+        // dot = the.view({ size: [1, 1], grab: [x, y], turn:  }).into()
+        // tail.grab = [s.x - tails.size, s.y - tails.size]
+        tail.turn = [Math.mix(-1, Math.PI / 2, Math.atan2(s.y, s.x) / Math.PI / 4), 0]
+
+    });
+    for (var i = 0; i < tails.length; i++) {
+
+        var t = tails[i]
+        // console.log(t)
+        // t.turn = [0, a]
+        // t.grab = [t.grab[0] * , s.y]
+    }
+    // console.log(s.x, s.y)
+    snake.grab = [s.x, s.y]
 </script>

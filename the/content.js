@@ -46,7 +46,7 @@ function frame(i){
   sr.html = sr.tag.innerHTML; // get HTML text to send to a sandbox. // @qxip has a hot tip to make this faster!
   document.body.innerHTML = document.head.innerHTML = ""; // clear screen for app to run inside the sandbox instead.
   i.style = "position: fixed; border: 0; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0;";
-  //i.integrity = "browsers please support this!"; // https://github.com/w3c/webappsec-subresource-integrity/issues/21
+  // i.integrity = "browsers please support this!"; // https://github.com/w3c/webappsec-subresource-integrity/issues/21
   try {
     i.src = sr.ext.getURL('') + 'enclave.html'; // try browser
   } catch (err) {
@@ -55,7 +55,7 @@ function frame(i){
   document.body.appendChild(i);
 }
 
-sr.polyfill = {getURL: function(){ return 'https://securerender.org/extension/' } };
-// sr.polyfill = {getURL: function(){ return '/the/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
-// sr.polyfill = {getURL: function(){ return 'http://localhost:8080/the/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
+// sr.polyfill = {getURL: function(){ return 'https://securerender.org/extension/' } };
+sr.polyfill = {getURL: function(){ return '/the/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
+// sr.polyfill = {getURL: function(){ return 'http://localhost:5173/the/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
 }());

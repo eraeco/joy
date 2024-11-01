@@ -7,9 +7,6 @@
       document.head.appendChild(script);
   }
 
-  load('trial/jquery.js', () => {
-    load('trial/meta.js', commands)
-  })
 
   load('trial/esprima.js', function(){
 
@@ -141,28 +138,28 @@ do {
 } while (count > 0);
 
 // // For...in loop (enumerate object properties)
-for (const key in person) {
-    if (person.hasOwnProperty(key)) {
-        console.log('Property:', key, 'Value:', person[key]);
-    }
-}
+// for (const key in person) {
+//     if (person.hasOwnProperty(key)) {
+//         console.log('Property:', key, 'Value:', person[key]);
+//     }
+// }
 
 // // For...of loop (iterate over iterable objects)
-for (const num of numbers) {
-    console.log('Number:', num);
-}
+// for (const num of numbers) {
+//     console.log('Number:', num);
+// }
 
 // // Exception Handling
 
 // // Try-catch-finally block
-try {
-  console.log('Try block executed');
-  throw new Error('An error occurred');
-} catch (error) {
-  console.error('Caught error:', error.message);
-} finally {
-  console.log('Finally block executed');
-}
+// try {
+//   console.log('Try block executed');
+//   throw new Error('An error occurred');
+// } catch (error) {
+//   console.error('Caught error:', error.message);
+// } finally {
+//   console.log('Finally block executed');
+// }
 
 // // Classes and Inheritance
 
@@ -448,13 +445,13 @@ try {
 
     `;
     try {
-      var ast = esprima.parseScript(code);
+      var ast = esprima.parse(code);
       render(ast);
     } catch (err) {
       console.error("Parsing Error:", err);
     }
   
-    setTimeout(function(){ $('#console').text(code).css({top: 0, left: 0, right: 0, height: '9em', bottom: 'none', 'text-align': 'left'}) },999);
+    // setTimeout(function(){ $('#console').text(code).css({top: 0, left: 0, right: 0, height: '9em', bottom: 'none', 'text-align': 'left'}) },999);
   
   });
   
@@ -1044,15 +1041,15 @@ try {
   }
   
   function hashToColor(hash) {
-    const r = ((hash >> 16) & 0xFF) / 255;
-    const g = ((hash >> 8) & 0xFF) / 255;
-    const b = (hash & 0xFF) / 255;
+    const r = Math.round(((hash >> 16) & 0xFE) / 255);
+    const g = Math.round(((hash >> 16) & 0xFF) / 255);
+    const b = Math.round(((hash >> 16) & 0xFF) / 255);
+    // const g = ((hash >> 8) & 0xFF) / 255;
+    // const b = (hash & 0xFF) / 255;
     return [r, g, b, 0.3];
   }
 
-  render.fill = function (ast) {
-    // const hash = hashString(ast.type);
-    // return hashToColor(hash);
+  render.fill = function(ast){
     return [Math.random()-0.2, Math.random()-0.2, Math.random()-0.2, 0.3];
   }
   render.id = function(ast) {
