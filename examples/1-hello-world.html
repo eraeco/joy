@@ -1,3 +1,16 @@
 <script class="SecureRender" src="../the/content.js">
 // the.view = "Hello World!"
+the.start = the.start || (async () => {
+    // the.player.book = "Hello World!"
+    // code = the.view({
+    //     fill: the.player && the.player.code ? the.player.code : "No Code!!",
+    // }).into()
+    ast = the.view({
+        fill: the.player && the.player.ast ? 
+            JSON.stringify(await the.player.ast, undefined, 4) : "NO AST",
+        drip: 1,
+    }).into()
+    // console.log(await the.player.book)
+})();
+
 </script>

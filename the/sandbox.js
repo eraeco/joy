@@ -71,7 +71,7 @@ sr.how.html = function(msg){
   }
 }
 
-sr.how.store = function(msg, eve){
+  sr.how.store = function (msg, eve) {
   var tmp;
   if(tmp = msg.to){
     if(msg.get){
@@ -135,6 +135,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   Math.remix = function(a,b,m){ m = m || 0; return (m - a) / (b - a) }
 
   this.store = new Proxy({}, {get: function(at,has,put){
+    
     if(u !== (put = at[has])){ return put }
     put = new Promise(function(res, rej){
       var ack = Math.random(), any = function(v){
@@ -147,7 +148,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     });
     put.toString = tS;
     return put;
-  }, set: function(at,has,put){
+  }, set: function (at, has, put) {
     up({how: 'store', get: has, put: at[has] = put});
   }});
   function tS(){ return '' };
@@ -197,6 +198,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
       //a.up = b.up;
     }
 
+
     msg.name = a.name || ((msg = what).name = (pid+(++pi)));
     msg.sort = [how, (b||'').name];
     up.s.push(msg);
@@ -222,7 +224,6 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   place.before = function(on){ return place(was.what, -1, on) }
   place.into = function(on){ return place(was.what, 0.1, on) }
   //place.text = function(t){ pm.s.push({what: }) }
-
   the.player = this.store;
   the.words = "english"; // TODO! Do not hardcode.
   the.unit = {cs: 5, ps: 1}; // TODO! Do not hardcode.
@@ -296,7 +297,7 @@ setInterval(breathe,0);
 
 ;(function(){
 // this is the CSS3 matrix transform rendering engine fallback. WebGL would be preferred.
-sr.how.view = function(list){
+  sr.how.view = function (list) {
   //console.log("render:", list);
   //view.innerHTML = "";
   // fill
@@ -308,12 +309,12 @@ sr.how.view = function(list){
 
   var change, i = 0, u;
   while(change = list[i++]){ each(change) }
-  function each(change, name, what, has, put, text, tmp){
+  function each(change, name, what, has, put, text, tmp) {
     if(!(name = change.name)){ return }
     text = ('string' == typeof change.fill);
     if(!(what = map.get(name))){
       map.set(name, what = (text?
-        document.createElement('p')
+        document.createElement(change.type || 'p')
       : document.createElement('div')));
       if(!text){
         what.style.minWidth = '1'+place['cs'];
