@@ -9,7 +9,7 @@ html, body {
 
   back-ground: black;
   co-lor: white;
-  font-size: max(18pt, 2vw);
+  fo-nt-size: max(18pt, 2vw);
 }
 
 * { out-line: 1px dashed black; }
@@ -22,7 +22,7 @@ body > div {
 
 div, ul, ol, li, p, span, form, button, input, textarea, img, line, text {
   margin: 0;
-  padding: 0.15em;
+  padding: 0.07em;
   position: relative;
   display: inline-block;
   box-sizing: border-box;
