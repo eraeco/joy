@@ -337,7 +337,7 @@
     } else
     if(ast.callee){
       ast.callee.back = ast;
-      //ast.callee.up = ast.up;
+      // ast.callee.up = ast.up;
       /*if(ast.body){ // anon functions
         ast.body.up = ast;
       }*/

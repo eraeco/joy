@@ -1,16 +1,15 @@
 html, body {
 	margin: 0;
 	padding: 0;
-  width: 100vw;
   min-height: 100vh;
   line-height: 100vh;
 	position: relative;
   text-align: center;
   vertical-align: middle;
 
-  b-ackground: black;
-  c-olor: white;
-  font-size: 18pt;
+  back-ground: black;
+  co-lor: white;
+  fo-nt-size: max(18pt, 2vw);
 }
 
 * { out-line: 1px dashed black; }
@@ -23,11 +22,12 @@ body > div {
 
 div, ul, ol, li, p, span, form, button, input, textarea, img, line, text {
   margin: 0;
-  padding: 0;
+  padding: 0.07em;
   position: relative;
   display: inline-block;
   box-sizing: border-box;
   vertical-align: middle;
+  border-radius: 0.5rem;
   text-align: center;
   line-height: normal;
   -webkit-transition: all 0.3s;
