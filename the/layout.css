@@ -23,8 +23,9 @@ body > div {
 
 div, ul, ol, li, p, span, form, button, input, textarea, img, line, text {
   margin: 0;
-  padding: 0;
+  padding: 0.025em;
   position: relative;
+  border-radius: 0.5em;
   display: inline-block;
   box-sizing: border-box;
   vertical-align: middle;

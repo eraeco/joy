@@ -1,6 +1,7 @@
 ; (function () {
   console.log("Hello Experiments! Do whatever you want in this folder or files!");
 
+  // Utility: dynamically load a script into the document and invoke callback when loaded.
   function load(src, cb) {
     var script = document.createElement('script');
     script.onload = cb; script.src = src;
@@ -92,9 +93,9 @@ const divide = (a, b) => {
 
 // // Rest parameters in a function
 // TODO: Need to fix this
-// function sumAll(...args) {
-//     return args.reduce((sum, current) => sum + current, 0);
-// }
+function sumAll(...args) {
+    return args.reduce((sum, current) => sum + current, 0);
+}
 
 // // Spread syntax in array literals
 // const arr1 = [1, 2, 3];
@@ -156,9 +157,9 @@ for (const key in person) {
 
 // // For...of loop (iterate over iterable objects)
 //TODO: Need to fix this
-for (const num of numbers) {
-    console.log('Number:', num);
-}
+// for (const num of numbers) {
+//     console.log('Number:', num);
+// }
 
 // // Exception Handling
 
@@ -216,10 +217,10 @@ setTimeout(function () {
 }, 1000);
 
 // // Working with Promises
-// const promise = new Promise(function (resolve, reject) {
-//     setTimeout(() => resolve('Promise resolved'), 500);
-// });
-// promise.then(result => console.log(result));
+const promise = new Promise(function (resolve, reject) {
+    setTimeout(() => resolve('Promise resolved'), 500);
+});
+promise.then(result => console.log(result));
 
 // // Using Map and Set
 //TODO: Need to fix this
@@ -256,7 +257,7 @@ setTimeout(function () {
 
 // // Conditional (ternary) operator
 // TODO: Need to fix this
-const max = x > y.length ? x : y.length;
+// const max = x > y.length ? x : y.length;
 
 // // Logical operators
 // const logicalAnd = x > 0 && y.length > 0;
@@ -447,11 +448,11 @@ const max = x > y.length ? x : y.length;
 // const largeNumber = 1000000;
 // // End of code examples
 //TODO: Need to fix this
-// (fn())(args);
+(fn(a))(args);
 // obj[computedProperty]();
 // obj.method(c).chain().calls(b);
 
-    //     `;
+`;
 
     code && render.put("code", code);
     var ast = acorn.parse(code,{ecmaVersion: 2022, sourceType: 'module'});
@@ -463,11 +464,13 @@ const max = x > y.length ? x : y.length;
   
   });
 
+  // Main render function: recursively inspects and processes an AST node.
   function render(ast) {
     
     if (!ast) { return }
     console.log("AST:", ast);
     // Renders body
+    // Container node: either a program or a block, so process accordingly.
     if(ast.body && !(ast.left || ast.right) && !(ast.test || ast.init || ast.update)){
       if(ast.id){ // named function, convert to left/right:
         render.act(ast);
@@ -510,14 +513,19 @@ const max = x > y.length ? x : y.length;
       return;
     }
     render.flow(ast);
-    render.act(ast);
+    if (!['ForStatement', 'ForInStatement', 'ForOfStatement'].includes(ast.type)) {
+        render.act(ast);
+    }
   }
   
+  // Process an AST node as an “action” node, handling basic nodes such as identifiers, literals,
+  // as well as special cases like 'this', async markers, and class declarations.
   render.act = function(ast){
     if(!ast){ return }
   
     //if(ast.raw){ // end!
     // Handle basic nodes (literals and identifiers)
+    // literal or identifier node: render text label.
     if(ast.raw || 'Identifier' == ast.type || ast.local || ast.imported){ // end!
       ast.$id = ast.$id || render.id(ast);
       render.the({ // make view
@@ -545,6 +553,7 @@ const max = x > y.length ? x : y.length;
       // console.log("***AST:", ast)
     }
     
+    // Mark this node as async.
     if (ast.async) { // handle async
       render.the({
         name: ast.$id + '-async',
@@ -553,11 +562,16 @@ const max = x > y.length ? x : y.length;
       });
     }
     // handle class
+    // Special handling for class declarations.
     if (ast.type === 'ClassDeclaration') {
       render.the({
         name: ast.$id + '-class',
         fill: "class",
         sort: [0.1, ast.$id],
+      }).the({
+        name: ast.$id + '-text',
+        sort: [0.1, ast.$id + '-class'],
+        fill: ast.id && ast.id.name ? ast.id.name : "unnamed class",
       });
     }
     var act = render.actify(ast);
@@ -572,6 +586,7 @@ const max = x > y.length ? x : y.length;
     render.expression(ast, left, op, right);
   }
 
+  // Helper: Determine how to “actify” an AST node by extracting its left/right/operator/other elements.
   render.actify = function (ast) {
     if (ast.left && ast.right) {
       act = ast;
@@ -581,6 +596,9 @@ const max = x > y.length ? x : y.length;
     } else if (ast.expression) {
       ast.expression.back = ast;
       act = ast = ast.expression;
+    // For arrow functions: treat parameters as left and body as right.
+    } else if (ast.type === 'ArrowFunctionExpression') {
+      act = { left: ast.params, operator: '⇒', right: ast.body };
     }  else if (ast.params) {
       ast.body.up = ast;
       act = { left: { property: ast.id }, operator: "=", right: ast.body };
@@ -590,7 +608,7 @@ const max = x > y.length ? x : y.length;
     } else if (ast.type === 'ClassDeclaration') {
       let l = {
         up: ast,
-        left: ast.id,
+        left: ast.superClass ? '' : ast.id,
         operator: ast.superClass ? 'extends': '',
         right: ast.superClass ? ast.superClass : {},
       }
@@ -598,15 +616,28 @@ const max = x > y.length ? x : y.length;
         left: l, operator: '=',
         right: ast.body,
       };
-     } else if (ast.callee) {
+    } else if (ast.type === 'NewExpression') {
+      act = { operator: 'new', left: ast.callee, right: ast.arguments };
+    } else if (ast.callee) {
       ast.callee.back = ast;
       console.log("AST:", ast);
-      act = { left: ast.body || ast.callee, operator: ''/*String.fromCharCode(8594)*/, right: ast.arguments };
-      //ast = ast.callee; // is this buggy for path?
+      // Check if the callee is empty or if there are no arguments (or if it's already invoked)
+      if (ast.envoked || !ast.callee || (ast.arguments && ast.arguments.length === 0)) {
+        act = { left: ast.body || ast.callee, operator: '', right: null };
+      } else {
+        act = { left: ast.body || ast.callee, operator: ''/*String.fromCharCode(8594)*/, right: ast.arguments };
+      }
+      // Do not render redundant "()" if the node is already invoked elsewhere or has no parameters.
     } else if (ast.source && ast.specifiers) {
       act = { left: ast.specifiers, operator: 'from', right: ast.source };
     } else if (ast.declaration) { 
       act  = { operator: 'export', right: ast.declaration };
+    } else if (ast.type === 'UpdateExpression') {
+      if (ast.prefix) {
+          act = { operator: ast.operator, right: ast.argument };
+      } else {
+          act = { operator: ast.operator, left: ast.argument };
+      }
     } else if (ast.operator && ast.argument) {
       act = { left: ast.prefix ? null : ast.argument, operator: ast.operator, right: ast.prefix ? ast.argument : null };
     } else if (ast.type === 'AwaitExpression') { 
@@ -628,13 +659,28 @@ const max = x > y.length ? x : y.length;
     } else if (ast.type === 'ReturnStatement') {
       act = { operator: 'return', right: ast.argument };
     } else if (ast.type === 'ThrowStatement') {
-      act = { operator: 'throw', right: ast.argument };
+      act = { operator: 'throw', right: ast.argument};
     } else if (ast.superClass) {
       act = {operator: 'extends', right: ast.superClass}
     }else if (ast.type === 'Property') {
       var s = !ast.shorthand && ast.kind === 'init';
       var k = ast.kind !== 'init';
       act = { left: ast.key, operator: s && ':' || k &&  ast.kind , right: (s || k) && ast.value};
+    } else if (ast.type === 'ConditionalExpression') {
+      act = { left: ast.test, operator: '?', right: ast.consequent };
+      act.alternate = ast.alternate;
+    } else if (ast.type === 'TemplateLiteral') {
+      act = { operator: 'template', parts: [] };
+      for (let i = 0; i < ast.quasis.length; i++) {
+          act.parts.push(ast.quasis[i].value.raw);
+          if (ast.expressions[i]) {
+              act.parts.push(ast.expressions[i]);
+          }
+      }
+    } else if (ast.type === 'SequenceExpression') {
+      act = { operator: 'sequence', expressions: ast.expressions };
+    } else if (ast.type === 'ObjectExpression') {
+      act = { operator: 'object', properties: ast.properties };
     } else if (ast.body) {
       act = { operator: 'return', right: ast.body };
     } else {
@@ -650,12 +696,14 @@ const max = x > y.length ? x : y.length;
     })
   }
   
+  // Process control flow nodes (e.g., if statements, loops, try/catch) and render their parts.
   render.flow = function (ast) {
     if (!ast) return;
     ast.$id = ast.$id || render.id(ast);
     
     if (ast.block) {
       ast.block.up = ast;
+      // Handle if-else structure: render test and consequent parts.
       render.view(ast);
       render.the({
         name: ast.$id + '-text',
@@ -708,8 +756,12 @@ const max = x > y.length ? x : y.length;
     } 
   };
 
+  // Render an expression by separately processing the left-hand part, operator, and right-hand part.
   render.expression = function (ast, left, operator, right) {
     render.view(ast);
+
+
+    // The original rendering for non-new expressions:
     if (left) {
       path = render.path(ast, {object: left})
       //if(path.length > 3){ path = [path[0], String.fromCharCode(8230)].concat(path.slice(-2)) } // FEATURE!
@@ -719,7 +771,7 @@ const max = x > y.length ? x : y.length;
     //act.operator = ('=' == act.operator? ':' : act.operator);
     operator && render.the({
       name: ast.$id+'-act',
-      sort: [0.1, ast.$id]
+      sort: [operator == 'new' ? -0.1 : 0.1, ast.$id]
     }).the({
       name: ast.$id+'-act-text',
       sort: [0.1, ast.$id+'-act'],
@@ -730,6 +782,11 @@ const max = x > y.length ? x : y.length;
       right.up = right.up || ast;
       path = render.path(ast, {object: right})
       render.side(right, ast, path);
+    }
+    if (ast.type === 'ConditionalExpression' && ast.alternate) {
+      ast.alternate.up = ast;
+      var alt_path = render.path(ast, {object: ast.alternate});
+      render.side(ast.alternate, ast, alt_path, 'else');
     }
   }
 
@@ -743,6 +800,7 @@ const max = x > y.length ? x : y.length;
     return path.reverse();
   }
 
+  // Render the side (additional) component of an expression, such as property access or arguments.
   render.side = function(right, ast, path, t){
     if (right.raw || 'Identifier' == right.type) {
       render.the({
@@ -782,7 +840,7 @@ const max = x > y.length ? x : y.length;
           fill: path.join(" . ")
         });
       }
-      } else if (right instanceof Array) {
+      } else if (right instanceof Array && right.length > 0 && !ast.renderedArgs) {
         render.list(ast, right, '(', ',', ')');
     } else if (right.argument && right.operator) {
         right.$id = right.$id || render.id(right);
@@ -825,11 +883,13 @@ const max = x > y.length ? x : y.length;
       }
   }
 
+  // Utility to render a list of nodes. 's' is the start delimiter, 'b' is the separator, and 'e' is the end delimiter.
   render.list = function(ast, steps, s, b, e){
     if (!ast) return;
     if (!(steps instanceof Array)) {
       steps = [steps] || [];
     }
+    // if (steps.length === 0) return;  // <== New: skip rendering if there are no items
 
     if(ast.elements){ s = '[', b = ',', e = ']' }
     // if(ast.expression){ s = '(', b = ',', e = ') => ' }
@@ -885,6 +945,9 @@ const max = x > y.length ? x : y.length;
   }
 
   // Utility functions
+  // -------------------------------------------------------------------------------
+  // Utility functions for render: color fill generation, id generation, messaging, etc.
+  // -------------------------------------------------------------------------------
   render.fill = function() {
     return [Math.random()-0.2, Math.random()-0.2, Math.random()-0.2, 0.3];
   };
