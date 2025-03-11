@@ -1,4 +1,4 @@
-; (function () {
+(function () {
   console.log("Hello Experiments! Do whatever you want in this folder or files!");
 
   // Utility: dynamically load a script into the document and invoke callback when loaded.
@@ -7,7 +7,6 @@
     script.onload = cb; script.src = src;
     document.head.appendChild(script);
   }
-
 
   load('trial/acorn.js', function () {
 
@@ -30,34 +29,34 @@
 // // Function Declarations and Expressions
 
 // // Function declaration with parameters and default values
-function add(a, b = 5) {
-    return a + b;
-}
+// function add(a, b = 5) {
+//     return a + b;
+// }
 
 // // Function expression assigned to a variable
-function multiply (a, b) {
-    return a * b;
-};
+// function multiply (a, b) {
+//     return a * b;
+// };
 
-const sq = function (n) {
-  return n * n;
-}
-const square = n => n * n;
+// const sq = function (n) {
+//   return n * n;
+// }
+// const square = n => n * n;
 
 // // Arrow function with implicit return
 
 // // Arrow function with block body
-const divide = (a, b) => {
-    if (b === 0) {
-        throw new Error('Division by zero');
-    }
-    return a / b;
-};
+// const divide = (a, b) => {
+//     if (b === 0) {
+//         throw new Error('Division by zero');
+//     }
+//     return a / b;
+// };
 
 // // Immediately Invoked Function Expression (IIFE)
 // (function () {
-// var a = 1;
-//     console.log('IIFE executed');
+//   var a = 1;
+//   console.log('IIFE executed');
 // })();
 
 // // Generator function
@@ -83,6 +82,7 @@ const divide = (a, b) => {
 
 // // Object destructuring with default values
 // const person = { name: 'Alice', age: 25 };
+//TODO: Fix this
 // const { name, age, gender = 'Female' } = person;
 
 // // Array destructuring
@@ -92,10 +92,9 @@ const divide = (a, b) => {
 // // Rest and Spread Operators
 
 // // Rest parameters in a function
-// TODO: Need to fix this
-function sumAll(...args) {
-    return args.reduce((sum, current) => sum + current, 0);
-}
+// function sumAll(...args) {
+//     return args.reduce((sum, current) => sum + current, 0);
+// }
 
 // // Spread syntax in array literals
 // const arr1 = [1, 2, 3];
@@ -149,11 +148,11 @@ function sumAll(...args) {
 // } while (count > 0);
 
 // // For...in loop (enumerate object properties)
-for (const key in person) {
-    if (person.hasOwnProperty(key)) {
-        console.log('Property:', key, 'Value:', person[key]);
-    }
-}
+// for (const key in person) {
+//     if (person.hasOwnProperty(key)) {
+//         console.log('Property:', key, 'Value:', person[key]);
+//     }
+// }
 
 // // For...of loop (iterate over iterable objects)
 //TODO: Need to fix this
@@ -212,15 +211,15 @@ for (const key in person) {
 // const jsonObject = JSON.parse(jsonString);
 
 // // Using setTimeout (asynchronous code)
-setTimeout(function () {
-    console.log('Timeout executed');
-}, 1000);
+// setTimeout(function () {
+//     console.log('Timeout executed');
+// }, 1000);
 
 // // Working with Promises
-const promise = new Promise(function (resolve, reject) {
-    setTimeout(() => resolve('Promise resolved'), 500);
-});
-promise.then(result => console.log(result));
+// const promise = new Promise(function (resolve, reject) {
+//     setTimeout(() => resolve('Promise resolved'), 500);
+// });
+// promise.then(result => console.log(result));
 
 // // Using Map and Set
 //TODO: Need to fix this
@@ -419,15 +418,15 @@ promise.then(result => console.log(result));
 
 // // Accessor properties
 //TODO: Need to fix this
-// const accessorExample = {
-//     _value: 0,
-//     get value() {
-//         return this._value;
-//     },
-//     set value(val) {
-//         this._value = val;
-//     }
-// };
+const accessorExample = {
+    _value: 0,
+    get value() {
+        return this._value;
+    },
+    set value(val) {
+        this._value = val;
+    }
+};
 // accessorExample.value = 42;
 // console.log(accessorExample.value); // 42
 
@@ -443,16 +442,20 @@ promise.then(result => console.log(result));
 // const optionalChainingResult = obj && obj.nonExistentProp && obj.nonExistentProp.subProp;
 // // Nullish coalescing operator (ECMAScript 2020)
 //TODO: Need to fix this
-// const nullishValue = null != null ? null : 'Default value';
+const nullishValue = null ?? 'Default value';
+// Ternary conditional operator (one-line)
+const ternarySample = isLoggedIn ? 'Welcome back!' : 'Please sign in';
+// Complex ternary with nesting
+const complexTernary = score > 90 ? 'A' : (score > 80 ? 'B' : (score > 70 ? 'C' : 'F'));
 // // Numeric es (ECMAScript 2021)
 // const largeNumber = 1000000;
 // // End of code examples
 //TODO: Need to fix this
 (fn(a))(args);
-// obj[computedProperty]();
-// obj.method(c).chain().calls(b);
+obj[computedProperty]();
+obj.method(c).chain().calls(b);
 
-`;
+    `;
 
     code && render.put("code", code);
     var ast = acorn.parse(code,{ecmaVersion: 2022, sourceType: 'module'});
@@ -469,6 +472,7 @@ promise.then(result => console.log(result));
     
     if (!ast) { return }
     console.log("AST:", ast);
+    
     // Renders body
     // Container node: either a program or a block, so process accordingly.
     if(ast.body && !(ast.left || ast.right) && !(ast.test || ast.init || ast.update)){
@@ -517,8 +521,8 @@ promise.then(result => console.log(result));
         render.act(ast);
     }
   }
-  
-  // Process an AST node as an “action” node, handling basic nodes such as identifiers, literals,
+
+  // Process an AST node as an "action" node, handling basic nodes such as identifiers, literals,
   // as well as special cases like 'this', async markers, and class declarations.
   render.act = function(ast){
     if(!ast){ return }
@@ -575,6 +579,13 @@ promise.then(result => console.log(result));
       });
     }
     var act = render.actify(ast);
+
+    // If we found a class body, treat it as a separate expression:
+    if (act.body) {
+      // For clarity, store the class body so we can render it after the main expression
+      act.classBody = act.body;
+      delete act.body;
+    }
     
     ast.up = ast.up || '';
     ast.$id = ast.$id || render.id(ast);
@@ -585,12 +596,39 @@ promise.then(result => console.log(result));
 
     render.expression(ast, left, op, right);
   }
-
-  // Helper: Determine how to “actify” an AST node by extracting its left/right/operator/other elements.
+  // Helper: Determine how to "actify" an AST node by extracting its left/right/operator/other elements.
   render.actify = function (ast) {
+    // Handle conditional expressions (ternary operators)
+    if (ast.type === 'ConditionalExpression') {
+      // Make sure we mark this as a conditional expression for special handling
+      var act = { 
+        left: ast.test, 
+        operator: '?', 
+        right: ast.consequent,
+        alternate: ast.alternate,
+        isConditional: true,
+        type: 'ConditionalExpression'
+      };
+      
+      // Process the alternate side - this could be a nested conditional
+      if (ast.alternate && ast.alternate.type === 'ConditionalExpression') {
+        ast.alternate.up = ast;
+        // Already a conditional, will get processed separately
+      } else if (ast.alternate) {
+        ast.alternate.up = ast;
+      }
+      
+      return act;
+    }
+    
     if (ast.left && ast.right) {
       act = ast;
       act.operator = ast.operator || '=';
+      // Special handling for nullish coalescing operator
+      if (act.operator === '??') {
+        // Handle nullish coalescing operator specially
+        act.isNullishCoalescing = true;
+      }
     } else if (ast.key && ast.value) { 
       act = { left: { property: ast.key }, operator: '=', right: ast.value}
     } else if (ast.expression) {
@@ -599,34 +637,41 @@ promise.then(result => console.log(result));
     // For arrow functions: treat parameters as left and body as right.
     } else if (ast.type === 'ArrowFunctionExpression') {
       act = { left: ast.params, operator: '⇒', right: ast.body };
-    }  else if (ast.params) {
+    } else if (ast.params) {
       ast.body.up = ast;
       act = { left: { property: ast.id }, operator: "=", right: ast.body };
     } else if ("VariableDeclaration" == ast.type || "VariableDeclarator" == ast.type) {
       let l =  ast.id || ast.declarations?.[0]?.id, r = ast.init || ast.declarations?.[0]?.init;
       act = { left: l, operator: l && r ? "=" : '', right:r};
-    } else if (ast.type === 'ClassDeclaration') {
-      let l = {
-        up: ast,
-        left: ast.superClass ? '' : ast.id,
-        operator: ast.superClass ? 'extends': '',
-        right: ast.superClass ? ast.superClass : {},
-      }
+    } else if (ast.type === 'ObjectPattern') {
+      act = { left: ast.properties, operator: '=', right: null };
+    } else if (ast.type === 'ArrayPattern') {
+      act = { left: ast.elements, operator: '=', right: null };
+    } else if (ast.type === 'AssignmentPattern') {
+      act = { left: ast.left, operator: '=', right: ast.right };
+    } else if (ast.type === 'LogicalExpression' && ast.operator === '??') {
+      // Handle nullish coalescing operator in logical expressions
+      act = { left: ast.left, operator: '??', right: ast.right, isNullishCoalescing: true };
+    } else if (ast.type === 'ClassDeclaration' || ast.type === 'ClassExpression') {
+      // Gracefully unify class into left/operator/right:
+      // left = class name, operator = 'extends' (if any), right = superClass
+      // Then treat the entire "class body" as another expression or property
+      let leftPart = ast.id || { name: 'anonymous' };
+      let op = ast.superClass ? 'extends' : 'class';
       act = {
-        left: l, operator: '=',
-        right: ast.body,
+        left: leftPart,
+        operator: op,
+        right: ast.superClass || { name: 'Object' } // Assume no super => Object
       };
+      // Also store the class body in a subproperty for the final expression step
+      act.body = ast.body;
     } else if (ast.type === 'NewExpression') {
       act = { operator: 'new', left: ast.callee, right: ast.arguments };
     } else if (ast.callee) {
       ast.callee.back = ast;
       console.log("AST:", ast);
       // Check if the callee is empty or if there are no arguments (or if it's already invoked)
-      if (ast.envoked || !ast.callee || (ast.arguments && ast.arguments.length === 0)) {
-        act = { left: ast.body || ast.callee, operator: '', right: null };
-      } else {
-        act = { left: ast.body || ast.callee, operator: ''/*String.fromCharCode(8594)*/, right: ast.arguments };
-      }
+      act = { left: ast.body || ast.callee, operator: ''/*String.fromCharCode(8594)*/, right: ast.arguments };
       // Do not render redundant "()" if the node is already invoked elsewhere or has no parameters.
     } else if (ast.source && ast.specifiers) {
       act = { left: ast.specifiers, operator: 'from', right: ast.source };
@@ -634,10 +679,10 @@ promise.then(result => console.log(result));
       act  = { operator: 'export', right: ast.declaration };
     } else if (ast.type === 'UpdateExpression') {
       if (ast.prefix) {
-          act = { operator: ast.operator, right: ast.argument };
+         act = { operator: ast.operator, right: ast.argument };
       } else {
-          act = { operator: ast.operator, left: ast.argument };
-      }
+         act = { operator: ast.operator, left: ast.argument };
+     }
     } else if (ast.operator && ast.argument) {
       act = { left: ast.prefix ? null : ast.argument, operator: ast.operator, right: ast.prefix ? ast.argument : null };
     } else if (ast.type === 'AwaitExpression') { 
@@ -645,17 +690,19 @@ promise.then(result => console.log(result));
     } else if (ast.type === 'YieldExpression') {
       act = { operator: "yield", right: ast.argument };
     } else if (ast.type === 'MemberExpression') {
-      let op =  ast.optional ? '?' : '.'
+      let op = ast.optional ? '?.' : '.'
       act = { left: ast.object, operator: op, right: ast.property };
       if (ast.object.type === "ThisExpression") {
         act.left = {type: "Identifier", name: "this"}
       }
+    } else if (ast.type === 'OptionalMemberExpression') {
+      act = { left: ast.object, operator: '?.', right: ast.property };
+    } else if (ast.type === 'OptionalCallExpression') {
+      act = { left: ast.callee, operator: '?.', right: ast.arguments };
     } else if (ast.type === 'SpreadElement' || ast.type === 'RestElement') {
       act = { operator: '...', right: ast.argument };
     } else if (ast.type === "ThisExpression") {
       act = {left: "this"}
-    } else if (ast.type === 'AssignmentPattern') {
-      act = { left: ast.left, operator: '=', right: ast.right };
     } else if (ast.type === 'ReturnStatement') {
       act = { operator: 'return', right: ast.argument };
     } else if (ast.type === 'ThrowStatement') {
@@ -685,7 +732,7 @@ promise.then(result => console.log(result));
       act = { operator: 'return', right: ast.body };
     } else {
       act = ast;
-    } 
+    }
     return act;
   }
   render.view = function (ast) {
@@ -695,12 +742,11 @@ promise.then(result => console.log(result));
       sort: [0.1, ast.up.$id]
     })
   }
-  
   // Process control flow nodes (e.g., if statements, loops, try/catch) and render their parts.
   render.flow = function (ast) {
     if (!ast) return;
     ast.$id = ast.$id || render.id(ast);
-    
+  
     if (ast.block) {
       ast.block.up = ast;
       // Handle if-else structure: render test and consequent parts.
@@ -720,6 +766,7 @@ promise.then(result => console.log(result));
         render.list(ast, [ast.finalizer], 'finally');
       }
     } else if (ast.discriminant && ast.cases) {
+      // Improved switch statement handling
       ast.discriminant.up = ast;
       render.view(ast);
       render.the({
@@ -728,7 +775,37 @@ promise.then(result => console.log(result));
         fill: 'switch',
       });
       render.list(ast, [ast.discriminant], '(', '', ')');
-      render.list(ast, ast.cases);
+      
+      // Handle each case separately with proper break statements
+      for (let i = 0; i < ast.cases.length; i++) {
+        const caseItem = ast.cases[i];
+        caseItem.up = ast;
+        
+        // Handle default case differently
+        if (!caseItem.test) {
+          render.the({
+            name: ast.$id + '-default-' + i,
+            sort: [0.1 + (i * 0.01), ast.$id],
+            fill: 'default:',
+          });
+        } else {
+          // Regular case
+          render.the({
+            name: ast.$id + '-case-' + i,
+            sort: [0.1 + (i * 0.01), ast.$id],
+            fill: 'case',
+          });
+          render(caseItem.test);
+          render.the({
+            name: ast.$id + '-case-colon-' + i,
+            sort: [0.1 + (i * 0.01) + 0.001, ast.$id],
+            fill: ':',
+          });
+        }
+        
+        // Render the consequent statements
+        render.list(ast, caseItem.consequent);
+      }
     } else if (ast.init && ast.test && ast.update) {
       render.view(ast);
       render.list(ast, [ast.init, ast.test, ast.update], 'for (', ';', ')');
@@ -739,12 +816,26 @@ promise.then(result => console.log(result));
       render.list(ast, ast.body.body || ast.body, 'do ', '', '');
     } else if (ast.body && ast.left && ast.right) {
       render.view(ast);
-      render.list(ast, [ast.left, ast.right], 'for (',(ast?.type === "ForInStatement" || ast?.type === "ForOfStatement") ? 'in' : 'for', ')');
+      render.list(ast, [ast.left, ast.right], 'for (', (ast?.type === "ForInStatement" || ast?.type === "ForOfStatement") ? (ast?.type === "ForInStatement" ? 'in' : 'of') : 'for', ')');
       render.list(ast, ast.body.body || ast.body, '{', '', '}');
-      // render.list(ast, [ast.left, ast.right], 'for (', '', ')');
     } else if (ast.test && (ast.alternate || ast.consequent)) {
       render.view(ast);
-      render.list(ast, [ast.test], 'if (', '', ')');
+      // Special handling for negation in test condition
+      if (ast.test.type === 'UnaryExpression' && ast.test.operator === '!') {
+        render.the({
+          name: ast.$id + '-if-negated',
+          sort: [0.1, ast.$id],
+          fill: 'if (!',
+        });
+        render(ast.test.argument);
+        render.the({
+          name: ast.$id + '-if-negated-close',
+          sort: [0.2, ast.$id],
+          fill: ')',
+        });
+      } else {
+        render.list(ast, [ast.test], 'if (', '', ')');
+      }
       render.list(ast, [ast.consequent], '{', '', '}');
       if (ast.alternate) {
         render.view(ast);
@@ -753,13 +844,92 @@ promise.then(result => console.log(result));
     } else if (ast.test) {
       render.view(ast);
       render.list(ast, [ast.test], 'while (', '', ')');
-    } 
-  };
+    } else if (ast.type === 'BreakStatement') {
+      // Turn 'break' into a minimal "operator" expression
+      const act = { operator: 'break' };
+      render.view(ast);
+      render.expression(ast, null, act.operator, null);
+    } else if (ast.type === 'ContinueStatement') {
+      // Similarly, 'continue' as an operator
+      const act = { operator: 'continue' };
+      render.view(ast);
+      render.expression(ast, null, act.operator, null);
+    } else if (ast.type === 'DebuggerStatement') {
+      // 'debugger' as an operator
+      const act = { operator: 'debugger' };
+      render.view(ast);
+      render.expression(ast, null, act.operator, null);
+    } else if (ast.type === 'EmptyStatement') {
+      // Do nothing, but keep log for clarity
+      console.debug("Empty statement encountered:", ast);
+    } else if (ast.type === 'LabeledStatement') {
+      // 'label: statement' => treat label as left, statement as right, operator=':'
+      ast.body.up = ast;
+      const act = { left: { name: ast.label.name }, operator: ':', right: ast.body };
+      render.view(ast);
+      render.expression(ast, act.left, act.operator, act.right);
+    } else if (ast.type === 'WithStatement') {
+      // 'with (obj) body' => treat obj as left, operator='with', body as right
+      ast.object.up = ast;
+      ast.body.up = ast;
+      const act = { left: ast.object, operator: 'with', right: ast.body };
+      render.view(ast);
+      render.expression(ast, act.left, act.operator, act.right);
+    } else {
+      // Final fallback
+      console.warn("Unrecognized flow node type:", ast.type, ast);
+    }
+  }
 
   // Render an expression by separately processing the left-hand part, operator, and right-hand part.
   render.expression = function (ast, left, operator, right) {
     render.view(ast);
 
+    // Special handling for ternary operator
+    if (ast.type === 'ConditionalExpression' || ast.isConditional) {
+      // Render the test condition (left side)
+      if (left) {
+        path = render.path(ast, {object: left})
+        left.up = ast;
+        render.side(left, ast, path, 'condition');
+      }
+
+      // Render the ? part
+      render.the({
+        name: ast.$id+'-ternary-question',
+        sort: [0.3, ast.$id]
+      }).the({
+        name: ast.$id+'-ternary-question-text',
+        sort: [0.1, ast.$id+'-ternary-question'],
+        fill: '?',
+      });
+
+      // Right side is the "true" part of the conditional
+      if (right) {
+        right.up = right.up || ast;
+        path = render.path(ast, {object: right});
+        render.side(right, ast, path, 'ifTrue');
+      }
+
+      // Render the : part
+      render.the({
+        name: ast.$id+'-ternary-colon',
+        sort: [0.6, ast.$id]
+      }).the({
+        name: ast.$id+'-ternary-colon-text',
+        sort: [0.1, ast.$id+'-ternary-colon'],
+        fill: ':',
+      });
+
+      // Alternate (else part) rendering
+      if (ast.alternate) {
+        ast.alternate.up = ast;
+        var alt_path = render.path(ast, {object: ast.alternate});
+        render.side(ast.alternate, ast, alt_path, 'ifFalse');
+      }
+      
+      return; // Exit early as we've handled the entire conditional
+    }
 
     // The original rendering for non-new expressions:
     if (left) {
@@ -768,40 +938,68 @@ promise.then(result => console.log(result));
       left.up = ast;
       render.side(left, ast, path, 'left');
     }
-    //act.operator = ('=' == act.operator? ':' : act.operator);
-    operator && render.the({
-      name: ast.$id+'-act',
-      sort: [operator == 'new' ? -0.1 : 0.1, ast.$id]
-    }).the({
-      name: ast.$id+'-act-text',
-      sort: [0.1, ast.$id+'-act'],
-      fill:  operator || '',
-    });
+    
+    // Special handling for nullish coalescing operator
+    if (operator === '??' || ast.isNullishCoalescing) {
+      render.the({
+        name: ast.$id+'-nullish',
+        sort: [0.1, ast.$id]
+      }).the({
+        name: ast.$id+'-nullish-text',
+        sort: [0.1, ast.$id+'-nullish'],
+        fill: '??',
+      });
+    } else {
+      // operator = ('=' == operator? ':' : operator);
+      operator && render.the({
+        name: ast.$id+'-act',
+        sort: [operator == 'new' ? -0.1 : 0.1, ast.$id]
+      }).the({
+        name: ast.$id+'-act-text',
+        sort: [0.1, ast.$id+'-act'],
+        fill: operator || '',
+      });
+    }
   
     if (right) {
       right.up = right.up || ast;
       path = render.path(ast, {object: right})
       render.side(right, ast, path);
     }
-    if (ast.type === 'ConditionalExpression' && ast.alternate) {
-      ast.alternate.up = ast;
-      var alt_path = render.path(ast, {object: ast.alternate});
-      render.side(ast.alternate, ast, alt_path, 'else');
-    }
   }
-
-  render.path = function (ast, a) {
-    var path = [];
-    while(a = a.object){
-      if (a.callee) { a.up = ast; render(a) }
-      // property.name, property.raw, name, raw
-      path.push((a.property||'').name||a.name||'');
-    }
-    return path.reverse();
-  }
-
   // Render the side (additional) component of an expression, such as property access or arguments.
   render.side = function(right, ast, path, t){
+    // Special handling for ternary operator parts
+    if (t === 'condition' || t === 'ifTrue' || t === 'ifFalse') {
+      // Different styling for different parts of the ternary expression
+      render.the({
+        name: ast.$id + '-' + t,
+        sort: [t === 'condition' ? 0.2 : (t === 'ifTrue' ? 0.4 : 0.7), ast.$id]
+      });
+      
+      // Check for nested ternary conditionals
+      if (t === 'ifFalse' && right && right.type === 'ConditionalExpression') {
+        // Nested conditional within the 'else' part
+        render(right);
+        return;
+      }
+      
+      // If the right side is a simple value or identifier
+      if (right.raw || 'Identifier' == right.type) {
+        render.the({
+          name: ast.$id + '-' + t + '-text',
+          sort: [0.1, ast.$id + '-' + t],
+          fill: right.raw || right.name || '?'
+        });
+        return;
+      }
+      
+      // Otherwise, render the component normally
+      render(right);
+      return;
+    }
+    
+    // Regular handling for non-ternary components
     if (right.raw || 'Identifier' == right.type) {
       render.the({
         name: ast.$id + '-' + (t || 'right'),
@@ -883,6 +1081,17 @@ promise.then(result => console.log(result));
       }
   }
 
+  // Utility functions
+  render.path = function (ast, a) {
+    var path = [];
+    while(a = a.object){
+      if (a.callee) { a.up = ast; render(a) }
+      // property.name, property.raw, name, raw
+      path.push((a.property||'').name||a.name||'');
+    }
+    return path.reverse();
+  }
+
   // Utility to render a list of nodes. 's' is the start delimiter, 'b' is the separator, and 'e' is the end delimiter.
   render.list = function(ast, steps, s, b, e){
     if (!ast) return;
@@ -943,8 +1152,6 @@ promise.then(result => console.log(result));
       });
     }
   }
-
-  // Utility functions
   // -------------------------------------------------------------------------------
   // Utility functions for render: color fill generation, id generation, messaging, etc.
   // -------------------------------------------------------------------------------
@@ -952,13 +1159,8 @@ promise.then(result => console.log(result));
     return [Math.random()-0.2, Math.random()-0.2, Math.random()-0.2, 0.3];
   };
 
-  render.uid = function () {
-    return Math.random().toString(32).slice(2);
-  };
-
   render.id = function (ast) {
-    const name = ast && ast.type || ast || "node";
-    return name + "-" + render.uid();
+    return Math.random().toString(32).slice(2);
   };
 
   render.the = function (o) {
@@ -969,4 +1171,4 @@ promise.then(result => console.log(result));
   render.put = function(key, val) {
     window.onmessage({ data: { put: val, get: key, how: "store" }, target: {id: key} });
   };
-  }());
+})();
