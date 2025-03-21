@@ -14,11 +14,11 @@ function fail(){ fail.yes = 1; document.body.innerHTML = "<center>SecureRender h
     sr.ban.set(tmp.postMessage, 1);
   }
 }());
-
 // Because ServiceWorker cannot intercept 'null' origin requests, enclave has to scrape sandbox html into localstorage with the JS inlined so it is not loaded externally next times. But this requires we use a srcDoc and allow for inline, which we previously did not need, and it turns out we can turn it off after we run so nobody else can do it later:
 (sr.csp = document.querySelector('meta')).content = (sr.old = sr.csp.content).replace("'unsafe-inline'",'');
 
-window.onmessage = function(eve){ // hear from app, enclave, and workers.
+  window.onmessage = function (eve) { // hear from app, enclave, and workers.
+    console.log("yoooooooo", eve);
   var msg = eve.data;
   if(!msg){ return }
   if(u !== msg.length){ return sr.how.view(msg) }
@@ -48,7 +48,15 @@ sr.run = function(msg, eve){
     script.onload = cb; script.src = src;
     document.head.appendChild(script);
   }
-  load('trial/toy.js')
+
+
+  // Utility: dynamically load a script into the document and invoke callback when loaded.
+  function load(src, cb) {
+    var script = document.createElement('script');
+    script.onload = cb; script.src = src;
+    document.head.appendChild(script);
+  }
+  load('trial/acorn.js');
 }());
 
 var view;
@@ -118,7 +126,8 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
       await breath();
       breath.was = l;
       breath.ago = 0;
-      if(!up.s.length){ return }
+      if (!up.s.length) { return }
+      console.log("????", up.s);
       up(up.s);
       up.s = [];
       return;
