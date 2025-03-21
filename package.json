@@ -4,7 +4,9 @@
   "description": "JOY is a JavaScript framework for building user interfaces and progressive applications.",
   "main": "index.js",
   "scripts": {
-    "dev": "vite"
+    "start": "node start.js",
+    "build": "cat ./node_modules/gun/examples/jquery.js ./node_modules/gun/gun.js ./node_modules/gun/sea.js ./node_modules/gun/as.js > joy.min.js && cp ./node_modules/gun/examples/style.css ./joy.css",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -30,8 +32,5 @@
   "homepage": "https://github.com/eraeco/joydb#readme",
   "dependencies": {
     "gun": "~>0.2020.1232"
-  },
-  "devDependencies": {
-    "vite": "^5.4.10"
   }
 }
