@@ -14,11 +14,11 @@ function fail(){ fail.yes = 1; document.body.innerHTML = "<center>SecureRender h
     sr.ban.set(tmp.postMessage, 1);
   }
 }());
+
 // Because ServiceWorker cannot intercept 'null' origin requests, enclave has to scrape sandbox html into localstorage with the JS inlined so it is not loaded externally next times. But this requires we use a srcDoc and allow for inline, which we previously did not need, and it turns out we can turn it off after we run so nobody else can do it later:
 (sr.csp = document.querySelector('meta')).content = (sr.old = sr.csp.content).replace("'unsafe-inline'",'');
 
-  window.onmessage = function (eve) { // hear from app, enclave, and workers.
-    console.log("yoooooooo", eve);
+window.onmessage = function (eve) { // hear from app, enclave, and workers.
   var msg = eve.data;
   if(!msg){ return }
   if(u !== msg.length){ return sr.how.view(msg) }
@@ -42,21 +42,12 @@ sr.run = function(msg, eve){
 }
 
 ;(function(){
-  // return; // MUST NOT BE COMMENTED FOR PRs!
+  return; // MUST NOT BE COMMENTED FOR PRs!
   function load(src, cb){
     var script = document.createElement('script');
     script.onload = cb; script.src = src;
     document.head.appendChild(script);
   }
-
-
-  // Utility: dynamically load a script into the document and invoke callback when loaded.
-  function load(src, cb) {
-    var script = document.createElement('script');
-    script.onload = cb; script.src = src;
-    document.head.appendChild(script);
-  }
-  load('trial/acorn.js');
 }());
 
 var view;
@@ -79,7 +70,7 @@ sr.how.html = function(msg){
   }
 }
 
-  sr.how.store = function (msg, eve) {
+sr.how.store = function (msg, eve) {
   var tmp;
   if(tmp = msg.to){
     if(msg.get){
@@ -127,7 +118,6 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
       breath.was = l;
       breath.ago = 0;
       if (!up.s.length) { return }
-      console.log("????", up.s);
       up(up.s);
       up.s = [];
       return;
@@ -144,7 +134,6 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   Math.remix = function(a,b,m){ m = m || 0; return (m - a) / (b - a) }
 
   this.store = new Proxy({}, {get: function(at,has,put){
-    
     if(u !== (put = at[has])){ return put }
     put = new Promise(function(res, rej){
       var ack = Math.random(), any = function(v){
@@ -157,7 +146,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     });
     put.toString = tS;
     return put;
-  }, set: function (at, has, put) {
+  }, set: function(at,has,put){
     up({how: 'store', get: has, put: at[has] = put});
   }});
   function tS(){ return '' };
@@ -206,7 +195,6 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     } else {
       //a.up = b.up;
     }
-
 
     msg.name = a.name || ((msg = what).name = (pid+(++pi)));
     msg.sort = [how, (b||'').name];
@@ -323,7 +311,7 @@ setInterval(breathe,0);
     text = ('string' == typeof change.fill);
     if(!(what = map.get(name))){
       map.set(name, what = (text?
-        document.createElement(change.type || 'p')
+        document.createElement(change.html || 'p')
       : document.createElement('div')));
       if(!text){
         what.style.minWidth = '1'+place['cs'];
@@ -407,11 +395,8 @@ setInterval(breathe,0);
       }
     }
     if(u !== (tmp = change.fill)){
-		what.fill = tmp;
-		if (Array.isArray(tmp)) {
-			var i = -1, l = tmp.length; while (++i < l) { tmp[i] = (tmp[i] * 100) + '%' }
-		}
-	  
+      what.fill = tmp;
+      var i = -1, l = tmp.length; while(++i < l){ tmp[i] = (tmp[i]*100)+'%' };
       what.style[text?'color':'background'] = "rgba("+tmp+")";
     }
     // /*tmp! delete*/ if(!what.innerText && what.fill){ what.style.color = '#FFF'; what.style.padding = '0.25em'; } // TODO: DELETE!

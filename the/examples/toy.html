@@ -1,5 +1,10 @@
 <script class="SecureRender" src="../content.js">
-
+/**
+-[ ] fix do while to retain structure
+-[ ] switch broke as well
+-[ ] render ? for optional chaining
+-[ ] else 
+*/
     the.start = the.start || (async () => {
 
         // code && render.put("code", code);
@@ -62,7 +67,7 @@ const sq = function (n) {
       });
   
       if((ast.up.params || ast.params)/* && (ast.params || ast.up.params || '').length > 0*/){ // treat parameters as first line.
-        render.list(ast, ast.up.params || ast.params, '(', ',', ') ⇒');
+        render.list(ast, ast.up.params || ast.params, '(', ',', ') =>');
       }
       render.list(ast, ast.body.body || ast.body, '', '', '');
       return;
@@ -724,7 +729,7 @@ const sq = function (n) {
   };
 
   render.the = function (o) {
-    console.log("...O", o)
+    // console.log("...O", o)
     postMessage([o]);
 
     // console.log('...up', postMessage({ get: o.sort[1], how: "store" }));
