@@ -3,6 +3,10 @@
   "version": "0.2021.1016",
   "description": "the anti-monopoly game engine for the web",
   "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "dev": "vite"
+  },
   "repository": {
     "type": "git"
   },
@@ -23,5 +27,8 @@
     "content.js": "Okg/45bSuN+sbZAl09sZEBzPpEqMbs7wL4O9GUd3sCA=",
     "enclave.html": "kym+PG/tbN9UUxzzNCGOBkdcL99JqU5x/fDk0SJc/2Q=",
     "enclave.js": "AvQTHnsHSBKrXrF6Wl359U0xc0f6dim0jB2j8IJUjkc="
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
   }
 }
