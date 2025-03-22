@@ -1,26 +1,21 @@
 ## *The* Secure Render
 
-This is a fork of Secure Render that includes an app/game engine.
+ > Warning: As of end of 2023 Google Chrome broke W3C origin policy that SecureRender depended on to keep data private. As such, only THE Rendering engine will be developed, it will still be housed in a security context but limited to per-app rather than per-user.
 
- > The last security audit was end of 2021, for any code since then, please help audit.
 
-Check [@SecureRender](https://twitter.com/SecureRender) for some cool demos.
+Watch the [Launch Party](https://archive.org/details/distributed-ai-internet-archive?start=3890) to learn high level concepts or check [@SecureRender](https://twitter.com/SecureRender) for some cool demos.
+
+ > As a result of the security limitations, this project may be renamed back to `JOY` or just `THE` Renderer.
 
 ### Install
 
-Secure Render is a proposed browser standard, this code works as both a polyfill that can be loaded as a library but also as a browser extension.
-
- > Secure Render has not published the security origin polyfill yet, so to alpha test developing an app or game you will need to use the extension.
+This code works as both a JS library or as a browser extension.
 
 1. Clone or download this repo, unzip if needed.
 
-2. Go to "chrome://extensions/" in your URL bar, or similar in Firefox/others.
+2. Go to this folder and run `python -m SimpleHTTPServer 8089` _or_ to "chrome://extensions/" in your URL bar (similar in Firefox/others) & toggle developer mode on and then `load unpacked` this folder.
 
-3. Toggle developer mode on.
-
-4. Click `load unpacked`, select this unzipped folder.
-
-5. Copy `examples/1-hello-world.html` to start building your own app/game.
+3. Copy `examples/1-hello-world.html` to start building your own app/game.
 
 ### Documentation
 

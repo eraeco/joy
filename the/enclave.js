@@ -30,7 +30,7 @@ sr = {ext: ((window.browser||window.chrome)||'').runtime};
   ;(async function(){
     var html = await (await fetch('./sandbox.html')).text();
     var js = await (await fetch('./sandbox.js')).text();
-    localStorage.sandbox = html.replace('script src="./sandbox.js">', "script>"+js);
+    //localStorage.sandbox = html.replace('script src="./sandbox.js">', "script>"+js);
   }());
 }());
 
@@ -65,7 +65,7 @@ window.addEventListener('storage', function(msg){
 });
 
 if(!sr.ext){ try{
-  navigator.serviceWorker.register('./service.js');
+  //navigator.serviceWorker.register('./service.js');
   navigator.serviceWorker.addEventListener("message", push);
   (sr.pushed = new BroadcastChannel('service')).onmessage = push;
   function push(msg){
