@@ -57,5 +57,5 @@ function frame(i){
 
 // sr.polyfill = {getURL: function(){ return 'https://securerender.org/extension/' } };
 // sr.polyfill = {getURL: function(){ return '/the/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
-sr.polyfill = {getURL: function(){ return 'http://localhost:8080/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
+sr.polyfill = {getURL: function(){ return 'http://localhost:8764/' } }; // for debugging  **THIS MUST HAVE // in front it during PRs
 }());

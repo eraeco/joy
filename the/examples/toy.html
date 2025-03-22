@@ -1,38 +1,24 @@
 <script class="SecureRender" src="../content.js">
+the.start = the.start || (async () => {
+
+  setTimeout(() => {
+    var code = `var a = 1, b = 2, c = a * b;`;
+
+    var ast = acorn.parse(code,{ecmaVersion: 2022, sourceType: 'module'});
+
+    render(ast);
+  }, 1);
+
+})();
+
+/* ---- the Code from Phone TOY is below ------ */
+
 /**
 -[ ] fix do while to retain structure
 -[ ] switch broke as well
 -[ ] render ? for optional chaining
 -[ ] else 
 */
-    the.start = the.start || (async () => {
-
-        // code && render.put("code", code);
-        var code = `
-
-
-function multiply (a, b) {
-    return a * b || 2;
-};
-
-const sq = function (n) {
-  return n * n;
-}
-        `
-        setTimeout(() => {
-            // code = "var y = 2;"
-            var ast = acorn.parse(code,{ecmaVersion: 2022, sourceType: 'module'});
-            console.log(ast);
-            render(ast);
-        }, 1000)
-        // // var ast = esprima.parse(code);
-        // ast && render.put("ast", JSON.stringify(ast, null, "\t"));
-        // render(ast);
-    
-    })();
-
-
-
     function render(ast) {
     
     if (!ast) { return }
@@ -355,11 +341,13 @@ const sq = function (n) {
           });
         } else {
           // Regular case
+          console.log("TODO: BUG! switch case", caseItem);
           render.the({
             name: ast.$id + '-case-' + i,
             sort: [0.1 + (i * 0.01), ast.$id],
             fill: 'case',
           });
+          caseItem.test.up = caseItem.up;
           render(caseItem.test);
           render.the({
             name: ast.$id + '-case-colon-' + i,
@@ -386,21 +374,7 @@ const sq = function (n) {
     } else if (ast.test && (ast.alternate || ast.consequent)) {
       render.view(ast);
       // Special handling for negation in test condition
-      if (ast.test.type === 'UnaryExpression' && ast.test.operator === '!') {
-        render.the({
-          name: ast.$id + '-if-negated',
-          sort: [0.1, ast.$id],
-          fill: 'if (!',
-        });
-        render(ast.test.argument);
-        render.the({
-          name: ast.$id + '-if-negated-close',
-          sort: [0.2, ast.$id],
-          fill: ')',
-        });
-      } else {
-        render.list(ast, [ast.test], 'if (', '', ')');
-      }
+      render.list(ast, [ast.test], 'if (', '', ')');
       render.list(ast, [ast.consequent], '{', '', '}');
       if (ast.alternate) {
         render.view(ast);
@@ -735,6 +709,31 @@ const sq = function (n) {
     // console.log('...up', postMessage({ get: o.sort[1], how: "store" }));
     return render;
   };
+
+
+/* ------------ END OF TOY ------------- */
+/* ------------ END OF TOY ------------- */
+/* ------------ END OF TOY ------------- */
+/* ------------ END OF TOY ------------- */
+/* ------------ END OF TOY ------------- */
+/* ------------ END OF TOY ------------- */
+
+
+
+
+
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
+/* ----------- START OF ACORN ------------ */
 
 
   (function (global, factory) {
