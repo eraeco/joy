@@ -18,11 +18,14 @@ function fail(){ document.body.innerHTML = "<center>SecureRender has detected an
 try{ if(window.self !== window.top){ return fail() } }catch(e){}; // App inside iframe could get clickjacked!
 if("securerender.org" === location.hostname){ return location = '//example.org' } // Browser MUST not allow polyfill to serve apps.
 
-window.addEventListener("load", function(){
+window.addEventListener("load", async function(){
   sr.tag = document.getElementsByTagName('SecureRender');
   if(!sr.tag.length){ sr.tag = document.getElementsByClassName('SecureRender') }
   if(!sr.tag.length){ return } // No Secure Render found.
   if(sr.tag[0].matches('iframe')){ return } // Secure Render already running.
+  try{ var s = document.getElementsByTagName('script'), j = 0, e; // 'build' deps.
+    while(e = s[j++]){ if(e = (e.className||e).src){ sr.deps += '\n;'+  await (await fetch(e)).text()||'' }}
+  }catch(e){}
   frame(); // Secure Render found, start the window frame to render inside of.
   (sr.watch = new MutationObserver(function(list, o){ // detect tampered changes, prevent clickjacking, etc.
     sr.watch.disconnect();
@@ -39,7 +42,7 @@ function frame(i){
   document.body.style = "overscroll-behavior-y: contain;";
   i = sr.i = document.createElement('iframe');
   i.className = 'SecureRender';
-  i.onload = function(){ sr.send({put: sr.html, how: 'html'}) }
+  i.onload = function(){ sr.send({put: sr.html, how: 'html', deps: sr.deps}) }
   sr.send = function(msg){ i.contentWindow.postMessage(msg, '*') }
   sr.tag = sr.tag[0]; // only support 1 for now.
   if(sr.tag.matches('script')){ sr.tag = sr.tag.parentElement }

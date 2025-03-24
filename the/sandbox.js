@@ -33,7 +33,7 @@ sr.run = function(msg, eve){
   if(sr.workers.get(msg.get)){ return }
   console.log("spawn untrusted script in worker:", msg);
 
-  var url = window.URL.createObjectURL(new Blob(["("+the+")()||(breath = async function(){"+msg.put+"})"]));
+  var url = window.URL.createObjectURL(new Blob([(msg.deps||'')+"\n;("+the+")()||(breath = async function(){"+msg.put+"})"]));
   var worker = new Worker(url), u;
   sr.workers.set(worker.id = msg.get, worker);
   worker.last = worker.rate = msg.rate || 16; // 1000/60
@@ -64,7 +64,7 @@ sr.how.html = function(msg){
       if(!s.id){ s.id = 's'+Math.random().toString(32).slice(2) }
       if(!s.rate){ s.rate = (parseFloat(s.getAttribute('rate'))||0.016)*1000 }
       if(t = s.innerText){
-        sr.run({how: 'script', put: t, get: s.id, rate: s.rate});
+        sr.run({how: 'script', put: t, get: s.id, rate: s.rate, deps: msg.deps});
       }
     }
   }
