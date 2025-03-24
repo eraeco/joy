@@ -2,7 +2,14 @@
 the.start = the.start || (async () => {
 
   setTimeout(() => {
-    var code = `var a = 1, b = 2, c = a * b;`;
+    var code = `
+let a = 1;
+var b = 2, c = a + b;
+
+var multiply = function(x,y){
+  return x * y;
+}
+`;
 
     var ast = acorn.parse(code,{ecmaVersion: 2022, sourceType: 'module'});
 
@@ -53,9 +60,9 @@ the.start = the.start || (async () => {
       });
   
       if((ast.up.params || ast.params)/* && (ast.params || ast.up.params || '').length > 0*/){ // treat parameters as first line.
-        render.list(ast, ast.up.params || ast.params, '(', ',', ') =>');
+        render.list(ast, ast.up.params || ast.params, 'function(', ',', ')');
       }
-      render.list(ast, ast.body.body || ast.body, '', '', '');
+      render.list(ast, ast.body.body || ast.body, '', ';', ';');
       return;
     }
 
@@ -63,7 +70,7 @@ the.start = the.start || (async () => {
   
       ast.up = ast.up || '';
       ast.$id = ast.$id || render.id(ast);
-  
+
       render.list(ast, ast.declarations||ast.expressions||ast.elements);
       return;
     }
@@ -641,7 +648,7 @@ the.start = the.start || (async () => {
 
     if(ast.elements){ s = '[', b = ',', e = ']' }
     // if(ast.expression){ s = '(', b = ',', e = ') => ' }
-    if (ast.declarations) { s = '', b = ',', e = '' }
+    if (ast.declarations) { s = ast.kind, b = ',', e = '' }
     if (ast.specifiers) { s = 'import {', b = ',', e = '}' }
     // if(ast.params){ s = '<', b = '&', e = '>' }
   
