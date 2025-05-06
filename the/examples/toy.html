@@ -3,82 +3,127 @@
 <script class="SecureRender" src="../content.js">
 the.start = the.start || (async () => {
 
-  setTimeout(() => {
-    var code = `
-`;/*
-import { a, b, c } from 'module';
+  setTimeout(() => {/*
+
+import a from 'module';
+import { b } from 'module';
+import { c, d } from 'module';
 import * as e from 'module';
 import f, { g, h as i } from 'module';
-// var declaration
+
 var x = 10;
-
-// let declaration
 let y = 'Hello World';
-
-// const declaration
 const z = true;
 
-// Function Declarations and Expressions
+var w = 1, v = 2;
+x = 11;
+x = 12, x = 13;
 
-// Function declaration with parameters and default values
-function add(a, b = 5) {
-    return a + b;
+function add(a, b) {
+  return a + b;
 }
-
-// Function expression assigned to a variable
-function multiply (a, b) {
+function multiply(a, b = 2) {
     return a * b;
-};
-
-const sq = function (n) {
+}
+var sq = function (n) {
   return n * n;
 }
-const square = n => n * n;
+let square = n => n * n;
+const divide = (a, b) => { return a / b };
+divide(1,2);
 
-// Arrow function with implicit return
-
-// Arrow function with block body
-const divide = (a, b) => {
-    if (b === 0) {
-        throw new Error('Division by zero');
-    }
-    return a / b;
-};
-
-// Immediately Invoked Function Expression (IIFE)
-(function () {
-var a = 1;
-    console.log('IIFE executed');
+(function(){
+  var a = 1;
 })();
 
-// Generator function
-function* idGenerator() {
-    let id = 0;
-    while (true) {
-        yield id++;
-    }
-}
+async function get(url) { await fetch(url) }
+var aget = async function(url){ await fetch(url) }
+let agat = async (a) => { await fetch(url) }
 
-// Async function
-async function fetchData(url) {
-    try {
-        let response = await fetch(url);
-        let data = await response.json();
-        console.log(data);
-    } catch (error) {
-        console.error(error);
-    }
-}
+function* gen(id) { yield id + 1 }
+var genv = function*(id){ yield id + 1 }
+async function* agen(id){ yield id + 1 }
+var agenv = async function*(id){ yield id + 1 }
 
-// Object and Array Destructuring
+var peer = {};
+var person = { name: 'Alice', age: 25, eye: {color: 'blue'} };
+const { name } = person;
+const { age, gender = 'Female' } = person;
 
-// Object destructuring with default values
-const person = { name: 'Alice', age: 25 };
-const { name, age, gender = 'Female' } = person;
-
-// Array destructuring
 const numbers = [1, 2, 3];
 const [first, second, third] = numbers;
+
+if(y > 5) y = 0;
+
+if(x > 5){
+  x = 5;
+} else if (x < 0){
+  x = 0
+} else {
+  x = 2.5;
+}
+
+// Switch statement
+switch (y) {
+  case 'Hello':
+    x = y + 1;
+    break;
+  case 'Goodbye':
+    x = 2;
+    z = 3;
+    break;
+  default:
+    console.log('Unknown message');
+}
+
+// For loop
+for (let i = 0; i < 5; i++) {
+  console.log('For loop iteration:', i);
+}
+
+// While loop
+let count = 0;
+while (count < 3) {
+  console.log('While loop count:', count);
+  count++;
+}
+
+// Do-while loop
+do {
+  console.log('Do-while loop count:', count);
+  count--;
+} while (count > 0);
+
+*/var code = `
+// For...in loop (enumerate object properties)
+for (const key in person) {
+  x + 7;
+  if (person.hasOwnProperty(key)) {
+    console.log('Property:', key, 'Value:', person[key]);
+  }
+}
+`;/*
+
+// For...of loop (iterate over iterable objects)
+//TODO: Need to fix this
+for (const num of numbers) {
+    console.log('Number:', num);
+}
+
+var eh = {c: "Hello", d: "World"};
+const is = eh?.c;
+
+// Exception Handling
+
+// Try-catch-finally block
+try {
+  console.log('Try block executed');
+  throw new Error('An error occurred');
+} catch (error) {
+  console.error('Caught error:', error.message);
+} finally {
+  console.log('Finally block executed');
+}
 
 // Rest and Spread Operators
 
@@ -95,74 +140,6 @@ const arr2 = [...arr1, 4, 5];
 // Spread syntax in object literals
 const obj1 = { a: 1, b: 2 };
 const obj2 = { ...obj1, c: 3 };
-
-// Control Flow Statements
-
-// If-else statement
-if (!(x > 5)) {
-    console.log('x is greater than 5');
-} else {
- console.log('x is less than 5');
-}
-
-var b = {c: "Hello", d: "World"};
-const somethin = b?.c;
-
-// Switch statement
-TODO: Need to fix this
-switch (y) {
-    case 'Hello':
-        console.log('Greeting detected');
-        break;
-    case 'Goodbye':
-        console.log('Farewell detected');
-        break;
-    default:
-        console.log('Unknown message');
-}
-
-// For loop
-for (let i = 0; i < 5; i++) {
-    console.log('For loop iteration:', i);
-}
-
-// While loop
-let count = 0;
-while (count < 3) {
-    console.log('While loop count:', count);
-    count++;
-}
-
-// // Do-while loop
-do {
-    console.log('Do-while loop count:', count);
-    count--;
-} while (count > 0);
-
-// For...in loop (enumerate object properties)
-for (const key in person) {
-    if (person.hasOwnProperty(key)) {
-        console.log('Property:', key, 'Value:', person[key]);
-    }
-}
-
-// For...of loop (iterate over iterable objects)
-//TODO: Need to fix this
-for (const num of numbers) {
-    console.log('Number:', num);
-}
-
-// Exception Handling
-
-// Try-catch-finally block
-try {
-  console.log('Try block executed');
-  throw new Error('An error occurred');
-} catch (error) {
-  console.error('Caught error:', error.message);
-} finally {
-  console.log('Finally block executed');
-}
 
 // Classes and Inheritance
 
@@ -439,12 +416,6 @@ const largeNumber = 1000000;
 obj[computedProperty]();
 obj.method(c).chain().calls(b);
 //--------------
-//--------------
-//--------------
-//--------------
-//--------------
-//--------------
-//--------------
 // Variables
 a = 0.1;
 let x = 1;
@@ -523,7 +494,6 @@ let prom = new Promise((resolve) => resolve(1));
 async function asyncFunc() { return 1; }
 
 // Template Literals
-let temp = `x is ${x}`;
 
 // Destructuring
 let [a, b] = [1, 2];
@@ -538,13 +508,13 @@ try { throw new Error(); } catch (e) {}
 
 // Ternary
 let tern = true ? 1 : 0;
-*/;
-code = `
-import a from 'module';
-var x = 1;
-`
-    var ast = acorn.parse(code,{ecmaVersion: 2022, sourceType: 'module'});
+```*/;
 
+    var ast = acorn.parse(code,{
+      ecmaVersion: 2022, sourceType: 'module',
+      onComment: function(){ }
+    });
+    
     render(ast);
   }, 1);
 
@@ -552,702 +522,426 @@ var x = 1;
 
 /* ---- the Code from Phone TOY is below ------ */
 
-/**
--[ ] fix do while to retain structure
--[ ] switch broke as well
--[ ] render ? for optional chaining
--[ ] else 
-*/
-    function render(ast) {
-    
-    if (!ast) { return }
-    console.log("AST:", ast);
-    
-    // Renders body
-    // Container node: either a program or a block, so process accordingly.
-    if(ast.body && !(ast.left || ast.right) && !(ast.test || ast.init || ast.update)){
-      if(ast.id){ // named function, convert to left/right:
-        render.act(ast);
-        return;
-      }
-      ast.up = ast.up || '';
-      ast.$id = ast.$id || render.id(ast);
-      if(!ast.up){
-        //render.the({name: ast.$id, fill: [1,1,1,0]});
+
+function render(ast, stop) { // built by Natnael, Mars.
+  if(!ast){ return }
+
+  render.annotate(ast);
+  console.log(ast.type||'', ast);
+
+  if(ast.up){
+    render.the({
+      name: ast.up.$id,
+      sort: stop || [0.1, ast.up.up.$id],
+      fill: render.fill(ast.up)
+    });
+  }
+
+  if(ast.left){ ast.left.up = ast; render(stop || ast.left) }
+  if(ast.sub || ast.length){
+    (ast.sub||ast).forEach((sub, i) => {
+      if (i > 0 && ast.text) {
         render.the({
-          name: ast.$id+'-start',
-          size: [[1, '~'], [1, '~']],
-          sort: [0.1, ast.up.$id]
-        }).the({ // make label
-          name: ast.$id+'-start-text',
-          sort: [0.1, ast.$id+'-start'],
-          fill: '',
+          name: ast.$id+'-text-'+i,
+          sort: stop || [0.1, ast.$id],
+          fill: ast.text
         });
       }
-      render.the({ // make view
-        name: ast.$id,
-        size: [[1,'~'],[1,'~']],
-        sort: [0.1, ast.up.$id],
-        fill: ast.up? render.fill(ast) : render.clear
-      });
-  
-      if((ast.up.params || ast.params)/* && (ast.params || ast.up.params || '').length > 0*/){ // treat parameters as first line.
-        render.list(ast, ast.up.params || ast.params, 'function(', ',', ')');
-      }
-      render.list(ast, ast.body.body || ast.body, '', ';', ';');
-      return;
-    }
-
-    if(ast.declarations || ast.expressions || ast.elements){
-  
-      ast.up = ast.up || '';
-      ast.$id = ast.$id || render.id(ast);
-
-      render.list(ast, ast.declarations||ast.expressions||ast.elements);
-      return;
-    }
-    render.flow(ast);
-    if (!['ForStatement', 'ForInStatement', 'ForOfStatement'].includes(ast.type)) {
-        render.act(ast);
-    }
-  }
-
-  // Process an AST node as an "action" node, handling basic nodes such as identifiers, literals,
-  // as well as special cases like 'this', async markers, and class declarations.
-  render.act = function(ast){
-    if(!ast){ return }
-  
-    //if(ast.raw){ // end!
-    // Handle basic nodes (literals and identifiers)
-    // literal or identifier node: render text label.
-    if(ast.raw || 'Identifier' == ast.type || ast.local || ast.imported){ // end!
-      ast.$id = ast.$id || render.id(ast);
-      render.the({ // make view
-        name: ast.$id,
-        fill: render.fill(ast),
-        sort: [0.1, ast.up.$id]
-      }).the({
-        name: ast.$id+'-text',
-        sort: [0.1, ast.$id],
-        fill: (ast.local || ast.imported || '').name || ast.raw || ast.name,
-      });
-      return;
-    }
-
-    if (ast.type === 'ThisExpression') {
-      render.the({
-        name: ast.$id,
-        fill: render.fill(ast),
-        sort: [0.1, ast?.up?.$id || ast.$id]
-      }).the({
-        name: ast.$id + '-text',
-        sort: [0.1, ast.$id],
-        fill: 'this',
-      });
-      // console.log("***AST:", ast)
-    }
-    
-    // Mark this node as async.
-    if (ast.async) { // handle async
-      render.the({
-        name: ast.$id + '-async',
-        fill: 'async',
-        sort: [0.1, ast.$id],
-      });
-    }
-    // handle class
-    // Special handling for class declarations.
-    if (ast.type === 'ClassDeclaration') {
-      render.the({
-        name: ast.$id + '-class',
-        fill: 'class',
-        sort: [0.1, ast.$id],
-      }).the({
-        name: ast.$id + '-text',
-        sort: [0.1, ast.$id + '-class'],
-        fill: ast.id && ast.id.name ? ast.id.name : 'unnamed class',
-      });
-    }
-    var act = render.actify(ast);
-
-    // If we found a class body, treat it as a separate expression:
-    if (act.body) {
-      // For clarity, store the class body so we can render it after the main expression
-      act.classBody = act.body;
-      delete act.body;
-    }
-    
-    ast.up = ast.up || '';
-    ast.$id = ast.$id || render.id(ast);
-
-    var left = act?.left,
-      op = act?.operator,
-      right = act?.right
-
-    //render.op(ast, left, op, right);
-    render.expression(ast, left, op, right);
-  }
-  // Helper: Determine how to "actify" an AST node by extracting its left/right/operator/other elements.
-  render.actify = function (ast) {
-    // Handle conditional expressions (ternary operators)
-    if (ast.type === 'ConditionalExpression') {
-      // Make sure we mark this as a conditional expression for special handling
-      var act = { 
-        left: ast.test, 
-        operator: '?', 
-        right: ast.consequent,
-        alternate: ast.alternate,
-        isConditional: true,
-        type: 'ConditionalExpression'
-      };
-      
-      // Process the alternate side - this could be a nested conditional
-      if (ast.alternate && ast.alternate.type === 'ConditionalExpression') {
-        ast.alternate.up = ast;
-        // Already a conditional, will get processed separately
-      } else if (ast.alternate) {
-        ast.alternate.up = ast;
-      }
-      
-      return act;
-    }
-    
-    if (ast.left && ast.right) {
-      act = ast;
-      act.operator = ast.operator || '=';
-      // Special handling for nullish coalescing operator
-      if (act.operator === '??') {
-        // Handle nullish coalescing operator specially
-        act.isNullishCoalescing = true;
-      }
-    } else if (ast.key && ast.value) { 
-      act = { left: { property: ast.key }, operator: ':', right: ast.value}
-    } else if (ast.expression) {
-      ast.expression.back = ast;
-      act = ast = ast.expression;
-    // For arrow functions: treat parameters as left and body as right.
-    } else if (ast.type === 'ArrowFunctionExpression') {
-      act = { left: ast.params, operator: '⇒', right: ast.body };
-    } else if (ast.params) {
-      ast.body.up = ast;
-      act = { left: { property: ast.id }, operator: '=', right: ast.body };
-    } else if ('VariableDeclaration' == ast.type || 'VariableDeclarator' == ast.type) {
-      let l =  ast.id || ast.declarations?.[0]?.id, r = ast.init || ast.declarations?.[0]?.init;
-      act = { left: l, operator: l && r ? '=' : '', right:r};
-    } else if (ast.type === 'ObjectPattern') {
-      act = { left: ast.properties, operator: '=', right: null };
-    } else if (ast.type === 'ArrayPattern') {
-      act = { left: ast.elements, operator: '=', right: null };
-    } else if (ast.type === 'AssignmentPattern') {
-      act = { left: ast.left, operator: '=', right: ast.right };
-    } else if (ast.type === 'LogicalExpression' && ast.operator === '??') {
-      // Handle nullish coalescing operator in logical expressions
-      act = { left: ast.left, operator: '??', right: ast.right, isNullishCoalescing: true };
-    } else if (ast.type === 'ClassDeclaration' || ast.type === 'ClassExpression') {
-      // Gracefully unify class into left/operator/right:
-      // left = class name, operator = 'extends' (if any), right = superClass
-      // Then treat the entire "class body" as another expression or property
-      let leftPart = ast.id || { name: 'anonymous' };
-      let op = ast.superClass ? 'extends' : 'class';
-      act = {
-        left: leftPart,
-        operator: op,
-        right: ast.superClass || { name: 'Object' } // Assume no super => Object
-      };
-      // Also store the class body in a subproperty for the final expression step
-      act.body = ast.body;
-    } else if (ast.type === 'NewExpression') {
-      act = { operator: 'new', left: ast.callee, right: ast.arguments };
-    } else if (ast.callee) {
-      ast.callee.back = ast;
-      console.log("AST:", ast);
-      // Check if the callee is empty or if there are no arguments (or if it's already invoked)
-      act = { left: ast.body || ast.callee, operator: ''/*String.fromCharCode(8594)*/, right: ast.arguments , banana: 1};
-      // Do not render redundant "()" if the node is already invoked elsewhere or has no parameters.
-    } else if (ast.source && ast.specifiers) {
-      act = { left: ast.specifiers, operator: 'from', right: ast.source };
-    } else if (ast.declaration) { 
-      act  = { operator: 'export', right: ast.declaration };
-    } else if (ast.type === 'UpdateExpression') {
-      if (ast.prefix) {
-         act = { operator: ast.operator, right: ast.argument };
-      } else {
-         act = { operator: ast.operator, left: ast.argument };
-     }
-    } else if (ast.operator && ast.argument) {
-      act = { left: ast.prefix ? null : ast.argument, operator: ast.operator, right: ast.prefix ? ast.argument : null };
-    } else if (ast.type === 'AwaitExpression') { 
-      act = { operator: 'await', right: ast.argument };
-    } else if (ast.type === 'YieldExpression') {
-      act = { operator: 'yield', right: ast.argument };
-    } else if (ast.type === 'MemberExpression') {
-      let op = ast.optional ? '?.' : '.'
-      act = { left: ast.object, operator: op, right: ast.property };
-      if (ast.object.type === 'ThisExpression') {
-        act.left = {type: 'Identifier', name: 'this'}
-      }
-    } else if (ast.type === 'OptionalMemberExpression') {
-      act = { left: ast.object, operator: '?.', right: ast.property };
-    } else if (ast.type === 'OptionalCallExpression') {
-      act = { left: ast.callee, operator: '?.', right: ast.arguments };
-    } else if (ast.type === 'SpreadElement' || ast.type === 'RestElement') {
-      act = { operator: '...', right: ast.argument };
-    } else if (ast.type === 'ThisExpression') {
-      act = {left: 'this'}
-    } else if (ast.type === 'ReturnStatement') {
-      act = { operator: 'return', right: ast.argument };
-    } else if (ast.type === 'ThrowStatement') {
-      act = { operator: 'throw', right: ast.argument};
-    } else if (ast.superClass) {
-      act = {operator: 'extends', right: ast.superClass}
-    }else if (ast.type === 'Property') {
-      var s = !ast.shorthand && ast.kind === 'init';
-      var k = ast.kind !== 'init';
-      act = { left: ast.key, operator: s && ':' || k &&  ast.kind , right: (s || k) && ast.value};
-    } else if (ast.type === 'ConditionalExpression') {
-      act = { left: ast.test, operator: '?', right: ast.consequent };
-      act.alternate = ast.alternate;
-    } else if (ast.type === 'TemplateLiteral') {
-      act = { operator: 'template', parts: [] };
-      for (let i = 0; i < ast.quasis.length; i++) {
-          act.parts.push(ast.quasis[i].value.raw);
-          if (ast.expressions[i]) {
-              act.parts.push(ast.expressions[i]);
-          }
-      }
-    } else if (ast.type === 'SequenceExpression') {
-      act = { operator: 'sequence', expressions: ast.expressions };
-    } else if (ast.type === 'ObjectExpression') {
-      act = { operator: 'object', properties: ast.properties };
-    } else if (ast.body) {
-      act = { operator: 'return', right: ast.body };
-    } else {
-      act = ast;
-    }
-    return act;
-  }
-  render.view = function (ast) {
-    render.the({ // make view
+      sub.up = ast;
+      render(stop || sub);
+    });
+  } else
+  if(ast.text){
+    render.the({
       name: ast.$id,
-      fill: render.fill(ast),
-      sort: [0.1, ast.up.$id]
+      sort: stop || [0.1, ast.up.$id],
+    }).the({
+      name: ast.$id + '-text',
+      sort: stop || [0.1, ast.$id],
+      fill: ast.text
     })
   }
-  // Process control flow nodes (e.g., if statements, loops, try/catch) and render their parts.
-  render.flow = function (ast) {
-    if (!ast) return;
-    ast.$id = ast.$id || render.id(ast);
-  
-    if (ast.block) {
-      ast.block.up = ast;
-      // Handle if-else structure: render test and consequent parts.
-      render.view(ast);
-      render.the({
-        name: ast.$id + '-text',
-        sort: [0.1, ast.block.up.$id],
-        fill: 'try',
-      });
-      render(ast.block);
+  if(ast.right){ ast.right.up = ast; render(stop || ast.right) }
+}
+
+// Normalize the AST into a consistent LEFT-OPERATOR-RIGHT structure
+render.annotate = function(ast){ ast = ast || '';
+  ast.up = ast.up || '';
+  ast.$id = ast.$id || render.id(ast);
+  if(!ast.type){ return ast }
+
+  switch (ast.type) {
+    case 'Program':
+      ast.left = {text:''};
+      ast.right = ast.body;
+      ast.right.text = ';';
+      ast.right.right = {text: ';'};
+      ast.fill = ast.left.fill = ast.right.fill = [];
+      break;
+    case 'SequenceExpression':
+      ast.expressions.fill = [];
+      ast.expressions.text = ',';
+    case 'ExpressionStatement':
+      ast.right = ast.expressions || ast.expression;
+      ast.fill = [];
+      break;
+
+    case 'Literal':
+    case 'Identifier':
+      ast.text = ast.text || ast.op || ast.raw || ast.name;
+      break;
+
+    case 'ImportDeclaration':
+      ast.right = ast.source;
+      ast.text = ast.op = 'from';
+      // ugly re-arrange:
+      var tmp = ast.specifiers;
+      tmp.left = {text: '{'}; tmp.right = {text: '}'};
+      tmp = ast.left = {left: {text:''}, right: tmp};
+      tmp.right.text = ',';
+      tmp.text = tmp.op = 'import';
+      if('ImportDefaultSpecifier' == tmp.right[0].type
+      || 'ImportNamespaceSpecifier' == tmp.right[0].type){
+        tmp.right = [ast.specifiers[0], ast.specifiers.slice(1)];
+        tmp.right[1].left = {text: '{'}; tmp.right[1].right = {text: '}'};
+        if('ImportDefaultSpecifier' == tmp.right[0].type){ tmp.right[0] = tmp.right[0].local }
+        tmp.right.text = ',';
+        tmp.right[1].text = ',';
+        if(0 == tmp.right[1].length){ tmp.right = tmp.right[0] }
+      }
+      break;
+    case 'ImportNamespaceSpecifier':
+      ast.left = {text: '*'};
+      ast.text = ast.op = 'as';
+      ast.right = ast.local;
+      break;
+    case 'ImportDefaultSpecifier':
+    case 'ImportSpecifier':
+      if(ast.imported.name !== ast.local.name){
+        ast.left = ast.imported;
+        ast.op = ast.text = 'as';
+      }
+      ast.right = ast.local;
+      break;
+
+    case 'VariableDeclaration':
+      ast.op = ast.type;
+      ast.left = {text: ast.kind, fill: []};
+      ast.right = ast.declarations;
+      ast.right.text = ',';
+      ast.fill = ast.right.fill = [];
+      break;
+    case 'VariableDeclarator':
+    case 'AssignmentPattern':
+    case 'AssignmentExpression':
+      ast.left = ast.id || ast.left;
+      ast.text = operator = '=';
+      ast.right = ast.init || ast.right;
+      break;
+
+    case 'BinaryExpression':
+    case 'LogicalExpression':
+      ast.op = ast.text = ast.operator;
+      break;
+
+    case 'ArrowFunctionExpression':
+      ast.arrow = true;
+      ast.op = ast.text = '=>';
+      if(!ast.body.length){ ast.right = [ast.body] }
+      ast.fill = render.fill(ast);
+    case 'BlockStatement':
+    case 'FunctionExpression':
+    case 'FunctionDeclaration':
+      ast.right = ast.right || (ast.body||'').body || ast.body;
+      ast.left = ast.params || ast.left || {text:''};
+      if(ast.params){
+        ast.params.left = {text:'('};
+        if(ast.params.length){ ast.params.text = ',' }
+        ast.params.right = {text:')'};
+        if(ast.id){
+          ast.left = {left: {text: 'function'}, op: ast.id.name, right: ast.params};
+          ast.left.text = ast.left.op;
+          if(ast.async){
+            ast.left.left.left = {text: 'async'};
+          }
+          if(ast.generator){
+            ast.left.left.right = {text: '*'};
+          }
+        } else {
+          ast.left.left = {text: (ast.async?'async ':'')+(ast.arrow?'':'function')+(ast.generator?'*':'')+'('};
+        }
+        ast.right.left = {text:'{'};
+        ast.right.text = ';';
+        ast.right.right = {text:'}'};
+      } else {
+        ast.right.left = {text:'{'};
+        ast.right.right = {text:'}'};
+      }
+      ast.fill = ast.fill || [];
+      break;
+    case 'ReturnStatement':
+      ast.text = 'return';
+      ast.right = ast.argument;
+      ast.fill = [];
+      break;
+    case 'CallExpression':
+      ast.left = (ast.expression||'').callee || ast.callee;
+      ast.right = (ast.expression||'').arguments || (ast.expression||'').argument || ast.arguments || ast.argument;
+      ast.right.left = {text:'('};
+      ast.right.text = ',';
+      ast.right.right = {text:')'};
+      break;
+
+    case 'ObjectPattern':
+    case 'ObjectExpression':
+      ast.right = ast.properties;
+      ast.right.left = {text: '{'};
+      if(ast.right.length){ ast.right.text = ',' }
+      ast.right.right = {text: '}'};
+      ast.fill = ast.right.fill = [];
+      break;
+    case 'Property':
+      ast.left = ast.key;
+      if(ast.shorthand){
+        if(!ast.value.name){
+          ast.left = ast.value;
+          ast.fill = [];
+        }
+      } else {
+        ast.op = ast.text = ':';
+        ast.right = ast.value;
+      }
+      break;
+
+    case 'ArrayPattern':
+    case 'ArrayExpression':
+      ast.right = ast.elements;
+      ast.right.left = {text: '['};
+      if(ast.right.length){ ast.right.text = ',' }
+      ast.right.right = {text: ']'};
+      ast.fill = ast.right.fill = [];
+      break;
+
+    case 'YieldExpression':
+      ast.text = ast.op = 'yield';
+    case 'AwaitExpression':
+      ast.right = ast.argument;
+      ast.text = ast.op = ast.text || ast.op || 'await';
+      ast.fill = [];
+      break;
+
+    case 'IfStatement':
+      if(ast.alternate){
+        ast.left = [ast.test, ast.consequent];
+        ast.left.left = {text: 'if('};
+        ast.left.text = ')';
+        ast.left.fill = [];
+        ast.text = 'else';
+        ast.right = ast.alternate;
+        ast.right.fill = [];
+      } else {
+        ast.left = ast.test;
+        ast.text = '?'
+        ast.right = ast.consequent;
+      }
+      break;
+
+    case 'SwitchStatement':
+      ast.left = ast.discriminant;
+      ast.left.left = {text: 'switch('};
+      ast.left.right = {text: ')'};
+      ast.left.fill = [];
+      ast.right = ast.cases;
+      ast.right.left = {text: '{'};
+      ast.right.right = {text: '}'};
+      ast.right.text = ast.right.op = '';
+      break;
+    case 'SwitchCase':
+      ast.text = ':';
+      if(ast.test){
+        ast.left = ast.test;
+        ast.left.left = {text: 'case'};
+      } else {
+        ast.left = {text: 'default'};
+      }
+      ast.right = ast.consequent;
+      ast.right.text = ';';
+      ast.fill = [];
+      break;
+    case 'BreakStatement':
+      ast.text = ast.op = "break";
+      break;
+
+    case 'ForStatement':
+      ast.left = [ast.init, ast.test, ast.update];
+      ast.left.left = { text: 'for(' };
+      ast.left.text = ';';
+      ast.left.right = { text: ')' };
+      ast.right = ast.body;
+      ast.fill = [];
+      break;
+    case 'WhileStatement':
+      ast.left = [ast.test];
+      ast.left.left = { text: 'while(' };
+      ast.left.right = { text: ')' };
+      ast.right = ast.body;
+      ast.fill = [];
+      break;
+    case 'DoWhileStatement':
+      ast.left = ast.body;
+      ast.left.left = { text: 'do' };
+      ast.right = [ast.test];
+      ast.right.left = { text: 'while(' };
+      ast.right.right = { text: ')' };
+      ast.fill = [];
+      break;
+    case 'ForInStatement':
+    case 'ForOfStatement':
+      //ast.left = { left: ast.left, text: ast.type === 'ForInStatement' ? 'in' : 'of', right: ast.right };
+      console.log(">>>>>>>>>>>>>>>>", ast);
+      //ast.left = [ast.test];
+      //ast.left.left = { text: 'for(' };
+      //ast.left.right = { text: ')' };
+      //ast.right = ast.body;
+      //ast.fill = [];
+      break;
+    case 'TryStatement':
+      ast.sub = [];
+      ast.sub.push({ left: { text: 'try' }, right: ast.block });
       if (ast.handler) {
-        render.view(ast);
-        render.list(ast, [ast.handler], 'catch');
+        ast.sub.push({ left: { left: { text: 'catch(' }, right: ast.handler.param, text: ')' }, right: ast.handler.body });
       }
       if (ast.finalizer) {
-        render.view(ast);
-        render.list(ast, [ast.finalizer], 'finally');
+        ast.sub.push({ left: { text: 'finally' }, right: ast.finalizer });
       }
-    } else if (ast.discriminant && ast.cases) {
-      // Improved switch statement handling
-      ast.discriminant.up = ast;
-      render.view(ast);
-      render.the({
-        name: ast.$id + '-text',
-        sort: [0.1, ast.discriminant.up.$id],
-        fill: 'switch',
-      });
-      render.list(ast, [ast.discriminant], '(', '', ')');
-      
-      // Handle each case separately with proper break statements
-      for (let i = 0; i < ast.cases.length; i++) {
-        const caseItem = ast.cases[i];
-        caseItem.up = ast;
-        
-        // Handle default case differently
-        if (!caseItem.test) {
-          render.the({
-            name: ast.$id + '-default-' + i,
-            sort: [0.1 + (i * 0.01), ast.$id],
-            fill: 'default:',
-          });
-        } else {
-          // Regular case
-          console.log("TODO: BUG! switch case", caseItem);
-          render.the({
-            name: ast.$id + '-case-' + i,
-            sort: [0.1 + (i * 0.01), ast.$id],
-            fill: 'case',
-          });
-          caseItem.test.up = caseItem.up;
-          render(caseItem.test);
-          render.the({
-            name: ast.$id + '-case-colon-' + i,
-            sort: [0.1 + (i * 0.01) + 0.001, ast.$id],
-            fill: ':',
-          });
-        }
-        
-        // Render the consequent statements
-        render.list(ast, caseItem.consequent);
-      }
-    } else if (ast.init && ast.test && ast.update) {
-      render.view(ast);
-      render.list(ast, [ast.init, ast.test, ast.update], 'for (', ';', ')');
-    } else if (ast.type === 'DoWhileStatement') {
-      ast.test.up = ast;
-      render.view(ast);
-      render.list(ast, [ast.test], 'while (', '', ')');
-      render.list(ast, ast.body.body || ast.body, 'do ', '', '');
-    } else if (ast.body && ast.left && ast.right) {
-      render.view(ast);
-      render.list(ast, [ast.left, ast.right], 'for (', (ast?.type === 'ForInStatement' || ast?.type === 'ForOfStatement') ? (ast?.type === 'ForInStatement' ? 'in' : 'of') : 'for', ')');
-      render.list(ast, ast.body.body || ast.body, '{', '', '}');
-    } else if (ast.test && (ast.alternate || ast.consequent)) {
-      render.view(ast);
-      // Special handling for negation in test condition
-      render.list(ast, [ast.test], 'if (', '', ')');
-      render.list(ast, [ast.consequent], '{', '', '}');
-      if (ast.alternate) {
-        render.view(ast);
-        render.list(ast, [ast.alternate], 'else', '', '');
-      }
-    } else if (ast.test) {
-      render.view(ast);
-      render.list(ast, [ast.test], 'while (', '', ')');
-    } else if (ast.type === 'BreakStatement') {
-      // Turn 'break' into a minimal "operator" expression
-      const act = { operator: 'break' };
-      render.view(ast);
-      render.expression(ast, null, act.operator, null);
-    } else if (ast.type === 'ContinueStatement') {
-      // Similarly, 'continue' as an operator
-      const act = { operator: 'continue' };
-      render.view(ast);
-      render.expression(ast, null, act.operator, null);
-    } else if (ast.type === 'DebuggerStatement') {
-      // 'debugger' as an operator
-      const act = { operator: 'debugger' };
-      render.view(ast);
-      render.expression(ast, null, act.operator, null);
-    } else if (ast.type === 'EmptyStatement') {
-      // Do nothing, but keep log for clarity
-      console.debug("Empty statement encountered:", ast);
-    } else if (ast.type === 'LabeledStatement') {
-      // 'label: statement' => treat label as left, statement as right, operator=':'
-      ast.body.up = ast;
-      const act = { left: { name: ast.label.name }, operator: ':', right: ast.body };
-      render.view(ast);
-      render.expression(ast, act.left, act.operator, act.right);
-    } else if (ast.type === 'WithStatement') {
-      // 'with (obj) body' => treat obj as left, operator='with', body as right
-      ast.object.up = ast;
-      ast.body.up = ast;
-      const act = { left: ast.object, operator: 'with', right: ast.body };
-      render.view(ast);
-      render.expression(ast, act.left, act.operator, act.right);
-    } else {
-      // Final fallback
-      console.warn("Unrecognized flow node type:", ast.type, ast);
-    }
-  }
-
-  // Render an expression by separately processing the left-hand part, operator, and right-hand part.
-  render.op = function (ast, left, op, right) {
-  }
-  render.expression = function (ast, left, operator, right) {
-    render.view(ast);
-
-    // Special handling for ternary operator
-    if (ast.type === 'ConditionalExpression' || ast.isConditional) {
-      // Render the test condition (left side)
-      if (left) {
-        path = render.path(ast, {object: left})
-        left.up = ast;
-        render.side(left, ast, path, 'condition');
-      }
-
-      // Render the ? part
-      render.the({
-        name: ast.$id+'-ternary-question',
-        sort: [0.3, ast.$id]
-      }).the({
-        name: ast.$id+'-ternary-question-text',
-        sort: [0.1, ast.$id+'-ternary-question'],
-        fill: '?',
-      });
-
-      // Right side is the "true" part of the conditional
-      if (right) {
-        right.up = right.up || ast;
-        path = render.path(ast, {object: right});
-        render.side(right, ast, path, 'ifTrue');
-      }
-
-      // Render the : part
-      render.the({
-        name: ast.$id+'-ternary-colon',
-        sort: [0.6, ast.$id]
-      }).the({
-        name: ast.$id+'-ternary-colon-text',
-        sort: [0.1, ast.$id+'-ternary-colon'],
-        fill: ':',
-      });
-
-      // Alternate (else part) rendering
-      if (ast.alternate) {
-        ast.alternate.up = ast;
-        var alt_path = render.path(ast, {object: ast.alternate});
-        render.side(ast.alternate, ast, alt_path, 'ifFalse');
-      }
-      
-      return; // Exit early as we've handled the entire conditional
-    }
-
-    // The original rendering for non-new expressions:
-    if (left) {
-      path = render.path(ast, {object: left})
-      //if(path.length > 3){ path = [path[0], String.fromCharCode(8230)].concat(path.slice(-2)) } // FEATURE!
-      left.up = ast;
-      render.side(left, ast, path, 'left');
-    }
-    
-    // Special handling for nullish coalescing operator
-    if (operator === '??' || ast.isNullishCoalescing) {
-      render.the({
-        name: ast.$id+'-nullish',
-        sort: [0.1, ast.$id]
-      }).the({
-        name: ast.$id+'-nullish-text',
-        sort: [0.1, ast.$id+'-nullish'],
-        fill: '??',
-      });
-    } else {
-      // operator = ('=' == operator? ':' : operator);
-      operator && render.the({
-        name: ast.$id+'-act',
-        sort: [operator == 'new' ? -0.1 : 0.1, ast.$id]
-      }).the({
-        name: ast.$id+'-act-text',
-        sort: [0.1, ast.$id+'-act'],
-        fill: operator || '',
-      });
-    }
-  
-    if (right) {
-      right.up = right.up || ast;
-      path = render.path(ast, {object: right})
-      render.side(right, ast, path);
-    }
-  }
-  // Render the side (additional) component of an expression, such as property access or arguments.
-  render.side = function(right, ast, path, t){
-    // Special handling for ternary operator parts
-    if (t === 'condition' || t === 'ifTrue' || t === 'ifFalse') {
-      // Different styling for different parts of the ternary expression
-      render.the({
-        name: ast.$id + '-' + t,
-        sort: [t === 'condition' ? 0.2 : (t === 'ifTrue' ? 0.4 : 0.7), ast.$id]
-      });
-      
-      // Check for nested ternary conditionals
-      if (t === 'ifFalse' && right && right.type === 'ConditionalExpression') {
-        // Nested conditional within the 'else' part
-        render(right);
-        return;
-      }
-      
-      // If the right side is a simple value or identifier
-      if (right.raw || 'Identifier' == right.type) {
-        render.the({
-          name: ast.$id + '-' + t + '-text',
-          sort: [0.1, ast.$id + '-' + t],
-          fill: right.raw || right.name || '?'
-        });
-        return;
-      }
-      
-      // Otherwise, render the component normally
-      render(right);
-      return;
-    }
-    
-    // Regular handling for non-ternary components
-    if (right.raw || 'Identifier' == right.type) {
-      render.the({
-        name: ast.$id + '-' + (t || 'right'),
-        sort: [0.1, ast.$id]
-      }).the({
-        name: ast.$id + '-' + (t || right) + '-text',
-        sort: [0.1, ast.$id + '-' + (t || 'right')],
-        fill: right.raw || right.name || '?'
-      });
-    } else if (right.async) {
-      render.the({
-        name: ast.$id + '-async',
-        fill: 'async',
-        sort: [0.1, ast.$id],
-      });
-    } else if (right.type === 'ClassDeclaration') {
-      render.the({
-        name: ast.$id + '-class',
-        fill: 'class',
-        sort: [0.1, ast.$id],
-      });
-      
-    } else if (right.property) {
-      if (right?.object?.type === 'ThisExpression') {
-        console.log("ThisExpression:", right);
-        // render.list(right, [right.object, right.property], '', '.', '');
-        right.up = ast;
-        render(right)
+      ast.fill = [];
+      break;
+    case 'MemberExpression':
+      if (ast.computed) {
+        ast.left = ast.object;
+        ast.right = ast.property;
+        ast.right.left = { text: ast.optional ? '?.[' : '[' };
+        ast.right.right = { text: ']' };
       } else {
-        render.the({ // RIGHT
-          name: ast.$id + '-' + (t || 'right'),
-          sort: [0.1, ast.$id]
-        }).the({
-          name: ast.$id + '-' + (t || 'right') + '-text',
-          sort: [0.1, ast.$id + '-' + (t || 'right')],
-          fill: path.join(' . ')
-        });
+        ast.left = ast.object;
+        ast.text = ast.optional ? '?.' : '.';
+        ast.right = ast.property;
       }
-      } else if (right instanceof Array && right.length > 0 && !ast.renderedArgs) {
-        render.list(ast, right, '(', ',', ')');
-    } else if (right.argument && right.operator) {
-        right.$id = right.$id || render.id(right);
-        right.up = ast;
-      
-        render.expression(right, right.prefix ? null: right.argument, right.operator, right.prefix ? right.argument: null);
-      } else if (right.callee || right.operator) {
-        right.up = ast;
-        render(right);
-      } else if (right.elements) {
-        render.the({ // make view
-          name: right.$id = right.$id || render.id(right),
-          sort: [0.1, ast.$id]
-        });
-        render.list(right, right.elements);
-      } else if (right.properties) {
-        render.the({ // make view
-          name: right.$id = right.$id || render.id(right),
-          sort: [0.1, ast.$id]
-        });
-        render.list(right, right.properties, '{', ',', '}');
-      } else if (right.body) {
-        right.up = right.up || ast
-        right.$id = right.$id || render.id(right);
-        render.the({ // RIGHT
-          name: right.$id,
-          sort: [0.1, right.up.$id],
-          fill: render.fill(right)
-        });
-        render(right);
-      } else if (right.argument) {
-        right.up = right.up || ast
-        right.$id = right.$id || render.id(right);
-        render.the({ // RIGHT
-          name: right.$id,
-          sort: [0.1, right.up.$id],
-          fill: render.fill(right)
-        });
-        render(right);
+      break;
+    case 'UpdateExpression':
+      if (ast.prefix) {
+        ast.left = { text: ast.operator };
+        ast.right = ast.argument;
+      } else {
+        ast.left = ast.argument;
+        ast.right = { text: ast.operator };
       }
-  }
-
-  // Utility functions
-  render.path = function (ast, a) {
-    var path = [];
-    while(a = a.object){
-      if (a.callee) { a.up = ast; render(a) }
-      // property.name, property.raw, name, raw
-      path.push((a.property||'').name||a.name||'');
-    }
-    return path.reverse();
-  }
-
-  // Utility to render a list of nodes. 's' is the start delimiter, 'b' is the separator, and 'e' is the end delimiter.
-  render.list = function(ast, steps, s, b, e){
-    if (!ast) return;
-    if (!(steps instanceof Array)) {
-      steps = [steps] || [];
-    }
-    // if (steps.length === 0) return;  // <== New: skip rendering if there are no items
-
-    if(ast.elements){ s = '[', b = ',', e = ']' }
-    // if(ast.expression){ s = '(', b = ',', e = ') => ' }
-    if (ast.declarations) { s = ast.kind, b = ',', e = '' }
-    if (ast.specifiers) { s = 'import {', b = ',', e = '}' }
-    // if(ast.params){ s = '<', b = '&', e = '>' }
-  
-    // console.log("???", s,b,e, ast.$id);
-    var id = render.id(ast);
-    if(s){
-      render.the({ // ACT
-        name: id, 
-        sort: [0.1, ast.$id],
-      }).the({
-        name: id+'-text',
-        sort: [0.1, id],
-        fill: s
-      });
-    }
-    steps.forEach(function(a, i){
-  
-      i && render.the({
-        name: id+'-'+i,
-        sort: [0.1, ast.$id],
-        fill: b || ""
-      });
-  
-      if(a?.expression && a.expression !== true){
-        a.expression.up = a;
-        a = a.expression;
+      break;
+    case 'UnaryExpression':
+      ast.left = { text: ast.operator };
+      ast.right = ast.argument;
+      break;
+    case 'NewExpression':
+      ast.left = { left: { text: 'new' }, right: ast.callee };
+      ast.right = ast.arguments;
+      ast.right.left = { text: '(' };
+      ast.right.right = { text: ')' };
+      break;
+    case 'ThisExpression':
+      ast.text = 'this';
+      break;
+    case 'Super':
+      ast.text = 'super';
+      break;
+    case 'SpreadElement':
+    case 'RestElement':
+      ast.left = { text: '...' };
+      ast.right = ast.argument;
+      break;
+    case 'ClassDeclaration':
+    case 'ClassExpression':
+      ast.left = ast.id || { text: '' };
+      if (ast.superClass) {
+        ast.left = { left: ast.left, text: 'extends', right: ast.superClass };
       }
-  
-      a.up = ast;
-      render.the({
-        name: a.$id = a.$id || render.id(a),
-        size: [[1,'~'],[1,'~']],
-        sort: [0.1, ast.$id]
-      });
-      render(a);
-    });
+      ast.left.left = { text: 'class' };
+      ast.right = ast.body;
+      ast.right.left = { text: '{' };
+      ast.right.right = { text: '}' };
+      ast.fill = [];
+      break;
+    case 'MethodDefinition':
+      ast.left = ast.key;
+      if (ast.kind === 'get' || ast.kind === 'set') {
+        ast.left.left = { text: ast.kind };
+      } else if (ast.kind === 'method') {
+        ast.left.left = { text: ast.static ? 'static' : '' };
+      }
+      ast.right = ast.value;
+      break;
+    case 'TemplateLiteral':
+      ast.sub = [{ text: '`' }];
+      for (let i = 0; i < ast.quasis.length; i++) {
+        ast.sub.push({ text: ast.quasis[i].value.raw });
+        if (i < ast.expressions.length) {
+          ast.sub.push({ left: { text: '${' }, right: ast.expressions[i], text: '}' });
+        }
+      }
+      ast.sub.push({ text: '`' });
+      ast.fill = [];
+      break;
+    case 'TaggedTemplateExpression':
+      ast.left = ast.tag;
+      ast.right = ast.quasi;
+      break;
+    case 'RegExpLiteral':
+      ast.text = '/' + ast.pattern + '/' + ast.flags;
+      break;
+    case 'MetaProperty':
+      ast.left = ast.meta;
+      ast.text = '.';
+      ast.right = ast.property;
+      break;
+    case 'ImportExpression':
+      ast.left = { text: 'import' };
+      ast.right = ast.source;
+      ast.right.left = { text: '(' };
+      ast.right.right = { text: ')' };
+      break;
+    // implement all other Node types here
+    // by figuring out which properties
+    // need to be annotated to left/right
+    // or restructured, and where syntax goes.
 
-    if(e){
-      render.the({ // ACT
-        name: id+'-end',
-        sort: [0.1, ast.$id],
-      }).the({
-        name: id+'-end-text',
-        sort: [0.1, id+'-end'],
-        fill: e
-      });
-    }
+    case 'EmptyStatement':
+      break;
+
+    default:
+      console.warn("Unrecognized node type:", ast.type, ast);
+      return ast;
   }
-  // -------------------------------------------------------------------------------
-  // Utility functions for render: color fill generation, id generation, messaging, etc.
-  // -------------------------------------------------------------------------------
-  render.fill = function() {
-    return [Math.random()-0.2, Math.random()-0.2, Math.random()-0.2, 0.3];
-  };
+  return ast;
+};
 
-  render.id = function (ast) {
-    return Math.random().toString(32).slice(2);
-  };
+// Utility functions
+render.fill = function(ast) {
+  return (ast.fill instanceof Array && ast.fill) || [Math.random() - 0.2, Math.random() - 0.2, Math.random() - 0.2, 0.3];
+};
 
-  render.the = function (o) {
-    // console.log("...O", o)
-    postMessage([o]);
+render.id = function() {
+  return Math.random().toString(32).slice(2);
+};
 
-    // console.log('...up', postMessage({ get: o.sort[1], how: "store" }));
-    return render;
-  };
+render.text = function(ast){
+  render.the({
+    name: ast.$id + '-text',
+    fill: ast.text
+  })
+}
+
+render.the = function(o) {
+  postMessage([o]);
+  return render;
+};
+
 </script>

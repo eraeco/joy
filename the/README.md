@@ -21,6 +21,8 @@ This code works as both a JS library or as a browser extension.
 
 3. Load `http://localhost:8764/examples/toy.html` to test, play with editing this file!
 
+If it still does not work, comment out `i.csp = ` line ~23 in `enclave.js` & refresh a few times.
+
  > Note: if you use `vite`, just `npm install .` inside this folder and then run `npm run dev`.
 
 ### Documentation
