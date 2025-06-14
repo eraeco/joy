@@ -48,6 +48,7 @@ sr.run = function(msg, eve){
     script.onload = cb; script.src = src;
     document.head.appendChild(script);
   }
+  load('plug/joy.js');
 }());
 
 var view;

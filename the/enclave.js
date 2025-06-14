@@ -20,7 +20,7 @@ sr = {ext: ((window.browser||window.chrome)||'').runtime};
   i.className = 'SecureRender';
   i.style = "position: fixed; border: 0; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0;";
   i.sandbox = 'allow-scripts allow-popups allow-downloads allow-pointer-lock';
-  i.csp = "script-src 'self' 'unsafe-inline'; default-src data: blob: mediastream: filesystem:; style-src 'self' 'unsafe-inline'; child-src 'self' blob:; worker-src blob: 'self';"; // 'unsafe-inline' let's us boot SR in localStorage polyfill mode, we then turn OFF 'unsafe-inline'.
+  //i.csp = "script-src 'self' 'unsafe-inline'; default-src data: blob: mediastream: filesystem:; style-src 'self' 'unsafe-inline'; child-src 'self' blob:; worker-src blob: 'self';"; // 'unsafe-inline' let's us boot SR in localStorage polyfill mode, we then turn OFF 'unsafe-inline'.
   sr.send = function(msg){ i.contentWindow.postMessage(msg, '*') } // TODO: AUDIT! THIS LOOKS SCARY, BUT '/' NOT WORK FOR SANDBOX 'null' ORIGIN. IS THERE ANYTHING BETTER?
   document.body.appendChild(i);
   if(sr.ext){ return i.src = "./sandbox.html" } // extension

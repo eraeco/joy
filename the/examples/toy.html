@@ -1,9 +1,7 @@
 <script src="https://cdn.jsdelivr.net/npm/acorn@8.14.1/dist/acorn.min.js"></script>
 <script src="https://gist.githubusercontent.com/amark/35f27a326a51d085624ea6ff4d291bea/raw/18a67a7d5c86fa366d1340280bde15f34cea1d04/parse5-built.js"></script>
 <script class="SecureRender" src="../content.js">
-the.start = the.start || (async () => {
-
-  setTimeout(() => {/*
+the.start = the.start || (async () => { setTimeout(() => {/*
 
 import a from 'module';
 import { b } from 'module';
@@ -11,13 +9,46 @@ import { c, d } from 'module';
 import * as e from 'module';
 import f, { g, h as i } from 'module';
 
-var x = 10;
+var x = 1 + 2;
 let y = 'Hello World';
 const z = true;
 
 var w = 1, v = 2;
 x = 11;
 x = 12, x = 13;
+
+// Assignment operators
+x += 5;
+x -= 2;
+x *= 3;
+x /= 2;
+x %= 3;
+x **= 2;
+
+// Unary operators
+const negation = -x.length;
+const positive = +y.length;
+
+// Update operators
+++x;
+--y;
+x++;
+y--;
+
+// Logical operators
+const And = x > 0 && y > 0;
+const Or = x < 0 || y > 0;
+const Not = !z;
+
+// Comparison operators
+const Eq = x == y;
+const Id = x === y;
+const notEq = x != y;
+const notId = x !== y;
+const Gr = x > y;
+const Ls = x < y;
+const GoE = x >= y;
+const LoE = x <= y;
 
 function add(a, b) {
   return a + b;
@@ -55,6 +86,7 @@ const [first, second, third] = numbers;
 
 if(y > 5) y = 0;
 
+*/var code = `
 if(x > 5){
   x = 5;
 } else if (x < 0){
@@ -62,6 +94,10 @@ if(x > 5){
 } else {
   x = 2.5;
 }
+`;/*
+
+// Ternary conditionals
+const max = x > y ? x + 1 : y;
 
 // Switch statement
 switch (y) {
@@ -94,20 +130,15 @@ do {
   count--;
 } while (count > 0);
 
-*/var code = `
 // For...in loop (enumerate object properties)
 for (const key in person) {
-  x + 7;
   if (person.hasOwnProperty(key)) {
     console.log('Property:', key, 'Value:', person[key]);
   }
 }
-`;/*
 
-// For...of loop (iterate over iterable objects)
-//TODO: Need to fix this
 for (const num of numbers) {
-    console.log('Number:', num);
+  num + 1;
 }
 
 var eh = {c: "Hello", d: "World"};
@@ -117,22 +148,19 @@ const is = eh?.c;
 
 // Try-catch-finally block
 try {
-  console.log('Try block executed');
-  throw new Error('An error occurred');
-} catch (error) {
-  console.error('Caught error:', error.message);
+  var x = 1;
+  x + 2;
+} catch (err) {
+  var x = err;
+  x + 9;
 } finally {
-  console.log('Finally block executed');
+  var x = 5 + 9;
+  x + 7;
 }
+
+throw "Hello";
 
 // Rest and Spread Operators
-
-// Rest parameters in a function
-TODO: Need to fix this
-function sumAll(...args) {
-    return args.reduce((sum, current) => sum + current, 0);
-}
-
 // Spread syntax in array literals
 const arr1 = [1, 2, 3];
 const arr2 = [...arr1, 4, 5];
@@ -141,28 +169,37 @@ const arr2 = [...arr1, 4, 5];
 const obj1 = { a: 1, b: 2 };
 const obj2 = { ...obj1, c: 3 };
 
+// Rest parameters in a function
+function sumAll(...args) {
+    return args.reduce((sum, current) => sum + current, 0);
+}
 // Classes and Inheritance
 
 // Class declaration
-TODO: Need to fix this
 class Animal {
-    constructor(name) {
-        console.log('Animal constructor called');
-    }
-    speak() {
-        console.log('Makes a noise.');
-    }
+  constructor(name){
+    console.log('Animal constructor called');
+  }
+  static async * speak(){
+    console.log('Makes a noise.');
+  }
+  static get name(){
+    console.log("w00t");
+  }
+  static look = function(at){
+    console.log(1);
+  }
 }
 
 // Subclass with inheritance
-class Dog extends Animal {
+class Cat extends Animal {
     speak() {
-        console.log(this.name + ' barks.');
+        console.log(super.speak() + this.name + ' meow.');
     }
 }
 
-const dog = new Dog('Rex');
-dog.speak();
+const cat = new Cat('Rex');
+cat.speak();
 
 // Miscellaneous Features
 
@@ -191,7 +228,6 @@ const promise = new Promise(function (resolve, reject) {
 promise.then(result => console.log(result));
 
 // Using Map and Set
-TODO: Need to fix this
 const map = new Map();
 map.set('key', 'value');
 const set = new Set([1, 2, 3]);
@@ -218,44 +254,11 @@ void function () {
 }();
 
 // Instanceof operator
-console.log(dog instanceof Dog); // true
+console.log(cat instanceof Cat); // true
 
 // In operator
-console.log('name' in dog); // true
+console.log('name' in cat); // true
 
-// Conditional (ternary) operator
-const max = x > y.length ? x : y.length;
-
-// Logical operators
-const logicalAnd = x > 0 && y.length > 0;
-const logicalOr = x < 0 || y.length > 0;
-const logicalNot = !z;
-
-// Assignment operators
-x += 5;
-x -= 2;
-x *= 3;
-x /= 2;
-x %= 3;
-x **= 2;
-
-// Unary operators
-const negation = -x;
-const positive = +y.length;
-
-// Comparison operators
-const isEqual = x == y.length;
-const isIdentical = x === y.length;
-const isNotEqual = x != y.length;
-const isNotIdentical = x !== y.length;
-const isGreater = x > y.length;
-const isLess = x < y.length;
-const isGreaterOrEqual = x >= y.length;
-const isLessOrEqual = x <= y.length;
-
-// Comma operator
-let a, b, c;
-a = (b = 1, c = 2);
 
 // Function hoisting
 hoistedFunction();
@@ -269,30 +272,33 @@ var hoistedVar = 'Hoisted variable';
 
 // Using 'this' keyword
 const obj4 = {
-    name: 'Object',
-    getName: function () {
-        return this.name;
-    }
+  name: 'Object',
+  getName: function () {
+    return this.name;
+  }
 };
 console.log(obj4.getName());
 
 // Closure example
 function outerFunction(outerVariable) {
-    return function innerFunction(innerVariable) {
-        console.log('Outer Variable:', outerVariable);
-        console.log('Inner Variable:', innerVariable);
-    };
+  return function innerFunction(innerVariable) {
+    console.log('Outer Variable:', outerVariable);
+    console.log('Inner Variable:', innerVariable);
+  };
 }
 const newFunction = outerFunction('outside');
 newFunction('inside');
 
 // Immediately resolved Promise
-Promise.resolve('Immediate value').then(value => console.log(value));
+// TODO: esprima/acornjs have property chaining structured backwards.
+foo.bar.lol.baz;
+foo['bar']['lol']['baz'];
+Promise.resolve('Immediate value').then; //(value => console.log(value));
 
 // Chained Promises
 Promise.resolve(1)
-    .then(value => value + 1)
-    .then(value => value + 1)
+    .then(value => value + 2)
+    .then(value => value + 3)
     .then(value => console.log('Final value:', value));
 
 // Using 'arguments' object in a function
@@ -329,12 +335,14 @@ const code = 'console.log("Evaluated code")';
 eval(code);
 
 // Regular expression methods
-const testString = 'abc';
-const testResult = /a/.test(testString);
-const matchResult = testString.match(/a/);
+const S = 'abc';
+const R = /a/.test(S);
+const M = S.match(/a/ig);
 
 // Labeled statements
-outerLabel: for (let i = 0; i < 5; i++) {
+zaz = 9;
+outerLabel:
+  for (let i = 0; i < 5; i++) {
     innerLabel: for (let j = 0; j < 5; j++) {
         if (j === 2) continue outerLabel; 
         if (i === 3) break innerLabel;
@@ -459,6 +467,9 @@ let or = true || false;
 let not = !true;
 
 // Control Flow
+
+if(true){ a = b; c = d; }
+
 if (true) { let a = 1; }
 else { let b = 2; }
 
@@ -509,19 +520,16 @@ try { throw new Error(); } catch (e) {}
 // Ternary
 let tern = true ? 1 : 0;
 ```*/;
+  var ast = acorn.parse(code,{
+    ecmaVersion: 2022, sourceType: 'module',
+    onComment: function(){ }
+  });
 
-    var ast = acorn.parse(code,{
-      ecmaVersion: 2022, sourceType: 'module',
-      onComment: function(){ }
-    });
-    
-    render(ast);
-  }, 1);
+  render(ast);
 
-})();
+},1)})();
 
 /* ---- the Code from Phone TOY is below ------ */
-
 
 function render(ast, stop) { // built by Natnael, Mars.
   if(!ast){ return }
@@ -537,7 +545,7 @@ function render(ast, stop) { // built by Natnael, Mars.
     });
   }
 
-  if(ast.left){ ast.left.up = ast; render(stop || ast.left) }
+  if(ast.L){ ast.L.up = ast; render(stop || ast.L) }
   if(ast.sub || ast.length){
     (ast.sub||ast).forEach((sub, i) => {
       if (i > 0 && ast.text) {
@@ -561,7 +569,7 @@ function render(ast, stop) { // built by Natnael, Mars.
       fill: ast.text
     })
   }
-  if(ast.right){ ast.right.up = ast; render(stop || ast.right) }
+  if(ast.J){ ast.J.up = ast; render(stop || ast.J) }
 }
 
 // Normalize the AST into a consistent LEFT-OPERATOR-RIGHT structure
@@ -572,17 +580,17 @@ render.annotate = function(ast){ ast = ast || '';
 
   switch (ast.type) {
     case 'Program':
-      ast.left = {text:''};
-      ast.right = ast.body;
-      ast.right.text = ';';
-      ast.right.right = {text: ';'};
-      ast.fill = ast.left.fill = ast.right.fill = [];
+      ast.L = {text:''};
+      ast.J = ast.body;
+      ast.J.text = ';';
+      ast.J.J = {text: ';'};
+      ast.fill = ast.L.fill = ast.J.fill = [];
       break;
     case 'SequenceExpression':
       ast.expressions.fill = [];
       ast.expressions.text = ',';
     case 'ExpressionStatement':
-      ast.right = ast.expressions || ast.expression;
+      ast.J = ast.expressions || ast.expression; // TODO: may need to wrap in '( )' in some cases. Yet again with IIFE.
       ast.fill = [];
       break;
 
@@ -591,261 +599,332 @@ render.annotate = function(ast){ ast = ast || '';
       ast.text = ast.text || ast.op || ast.raw || ast.name;
       break;
 
+
+    case 'ImportExpression':
     case 'ImportDeclaration':
-      ast.right = ast.source;
+      ast.J = ast.source;
       ast.text = ast.op = 'from';
       // ugly re-arrange:
       var tmp = ast.specifiers;
-      tmp.left = {text: '{'}; tmp.right = {text: '}'};
-      tmp = ast.left = {left: {text:''}, right: tmp};
-      tmp.right.text = ',';
+      tmp.L = {text: '{'}; tmp.J = {text: '}'};
+      tmp = ast.L = {L: {text:''}, J: tmp};
+      tmp.J.text = ',';
       tmp.text = tmp.op = 'import';
-      if('ImportDefaultSpecifier' == tmp.right[0].type
-      || 'ImportNamespaceSpecifier' == tmp.right[0].type){
-        tmp.right = [ast.specifiers[0], ast.specifiers.slice(1)];
-        tmp.right[1].left = {text: '{'}; tmp.right[1].right = {text: '}'};
-        if('ImportDefaultSpecifier' == tmp.right[0].type){ tmp.right[0] = tmp.right[0].local }
-        tmp.right.text = ',';
-        tmp.right[1].text = ',';
-        if(0 == tmp.right[1].length){ tmp.right = tmp.right[0] }
+      if('ImportDefaultSpecifier' == tmp.J[0].type
+      || 'ImportNamespaceSpecifier' == tmp.J[0].type){
+        tmp.J = [ast.specifiers[0], ast.specifiers.slice(1)];
+        tmp.J[1].L = {text: '{'}; tmp.J[1].J = {text: '}'};
+        if('ImportDefaultSpecifier' == tmp.J[0].type){ tmp.J[0] = tmp.J[0].local }
+        tmp.J.text = ',';
+        tmp.J[1].text = ',';
+        if(0 == tmp.J[1].length){ tmp.J = tmp.J[0] }
       }
       break;
     case 'ImportNamespaceSpecifier':
-      ast.left = {text: '*'};
+      ast.L = {text: '*'};
       ast.text = ast.op = 'as';
-      ast.right = ast.local;
+      ast.J = ast.local;
       break;
     case 'ImportDefaultSpecifier':
     case 'ImportSpecifier':
       if(ast.imported.name !== ast.local.name){
-        ast.left = ast.imported;
+        ast.L = ast.imported;
         ast.op = ast.text = 'as';
       }
-      ast.right = ast.local;
+      ast.J = ast.local;
       break;
 
     case 'VariableDeclaration':
       ast.op = ast.type;
-      ast.left = {text: ast.kind, fill: []};
-      ast.right = ast.declarations;
-      ast.right.text = ',';
-      ast.fill = ast.right.fill = [];
+      ast.L = {text: ast.kind, fill: []};
+      ast.J = ast.declarations;
+      ast.J.text = ',';
+      ast.fill = ast.J.fill = [];
       break;
     case 'VariableDeclarator':
     case 'AssignmentPattern':
     case 'AssignmentExpression':
-      ast.left = ast.id || ast.left;
-      ast.text = operator = '=';
-      ast.right = ast.init || ast.right;
+      ast.L = ast.id || ast.left || ast.L;
+      ast.op = ':'; ast.text = ast.operator || '=';
+      ast.J = ast.init || ast.right || ast.J;
+      var tmp = ast.up?.up?.up?.up?.up||''; // uggh annoying special case!
+      if(tmp.left && tmp.right){ ast.text = ast.op = '' }
       break;
 
     case 'BinaryExpression':
     case 'LogicalExpression':
+      ast.L = ast.left;
       ast.op = ast.text = ast.operator;
+      ast.J = ast.right;
+      break;
+    case 'UnaryExpression':
+      ast.L = { text: ast.operator };
+      ast.J = ast.argument;
+      //ast.fill = [];
+      break;
+    case 'UpdateExpression':
+      if (ast.prefix) {
+        ast.L = { text: ast.operator };
+        ast.J = ast.argument;
+      } else {
+        ast.L = ast.argument;
+        ast.J = { text: ast.operator };
+      }
       break;
 
     case 'ArrowFunctionExpression':
       ast.arrow = true;
       ast.op = ast.text = '=>';
-      if(!ast.body.length){ ast.right = [ast.body] }
+      if(!ast.body.length){ ast.J = [ast.body] }
       ast.fill = render.fill(ast);
     case 'BlockStatement':
     case 'FunctionExpression':
     case 'FunctionDeclaration':
-      ast.right = ast.right || (ast.body||'').body || ast.body;
-      ast.left = ast.params || ast.left || {text:''};
+      ast.L = ast.params || ast.L || {text:''};
+      ast.op = '=>';
+      ast.J = ast.J || (ast.body||'').body || ast.body;
       if(ast.params){
-        ast.params.left = {text:'('};
+        ast.params.L = {text:'('};
         if(ast.params.length){ ast.params.text = ',' }
-        ast.params.right = {text:')'};
+        ast.params.J = {text:')'};
         if(ast.id){
-          ast.left = {left: {text: 'function'}, op: ast.id.name, right: ast.params};
-          ast.left.text = ast.left.op;
+          ast.L = {L: {text: 'function'}, op: ast.id.name, J: ast.params};
+          ast.L.text = ast.L.op;
           if(ast.async){
-            ast.left.left.left = {text: 'async'};
+            ast.L.L.L = {text: 'async'};
           }
           if(ast.generator){
-            ast.left.left.right = {text: '*'};
+            ast.L.L.J = {text: '*'};
           }
         } else {
-          ast.left.left = {text: (ast.async?'async ':'')+(ast.arrow?'':'function')+(ast.generator?'*':'')+'('};
+          ast.L.L = {text: (ast.async?'async ':'')+(ast.arrow?'':'function')+(ast.generator?'*':'')+'('};
+          if('ClassDeclaration' == ast.up.up.up.type){
+            ast.L.L = {text: '('};
+          }
         }
-        ast.right.left = {text:'{'};
-        ast.right.text = ';';
-        ast.right.right = {text:'}'};
+        ast.J.L = {text:'{'};
+        ast.J.text = ';';
+        ast.J.J = {text:'}'};
       } else {
-        ast.right.left = {text:'{'};
-        ast.right.right = {text:'}'};
+        ast.J.L = {text:'{'};
+        ast.J.J = {text:'}'};
       }
       ast.fill = ast.fill || [];
       break;
     case 'ReturnStatement':
       ast.text = 'return';
-      ast.right = ast.argument;
+      ast.J = ast.argument;
       ast.fill = [];
       break;
     case 'CallExpression':
-      ast.left = (ast.expression||'').callee || ast.callee;
-      ast.right = (ast.expression||'').arguments || (ast.expression||'').argument || ast.arguments || ast.argument;
-      ast.right.left = {text:'('};
-      ast.right.text = ',';
-      ast.right.right = {text:')'};
+      ast.L = (ast.expression||'').callee || ast.callee;
+      ast.J = (ast.expression||'').arguments || (ast.expression||'').argument || ast.arguments || ast.argument;
+      ast.J.L = {text:'('};
+      if(ast.J.length){ ast.J.text = ',' }
+      ast.J.J = {text:')'};
+      if(ast.L.property){ ast.fill = [] }
       break;
 
     case 'ObjectPattern':
     case 'ObjectExpression':
-      ast.right = ast.properties;
-      ast.right.left = {text: '{'};
-      if(ast.right.length){ ast.right.text = ',' }
-      ast.right.right = {text: '}'};
-      ast.fill = ast.right.fill = [];
+      ast.J = ast.properties;
+      ast.J.L = {text: '{'};
+      if(ast.J.length){ ast.J.text = ',' }
+      ast.J.J = {text: '}'};
+      ast.fill = ast.J.fill = [];
       break;
     case 'Property':
-      ast.left = ast.key;
+      ast.L = ast.key;
+      if('get' == ast.kind || 'set' == ast.kind){
+        ast.L.L = {text: ast.kind}
+      }
       if(ast.shorthand){
         if(!ast.value.name){
-          ast.left = ast.value;
+          ast.L = ast.value;
           ast.fill = [];
         }
       } else {
         ast.op = ast.text = ':';
-        ast.right = ast.value;
+        ast.J = ast.value;
       }
       break;
 
     case 'ArrayPattern':
     case 'ArrayExpression':
-      ast.right = ast.elements;
-      ast.right.left = {text: '['};
-      if(ast.right.length){ ast.right.text = ',' }
-      ast.right.right = {text: ']'};
-      ast.fill = ast.right.fill = [];
+      ast.J = ast.elements;
+      ast.J.L = {text: '['};
+      if(ast.J.length){ ast.J.text = ',' }
+      ast.J.J = {text: ']'};
+      ast.fill = ast.J.fill = [];
+      break;
+
+    case 'ConditionalExpression':
+      ast.ternary = true;
+    case 'IfStatement':
+      ast.L = [ast.test, ast.consequent];
+      if(ast.L[1]?.body){ ast.L[1].body.text = ';' }
+      ast.L.L = {text: ast.ternary? '' : 'if('};
+      ast.L.text = ast.ternary? '?' : ')';
+      if(!ast.ternary){ ast.L.fill = [] }
+      if(ast.J = ast.alternate){
+        ast.text = ast.ternary? ':' : 'else';
+        if(!ast.ternary){ ast.J.fill = [] }
+      }
+      break;
+
+    case 'SwitchStatement':
+      ast.L = ast.discriminant;
+      ast.L.L = {text: 'switch('};
+      ast.L.J = {text: ')'};
+      ast.L.fill = [];
+      ast.J = ast.cases;
+      ast.J.L = {text: '{'};
+      ast.J.J = {text: '}'};
+      ast.J.text = ast.J.op = '';
+      break;
+    case 'SwitchCase':
+      ast.text = ':';
+      if(ast.test){
+        ast.L = ast.test;
+        ast.L.L = {text: 'case'};
+      } else {
+        ast.L = {text: 'default'};
+      }
+      ast.J = ast.consequent;
+      ast.J.text = ';';
+      ast.fill = [];
+      break;
+    case 'BreakStatement':
+      ast.text = ast.op = "break";
+      ast.J = ast.label;
+      break;
+    case 'ContinueStatement':
+      ast.text = 'continue';
+      ast.J = ast.label;
+      break;
+    case 'LabeledStatement':
+      ast.L = ast.label;
+      ast.text = ':';
+      ast.J = ast.body;
+      ast.fill = [];
+      break;
+
+    case 'ForStatement':
+      ast.L = [ast.init, ast.test, ast.update];
+      ast.L.L = { text: 'for(' };
+      ast.L.text = ';';
+      ast.L.J = { text: ')' };
+      ast.J = ast.body;
+      ast.fill = [];
+      break;
+    case 'WhileStatement':
+      ast.L = [ast.test];
+      ast.L.L = { text: 'while(' };
+      ast.L.J = { text: ')' };
+      ast.J = ast.body;
+      ast.fill = [];
+      break;
+    case 'DoWhileStatement':
+      ast.L = ast.body;
+      ast.L.L = { text: 'do' };
+      ast.J = [ast.test];
+      ast.J.L = { text: 'while(' };
+      ast.J.J = { text: ')' };
+      ast.fill = [];
+      break;
+    case 'ForInStatement':
+    case 'ForOfStatement':
+      ast.L = [{L: ast.left, J: ast.right, up: ast}]; // TODO: BUG! This may be incorrectly structured.
+      ast.L[0].op = ast.L[0].text = (ast.type=='ForInStatement')?'in':'of';
+      ast.L.L = { text: 'for(' };
+      ast.L.J = { text: ')' };
+      ast.J = ast.body;
+      ast.fill = [];
+      break;
+    case 'ChainExpression':
+      ast.J = ast.expression;
+      ast.fill = [];
+      break;
+
+    case 'RegExpLiteral':
+      ast.text = '/' + ast.pattern + '/' + ast.flags;
       break;
 
     case 'YieldExpression':
       ast.text = ast.op = 'yield';
     case 'AwaitExpression':
-      ast.right = ast.argument;
+      ast.J = ast.argument;
       ast.text = ast.op = ast.text || ast.op || 'await';
       ast.fill = [];
       break;
 
-    case 'IfStatement':
-      if(ast.alternate){
-        ast.left = [ast.test, ast.consequent];
-        ast.left.left = {text: 'if('};
-        ast.left.text = ')';
-        ast.left.fill = [];
-        ast.text = 'else';
-        ast.right = ast.alternate;
-        ast.right.fill = [];
-      } else {
-        ast.left = ast.test;
-        ast.text = '?'
-        ast.right = ast.consequent;
-      }
-      break;
-
-    case 'SwitchStatement':
-      ast.left = ast.discriminant;
-      ast.left.left = {text: 'switch('};
-      ast.left.right = {text: ')'};
-      ast.left.fill = [];
-      ast.right = ast.cases;
-      ast.right.left = {text: '{'};
-      ast.right.right = {text: '}'};
-      ast.right.text = ast.right.op = '';
-      break;
-    case 'SwitchCase':
-      ast.text = ':';
-      if(ast.test){
-        ast.left = ast.test;
-        ast.left.left = {text: 'case'};
-      } else {
-        ast.left = {text: 'default'};
-      }
-      ast.right = ast.consequent;
-      ast.right.text = ';';
-      ast.fill = [];
-      break;
-    case 'BreakStatement':
-      ast.text = ast.op = "break";
-      break;
-
-    case 'ForStatement':
-      ast.left = [ast.init, ast.test, ast.update];
-      ast.left.left = { text: 'for(' };
-      ast.left.text = ';';
-      ast.left.right = { text: ')' };
-      ast.right = ast.body;
-      ast.fill = [];
-      break;
-    case 'WhileStatement':
-      ast.left = [ast.test];
-      ast.left.left = { text: 'while(' };
-      ast.left.right = { text: ')' };
-      ast.right = ast.body;
-      ast.fill = [];
-      break;
-    case 'DoWhileStatement':
-      ast.left = ast.body;
-      ast.left.left = { text: 'do' };
-      ast.right = [ast.test];
-      ast.right.left = { text: 'while(' };
-      ast.right.right = { text: ')' };
-      ast.fill = [];
-      break;
-    case 'ForInStatement':
-    case 'ForOfStatement':
-      //ast.left = { left: ast.left, text: ast.type === 'ForInStatement' ? 'in' : 'of', right: ast.right };
-      console.log(">>>>>>>>>>>>>>>>", ast);
-      //ast.left = [ast.test];
-      //ast.left.left = { text: 'for(' };
-      //ast.left.right = { text: ')' };
-      //ast.right = ast.body;
-      //ast.fill = [];
+    case 'ThrowStatement':
+      ast.text = ast.op = 'throw';
+      ast.J = ast.argument;
       break;
     case 'TryStatement':
-      ast.sub = [];
-      ast.sub.push({ left: { text: 'try' }, right: ast.block });
-      if (ast.handler) {
-        ast.sub.push({ left: { left: { text: 'catch(' }, right: ast.handler.param, text: ')' }, right: ast.handler.body });
-      }
-      if (ast.finalizer) {
-        ast.sub.push({ left: { text: 'finally' }, right: ast.finalizer });
+      ast.L = ast.block;
+      ast.L.L = {text: 'try'};
+      ast.L.fill = [];
+      ast.L.body.text = ';';
+      ast.J = (ast.handler && ast.finalizer)?
+        [ast.handler, ast.finalizer]
+      : ast.handler || ast.finalizer;
+      (ast.finalizer||'').L = {text: 'finally'};
+      ((ast.finalizer||'').body||'').text = ';';
+      ast.J.fill = [];
+      break;
+    case 'CatchClause':
+      ast.fill = [];
+      ast.L = ast.param;
+      ast.L.L = {text: 'catch('};
+      ast.L.J = {text: ')'};
+      ast.L.fill = [];
+      ast.J = ast.body;
+      ast.J.body.text = ';';
+      break;
+
+    case 'ClassDeclaration':
+    case 'ClassExpression':
+      ast.L = ast.id || { text: '' };
+      ast.op = ':';
+      ast.J = ast.body.body;
+      ast.L.L = { text: 'class' };
+      ast.J.L = { text: '{' };
+      ast.J.J = { text: '}' };
+      if (ast.superClass){
+        ast.J = {L: {text: 'extends', J: ast.superClass}, J: ast.J, fill:[]};
+        //ast.J = {L: ast.superClass, text: 'extends', J: ast.J};
       }
       ast.fill = [];
       break;
-    case 'MemberExpression':
-      if (ast.computed) {
-        ast.left = ast.object;
-        ast.right = ast.property;
-        ast.right.left = { text: ast.optional ? '?.[' : '[' };
-        ast.right.right = { text: ']' };
-      } else {
-        ast.left = ast.object;
-        ast.text = ast.optional ? '?.' : '.';
-        ast.right = ast.property;
+    case 'PropertyDefinition':
+      ast.text = '=';
+    case 'MethodDefinition':
+      ast.L = ast.key;
+      ast.op = ':';
+      ast.J = ast.value;
+      var L = ast.L;
+      ast.fill = [];
+      if (ast.kind === 'get' || ast.kind === 'set') {
+        L = L.L = {text: ast.kind, fill:[]};
       }
-      break;
-    case 'UpdateExpression':
-      if (ast.prefix) {
-        ast.left = { text: ast.operator };
-        ast.right = ast.argument;
-      } else {
-        ast.left = ast.argument;
-        ast.right = { text: ast.operator };
+      if(ast.J.generator){
+        L = L.L = {text: '*', fill:[]};
       }
-      break;
-    case 'UnaryExpression':
-      ast.left = { text: ast.operator };
-      ast.right = ast.argument;
+      if(ast.J.async){
+        L = L.L = {text: 'async', fill:[]};
+      }
+      if (ast.static) {
+        L = L.L = {text: 'static', fill:[]};
+      }
       break;
     case 'NewExpression':
-      ast.left = { left: { text: 'new' }, right: ast.callee };
-      ast.right = ast.arguments;
-      ast.right.left = { text: '(' };
-      ast.right.right = { text: ')' };
+      ast.L = {L: { text: 'new' }, J: ast.callee };
+      ast.J = ast.arguments;
+      ast.J.L = { text: '(' };
+      ast.J.J = { text: ')' };
+      ast.fill = [];
       break;
     case 'ThisExpression':
       ast.text = 'this';
@@ -853,65 +932,43 @@ render.annotate = function(ast){ ast = ast || '';
     case 'Super':
       ast.text = 'super';
       break;
+
+    case 'MetaProperty':
+    case 'MemberExpression': // TODO: Property chaining is backwards :(
+      if (ast.computed) {
+        ast.L = ast.object;
+        ast.J = ast.property;
+        ast.J.L = { text: ast.optional ? '?.[' : '[' };
+        ast.J.J = { text: ']' };
+        break;
+      }
+      ast.L = ast.object || ast.meta;
+      ast.text = ast.optional ? '?.' : '.';
+      ast.J = ast.property;
+      break;
+
     case 'SpreadElement':
     case 'RestElement':
-      ast.left = { text: '...' };
-      ast.right = ast.argument;
+      ast.text = ast.op = '...';
+      ast.J = ast.argument;
       break;
-    case 'ClassDeclaration':
-    case 'ClassExpression':
-      ast.left = ast.id || { text: '' };
-      if (ast.superClass) {
-        ast.left = { left: ast.left, text: 'extends', right: ast.superClass };
-      }
-      ast.left.left = { text: 'class' };
-      ast.right = ast.body;
-      ast.right.left = { text: '{' };
-      ast.right.right = { text: '}' };
-      ast.fill = [];
-      break;
-    case 'MethodDefinition':
-      ast.left = ast.key;
-      if (ast.kind === 'get' || ast.kind === 'set') {
-        ast.left.left = { text: ast.kind };
-      } else if (ast.kind === 'method') {
-        ast.left.left = { text: ast.static ? 'static' : '' };
-      }
-      ast.right = ast.value;
-      break;
+
     case 'TemplateLiteral':
-      ast.sub = [{ text: '`' }];
+      ast.J = [];
+      ast.J.L = {text: '`'};
+      ast.J.J = {text: '`'};
       for (let i = 0; i < ast.quasis.length; i++) {
-        ast.sub.push({ text: ast.quasis[i].value.raw });
+        ast.J.push({ text: ast.quasis[i].value.raw });
         if (i < ast.expressions.length) {
-          ast.sub.push({ left: { text: '${' }, right: ast.expressions[i], text: '}' });
+          ast.J.push({L: {text: '${'}, text: ast.expressions[i]?.name, J: {text:'}'} });
         }
       }
-      ast.sub.push({ text: '`' });
       ast.fill = [];
       break;
     case 'TaggedTemplateExpression':
-      ast.left = ast.tag;
-      ast.right = ast.quasi;
+      ast.L = ast.tag;
+      ast.J = ast.quasi;
       break;
-    case 'RegExpLiteral':
-      ast.text = '/' + ast.pattern + '/' + ast.flags;
-      break;
-    case 'MetaProperty':
-      ast.left = ast.meta;
-      ast.text = '.';
-      ast.right = ast.property;
-      break;
-    case 'ImportExpression':
-      ast.left = { text: 'import' };
-      ast.right = ast.source;
-      ast.right.left = { text: '(' };
-      ast.right.right = { text: ')' };
-      break;
-    // implement all other Node types here
-    // by figuring out which properties
-    // need to be annotated to left/right
-    // or restructured, and where syntax goes.
 
     case 'EmptyStatement':
       break;
@@ -943,5 +1000,4 @@ render.the = function(o) {
   postMessage([o]);
   return render;
 };
-
 </script>

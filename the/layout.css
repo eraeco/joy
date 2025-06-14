@@ -23,7 +23,7 @@ body > div {
 
 div, ul, ol, li, p, span, form, button, input, textarea, img, line, text {
   margin: 0;
-  padding: 0;
+  padding: 0.2em; /* TODO: WRONG! ONLY FOR CODE FOR PHONE */
   position: relative;
   display: inline-block;
   box-sizing: border-box;
