@@ -13,7 +13,7 @@ var x = 1 + 2;
 let y = 'Hello World';
 const z = true;
 
-var w = 1, v = 2;
+var w = 1, v = 2, u;
 x = 11;
 x = 12, x = 13;
 
@@ -520,6 +520,7 @@ try { throw new Error(); } catch (e) {}
 // Ternary
 let tern = true ? 1 : 0;
 ```*/;
+
   var ast = acorn.parse(code,{
     ecmaVersion: 2022, sourceType: 'module',
     onComment: function(){ }
@@ -647,6 +648,7 @@ render.annotate = function(ast){ ast = ast || '';
       ast.L = ast.id || ast.left || ast.L;
       ast.op = ':'; ast.text = ast.operator || '=';
       ast.J = ast.init || ast.right || ast.J;
+      if(!ast.J){ ast.text = '' }
       var tmp = ast.up?.up?.up?.up?.up||''; // uggh annoying special case!
       if(tmp.left && tmp.right){ ast.text = ast.op = '' }
       break;
