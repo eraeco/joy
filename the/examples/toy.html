@@ -3,22 +3,46 @@
 <script class="SecureRender" src="../content.js">
 the.start = the.start || (async () => { setTimeout(async () => {
 
-  var code = "annotate = "+the.toy.annotate.toString();
+var code = the.toy.render.toString();
+var html = `
+<input type="file" id="file" name="file" accept=".pdf,.docx" multiple>
+<li><a href="https://www.example.com" ping="https://tracker1.example.com https://tracker2.example.com">Visit Example.com</a></li>
+<div id="home" class="container pretty" style="max-width: 500px; background: blue;">
+  <h1>Test Structure</h1>
+  <p>welcome!</p>
+<script>
+${code}
+<\/script>
+</div>
+`;
 
-  var ast = acorn.parse(code,{
-    ecmaVersion: 2022, sourceType: 'module',
-    onComment: function(){ }
-  });
-
-  console.log("AST", ast);
-  the.toy.render(ast);
-
+  the.toy.see(html);
 
 },1)})();
 
 /* ---- the Code from Phone TOY is below ------ */
 
 toy = the.toy = the.toy || {};
+toy.see = function(text){
+  var ast, err = "";
+  try{
+    ast = acorn.parse(text,{
+      ecmaVersion: 2022, sourceType: 'module',
+      onComment: function(){ }
+    });
+    toy.annotate = toy.js;
+  }catch(e){err += e}
+  if(!ast){try{
+    ast = parse5.parse(text);
+    toy.annotate = toy.html;
+  }catch(e){err += e}}
+  if(!ast){
+    toy.render({text: err});
+    return;
+  }
+  toy.render(ast);
+}
+
 toy.render = function render(ast, stop) { // built by Natnael, Mars.
   if(!ast){ return }
 
@@ -28,7 +52,7 @@ toy.render = function render(ast, stop) { // built by Natnael, Mars.
   if(ast.up){
     toy.the({
       name: ast.up.$id,
-      sort: stop || [0.1, ast.up.up.$id],
+      sort: stop || [0.1, ast.up?.up?.$id],
       fill: toy.fill(ast.up)
     });
   }
@@ -61,7 +85,7 @@ toy.render = function render(ast, stop) { // built by Natnael, Mars.
 }
 
 // Normalize the AST into a consistent LEFT-OPERATOR-RIGHT structure
-toy.annotate = function(ast){ ast = ast || '';
+toy.js = function(ast){ ast = ast || ''; // built by Natnael, Mars.
   ast.up = ast.up || '';
   ast.$id = ast.$id || toy.id(ast);
   if(!ast.type){ return ast }
@@ -86,7 +110,6 @@ toy.annotate = function(ast){ ast = ast || '';
     case 'Identifier':
       ast.text = ast.text || ast.op || ast.raw || ast.name;
       break;
-
 
     case 'ImportExpression':
     case 'ImportDeclaration':
@@ -468,6 +491,127 @@ toy.annotate = function(ast){ ast = ast || '';
   }
   return ast;
 };
+
+toy.html = function(ast){ ast = ast || ''; // built by Abenezer, Mars.
+  ast.$id = ast.$id || toy.id(ast);
+  ast.fill = ast.fill || toy.fill(ast);
+
+  if(ast.js){ // TODO: kinda hacky, clean up.
+    toy.annotate = toy.js;
+    toy.render(ast.js);
+    toy.annotate = toy.html;
+    return;
+  }
+  ast.sub = ast.sub || ast.childNodes;
+  if(ast.tagName){
+    ast.L = ast.attrs || [];
+    ast.L.L = {text: '<' + ast.tagName};
+    ast.L.J = {text: '>'};
+    //ast.J = [{text: ast.tagName}];ast.J.L = {text: '</'};ast.J.J = {text: '>'};
+    ast.J = {text: '</'+ast.tagName+'>'};
+    ast.L.fill = [];
+    ast.J.fill = [];
+    if('script' == ast.tagName){ // TODO: kinda hacky, clean up.
+      var code = ast.sub[0]?.value;
+      if(code){
+        var js = acorn.parse(code,{
+          ecmaVersion: 2022, sourceType: 'module',
+          onComment: function(){ }
+        });
+        js.up = ast;
+        ast.sub = [{js:js}];
+      }
+    }
+  } else if(ast.name){
+    ast.L = {text: ast.name};
+    if(ast.value){
+      ast.text = '=';
+      toy.html.notate(ast);
+      ast.J = ast.J || {text: '"' + ast.value + '"'};
+      if(ast.J.length){
+        ast.J.L = ast.J.L || {text: '"'};
+        ast.J.J = ast.J.J || {text: '"'};
+      }
+    }
+    if("#documentType" == ast.nodeName){
+      ast.text = "<!DOCTYPE html>";
+      ast.L = null;
+    }
+  } else if(ast.value){
+    ast.text = ast.value.trim();
+  }
+
+  return ast;
+};
+
+toy.html.notate = function(ast){ // built by Abenezer, Mars.
+  var name = ast.name;
+  if('aria-' == ast.name.slice(0,5)){ name = 'aria' }
+  switch(name){
+    case 'rel':
+    case 'aria':
+    case 'ping':
+    case 'headers':
+    case 'dropzone':
+    case 'sandbox':
+    case 'class':
+      ast.fill = [];
+      ast.J = ast.value.split(' ').map(function(v,i){return {text: v}});
+      ast.J.text = ' ';
+      //ast.J.fill = [];
+      break;
+    case 'srcset': case 'sizes': // TODO: maybe this should be toy.attrs ',',' '?
+    case 'accept':
+      ast.fill = [];
+      ast.J = ast.value.split(',').map(function(v,i){return {text: (v||'').trim()}});
+      ast.J.text = ',';
+      //ast.J.fill = [];
+      break;
+    case 'style':
+      //ast.fill = [];
+      ast.J = toy.attrs(ast.value, ';',':');
+      ast.J.text = ';';
+      ast.J.fill = [];
+      break;
+    case 'content':
+      ast.metaType = ast.metaType || (ast.up.find(obj => (obj.name in {'name':1,'http-equiv':1}))||'').value;
+      switch(ast.metaType){
+        case 'X-UA-Compatible':
+        case 'viewport':
+          ast.J = toy.attrs(ast.value, ',','=');
+          ast.J.text = ',';
+          ast.J.fill = [];
+          break;
+        case 'robots':
+        case 'keywords':
+          ast.J = toy.attrs(ast.value, ',');
+          ast.J.text = ',';
+          ast.J.fill = [];
+          break;
+        case 'Content-Security-Policy':
+          ast.J = toy.attrs(ast.value, ';',' ',' ');
+          ast.J.text = ';';
+          ast.J.fill = [];
+          break;
+      }
+      break;
+  }
+}
+
+toy.attrs = function(v, a,b,c){
+  return v.split(a).map(function(v,i){
+    if(!v){ return {} }
+    var w = v.split(b);
+    if(w[1]){
+      if(!c){
+        return {L: {text: w[0]}, text:b, J:{text: w[1]}};
+      }
+      if('' == w[0]){ w = w.slice(1) }
+      return toy.attrs(w.join(' '), ' ');
+    }
+    return {text: v}
+  });
+}
 
 // Utility functions
 toy.fill = this.theme || function(ast) { return (ast.fill instanceof Array && ast.fill) || [Math.random() - 0.2, Math.random() - 0.2, Math.random() - 0.2, 0.3] }

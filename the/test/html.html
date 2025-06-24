@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" prefix="og: http://ogp.me/ns#">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A comprehensive HTML5 page showcasing all HTML features.">
+  <meta name="keywords" content="HTML5, web development, sample page">
+  <meta name="author" content="Grok">
+  <meta name="robots" content="index, follow">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'; default-src data: blob: mediastream: filesystem:; style-src 'self' 'unsafe-inline'; child-src 'self' blob:; worker-src blob: 'self';">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta property="og:title" content="Comprehensive HTML5 Showcase">
+  <meta property="og:description" content="Demonstrating HTML5 features and elements.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://example.com/comprehensive.html">
+  <meta property="og:image" content="https://example.com/sample.jpg">
+  <title>Comprehensive HTML5 Showcase</title>
+  <base href="https://example.com/">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="alternate" type="application/rss+xml" href="feed.rss">
+  <link rel="stylesheet" href="styles.css" integrity="sha256-AbCdEfGhIjKlMnOpQrStUvWxYzA1B2C3D4E5F6G7H8I=" crossorigin="anonymous">
+</head>
+<body>
+  <header>
+    <h1>Comprehensive HTML5 Showcase</h1>
+    <p>A page demonstrating all HTML5 features and elements.</p>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="#section1" accesskey="1">Section 1</a></li>
+      <li><a href="#section2" accesskey="2">Section 2</a></li>
+      <li><a href="#form" accesskey="3">Form</a></li>
+      <li><a href="#multimedia" accesskey="4">Multimedia</a></li>
+      <li><a href="https://www.example.com" ping="https://tracker1.example.com https://tracker2.example.com">Visit Example.com</a></li>
+    </ul>
+  </nav>
+  <main>
+    <section id="section1">
+      <h2>Semantic Elements</h2>
+      <article>
+        <h3>Article Example</h3>
+        <p>This is an <mark>article</mark> with semantic content.</p>
+        <time datetime="2025-06-22T21:01:00-07:00">June 22, 2025</time>
+        <address>Author: <a href="mailto:author@example.com">Grok</a></address>
+      </article>
+      <aside>
+        <h3>Related Information</h3>
+        <p>This is an aside for supplementary content.</p>
+      </aside>
+      <figure>
+        <figcaption>Sample Figure</figcaption>
+        <p>Content related to the figure.</p>
+      </figure>
+    </section>
+    <section id="section2">
+      <h2>Text Formatting</h2>
+      <p>This is <b>bold</b>, <i>italic</i>, <strong>strong</strong>, <em>emphasized</em>, <small>small</small>, <sub>subscript</sub>, <sup>superscript</sup>, <code>code</code>, <pre>preformatted text</pre>, <q>quoted</q>, <abbr title="HyperText Markup Language">HTML</abbr>, <s>strikethrough</s>, <del>deleted</del>, <ins>inserted</ins>, and <dfn title="Definition">defined</dfn> text.</p>
+      <blockquote cite="https://example.com/source">
+        <p>This is a blockquote.</p>
+      </blockquote>
+      <details>
+        <summary>More Information</summary>
+        <p>Details content revealed on toggle.</p>
+      </details>
+      <dialog open>
+        <p>This is an open dialog.</p>
+        <button type="button">Close</button>
+      </dialog>
+    </section>
+    <section id="form">
+      <h2>Form Elements</h2>
+      <form action="/submit" method="post" autocomplete="on" novalidate>
+        <fieldset>
+          <legend>Personal Information</legend>
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" required placeholder="Enter your name" pattern="[A-Za-z ]+" maxlength="50" autofocus>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required placeholder="email@example.com">
+          <label for="tel">Phone:</label>
+          <input type="tel" id="tel" name="tel" placeholder="123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+          <label for="number">Age:</label>
+          <input type="number" id="number" name="age" min="18" max="120" step="1">
+          <label for="range">Satisfaction:</label>
+          <input type="range" id="range" name="satisfaction" min="0" max="100" step="10">
+          <label for="date">Birthdate:</label>
+          <input type="date" id="date" name="birthdate" min="1900-01-01" max="2025-12-31">
+          <label for="datetime-local">Appointment:</label>
+          <input type="datetime-local" id="datetime-local" name="appointment">
+          <label for="time">Preferred Time:</label>
+          <input type="time" id="time" name="time">
+          <label for="month">Month:</label>
+          <input type="month" id="month" name="month">
+          <label for="week">Week:</label>
+          <input type="week" id="week" name="week">
+          <label for="url">Website:</label>
+          <input type="url" id="url" name="website" placeholder="https://example.com">
+          <label for="color">Favorite Color:</label>
+          <input type="color" id="color" name="color" value="#ff0000">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required minlength="8">
+          <label for="search">Search:</label>
+          <input type="search" id="search" name="search" placeholder="Search...">
+          <label for="checkbox">Subscribe:</label>
+          <input type="checkbox" id="checkbox" name="subscribe" checked>
+          <label for="radio1">Option 1:</label>
+          <input type="radio" id="radio1" name="option" value="1" checked>
+          <label for="radio2">Option 2:</label>
+          <input type="radio" id="radio2" name="option" value="2">
+          <label for="select">Country:</label>
+          <select id="select" name="country" required>
+            <optgroup label="North America">
+              <option value="us">United States</option>
+              <option value="ca">Canada</option>
+            </optgroup>
+            <optgroup label="Europe">
+              <option value="uk">United Kingdom</option>
+            </optgroup>
+          </select>
+          <label for="multi-select">Hobbies:</label>
+          <select id="multi-select" name="hobbies" multiple size="3">
+            <option value="reading">Reading</option>
+            <option value="gaming">Gaming</option>
+            <option value="travel">Travel</option>
+          </select>
+          <label for="textarea">Comments:</label>
+          <textarea id="textarea" name="comments" rows="4" cols="50" placeholder="Your comments..." maxlength="500"></textarea>
+          <label for="file">Upload File:</label>
+          <input type="file" id="file" name="file" accept=".pdf,.docx" multiple>
+          <input type="hidden" name="token" value="abc123">
+          <label for="datalist">City:</label>
+          <input type="text" id="datalist" name="city" list="cities">
+          <datalist id="cities">
+            <option value="New York">
+            <option value="London">
+            <option value="Tokyo">
+          </datalist>
+          <meter value="0.6" min="0" max="1" low="0.3" high="0.7" optimum="0.5">60%</meter>
+          <progress value="70" max="100">70%</progress>
+          <output for="range" name="result">50</output>
+          <button type="submit">Submit</button>
+          <button type="reset">Reset</button>
+        </fieldset>
+      </form>
+    </section>
+    <section id="multimedia">
+      <h2>Multimedia Elements</h2>
+      <picture>
+        <source media="(min-width: 800px)" srcset="small.jpg 600w, large.jpg 1200w">
+        <source media="(min-width: 400px)" srcset="medium.jpg">
+        <img src="small.jpg" alt="Responsive image" width="300" height="200" loading="lazy">
+      </picture>
+      <video controls poster="poster.jpg" preload="metadata" width="400" height="300">
+        <source src="video.mp4" type="video/mp4">
+        <source src="video.webm" type="video/webm">
+        <track kind="subtitles" src="subtitles.vtt" srclang="en" label="English" default>
+        <track kind="captions" src="captions.vtt" srclang="es" label="Spanish">
+        <p>Your browser does not support the video element.</p>
+      </video>
+      <audio controls preload="auto">
+        <source src="audio.mp3" type="audio/mpeg">
+        <source src="audio.ogg" type="audio/ogg">
+        <p>Your browser does not support the audio element.</p>
+      </audio>
+      <canvas id="canvas" width="200" height="200">Canvas not supported.</canvas>
+      <svg width="100" height="100">
+        <circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill="red"/>
+        <text x="10" y="90" font-size="16">SVG Text</text>
+      </svg>
+      <math>
+        <mrow>
+          <msup><mi>x</mi><mn>2</mn></msup>
+          <mo>+</mo>
+          <msup><mi>y</mi><mn>2</mn></msup>
+          <mo>=</mo>
+          <mn>1</mn>
+        </mrow>
+      </math>
+    </section>
+    <section id="embedded">
+      <h2>Embedded Content</h2>
+      <iframe src="https://example.com" title="Embedded page" width="300" height="200" sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-modals allow-pointer-lock allow-presentation allow-top-navigation allow-downloads" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <embed type="image/png" src="image.png" width="100" height="100">
+      <object data="document.pdf" type="application/pdf" width="300" height="200">
+        <p>PDF not supported.</p>
+      </object>
+    </section>
+    <section id="tables">
+      <h2>Tables</h2>
+      <table border="1">
+        <caption>Sample Table</caption>
+        <thead>
+          <tr>
+            <th scope="col">Header 1</th>
+            <th scope="col">Header 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Row 1, Cell 1</td>
+            <td>Row 1, Cell 2</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Footer 1</td>
+            <td>Footer 2</td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+    <section id="lists">
+      <h2>Lists</h2>
+      <ul>
+        <li>Unordered item 1</li>
+        <li>Unordered item 2</li>
+      </ul>
+      <ol type="1" start="1">
+        <li>Ordered item 1</li>
+        <li>Ordered item 2</li>
+      </ol>
+      <dl>
+        <dt>Term</dt>
+        <dd>Definition</dd>
+      </dl>
+    </section>
+  </main>
+  <footer>
+    <p>© 2025 Example Corp. All rights reserved.</p>
+    <template>
+      <p>This is a template content.</p>
+    </template>
+  </footer>
+</body>
+</html>
