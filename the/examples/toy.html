@@ -3,22 +3,19 @@
 <script class="SecureRender" src="../content.js">
 the.start = the.start || (async () => { setTimeout(async () => {
 
-var code = the.toy.render.toString();
-var html = `
-<input type="file" id="file" name="file" accept=".pdf,.docx" multiple>
-<li><a href="https://www.example.com" ping="https://tracker1.example.com https://tracker2.example.com">Visit Example.com</a></li>
-<div id="home" class="container pretty" style="max-width: 500px; background: blue;">
-  <h1>Test Structure</h1>
-  <p>welcome!</p>
-<script>
-${code}
-<\/script>
-</div>
-`;
+open = the.view({fill: [0, 0, 0]}).into();
+the.view({fill: "Open File or URL"}).into(open);
 
-  the.toy.see(html);
+the.view(open).on('tap',()=>{
+  console.log("TAPPED BUTTON!");
+
+});
 
 },1)})();
+
+if(the.key.M0 && the.aim in open){
+  console.log("BUTTON TAPPED!");
+}
 
 /* ---- the Code from Phone TOY is below ------ */
 

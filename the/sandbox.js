@@ -94,7 +94,9 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   if(this.the){ return the }
   this.the = the;
   the.aim = the.aim || {};//function(){};
+  the.aim.toString = function(){ return this.at }
   the.key = the.key || {};//function(){};
+  a = {};
   onmessage = async function(eve){
     var msg = eve.data;
     if(view !== the.view){
@@ -109,12 +111,15 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
         p = msg[i];
         v = msg[l+i];
         t = the;
-        p = p.split('_');
+        p = p.split('.');
         while((k = p.shift()) && p.length){ t = t[k] || (t[k] = {}) }
         t[k] = v;
       }
       l = breath.now || -1;
       breath.ago = ((breath.now = perf.now()) - l);
+      if(msg.length){
+
+      }
       await breath();
       breath.was = l;
       breath.ago = 0;
@@ -157,7 +162,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     return places.get(what) ||
       (what && place === what.place && what) ||
       (places.set(what, what = new Proxy(what, place.ing)) && what)
-  }, was = {}, stay = {fill:''}, places = new Map, place;
+  }, was = {}, stay = {fill:''}, places = new Map, place; view.s = {};
   places.set(the.view = view, {name:'SecureRender'});
   place = view.place = function(what, how, where){
     if(!how){
@@ -193,11 +198,14 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     if((0.1 === how) || (-0.1 === how)){
       //if(b === a.up){ return }
       //a.up = b;
+      what.up = where;
+      //a.up = b;
     } else {
       //a.up = b.up;
+      console.warn("unhandled how case in place");
     }
 
-    msg.name = a.name || ((msg = what).name = (pid+(++pi)));
+    msg.name = a.name || (msg = JSON.parse(JSON.stringify(what))), (msg.name = what.name = (pid+(++pi))), (view.s[what.name] = a).name; // TODO: BUG!! Don't use JSON to copy :(
     msg.sort = [how, (b||'').name];
     up.s.push(msg);
     return a;
@@ -215,13 +223,36 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     }
     msg[has] = at[has] = put;
     up.s.push(msg);
+  }, has: function(at,has){
+    return place.has.call(at, has);
   }};
+
   place.place = place;
   place.begin = function(on){ return place(was.what, -0.1, on) }
   place.after = function(on){ return place(was.what, 1, on) }
   place.before = function(on){ return place(was.what, -1, on) }
   place.into = function(on){ return place(was.what, 0.1, on) }
-  //place.text = function(t){ pm.s.push({what: }) }
+
+  place.has = function(has){ return (the.view.s[has]||place).via()[this.name] }
+  place.via = function(until){
+    var l = [], i=1, up = {up: this.up};
+    while(up = up.up){ l.push(up); l[up.name||''] = i++ }
+    return l;
+  }
+  place.on = function(how, as){
+    // see, zip, aim, tap, hop, 
+    // joy0  = see
+    // joy1| = zip
+    // joy1- = aim
+    // tap  = act
+    // tap|
+    //
+    // zip-zip = tap
+    // tap+zip = aim
+    // 
+    return this;
+  }
+
   the.player = this.store;
   the.words = "english"; // TODO! Do not hardcode.
   the.unit = {cs: 5, ps: 1}; // TODO! Do not hardcode.
@@ -250,16 +281,27 @@ setInterval(breathe,0);
   Math.mix = function (a,b,m) { m = m || 0; return a + (b-a) * m }
   Math.remix = function(a,b,m){ m = m || 0; return (m - a) / (b - a) }
 
-  var aim = the.aim = function(){}, tap = the.tap = function(){};
+  // see, aim, tap
+  var aim = the.aim = function(){}, tap = the.tap = function(){}, u;
+  w.onmousedown = function(eve){
+    var key = "M"+eve.button;
+    share.set("key."+key, (keys[key] = perf.now()));
+  }
+  w.onmouseup = function(eve){
+    var key = "M"+eve.button;
+    share.set("key."+key, (keys[key] = 0));
+  }
   function mousemove(eve){ // Needs to be viewport x/y/z, not html.
-    share.set('aim_x', tap.x = Math.mix(-1, 1, Math.remix(0, w.innerWidth, eve.clientX)));
-    share.set('aim_y', tap.y = -Math.mix(-1, 1, Math.remix(0, w.innerHeight, eve.clientY)));
-    share.set('aim_z', tap.z = 0); // VR!
+    share.set('aim.x', tap.x = Math.mix(-1, 1, Math.remix(0, w.innerWidth, eve.clientX)));
+    share.set('aim.y', tap.y = -Math.mix(-1, 1, Math.remix(0, w.innerHeight, eve.clientY)));
+    share.set('aim.z', tap.z = 0); // VR!
+    share.set("aim.at", eve?.target?.name||'');
+    //share.set("aim.at", document.elementsFromPoint(eve.clientX, eve.clientY).map(function(el){ return {name: el.name, html:{}} }));
   }
   w.onmousemove = mousemove;
   w.ontouchmove = function(eve){
     var multi = eve.touches || [{}], t = multi[0];
-    for(var k in t){ if(undefined === eve[k]){ eve[k] = t[k] } }
+    for(var k in t){ if(u === eve[k]){ eve[k] = t[k] } }
     mousemove(eve);
   }
   var keys = the.keys = function(){};
@@ -269,16 +311,17 @@ setInterval(breathe,0);
       return;
     }
     var now = +new Date();
-    share.set("key_"+key, (keys[key] = now));
+    share.set("key."+key, (keys[key] = now));
     key = eve.which;
-    share.set("key_"+key, (keys[key] = now));
+    share.set("key."+key, (keys[key] = now));
   };
   w.onkeyup = function(eve){
     var key = clean(eve.code);
-    share.set("key_"+key, (keys[key] = 0));
+    share.set("key."+key, (keys[key] = 0));
     key = eve.which;
-    share.set("key_"+key, (keys[key] = 0));
+    share.set("key."+key, (keys[key] = 0));
   };
+  //w.ontouchstart = 
   function clean(code){ return code.replace('Key','').replace('Arrow','').replace('Digit') }
   /* JOY
     LS move: [WASD]
@@ -303,7 +346,7 @@ setInterval(breathe,0);
   // size
   // grab
   // sort
-//   console.log('**** CSS render(list) ***. List = ', list);
+  console.log('**** CSS render(list) ***. List = ', list);
 
   var change, i = 0, u;
   while(change = list[i++]){ each(change) }
@@ -445,6 +488,8 @@ map.set(1, window);
 ;(function(){
 
 // *WEBGL
+
+// TODO: Jargon Buzzword Bug! All "views" need to be Neural Gaussian Klien Riemann Mobius Tetra/icosahedron Manifolds
 return; // WEBGL RENDERER TURNED OFF BY DEFAULT, COMMENT OUT THIS LINE TO REPLACE THE HTML ONE. IT IS STILL COMPLETELY BROKEN AND DOES NOT OBEY THE LAYOUT RULES YET.
 
 class Box {
@@ -455,6 +500,7 @@ class Box {
     this.turn = [0,0,0];
     this.grab = [0,0,0];
     this.zoom = [1,1,1];
+    //this.warp = [0,0,0]; // bend or skew?
     this.fill = [0,0,0,1];
     this.away;
     this.drip = [0,0,0];
