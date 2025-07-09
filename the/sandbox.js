@@ -18,13 +18,14 @@ function fail(){ fail.yes = 1; document.body.innerHTML = "<center>SecureRender h
 // Because ServiceWorker cannot intercept 'null' origin requests, enclave has to scrape sandbox html into localstorage with the JS inlined so it is not loaded externally next times. But this requires we use a srcDoc and allow for inline, which we previously did not need, and it turns out we can turn it off after we run so nobody else can do it later:
 (sr.csp = document.querySelector('meta')).content = (sr.old = sr.csp.content).replace("'unsafe-inline'",'');
 
-window.onmessage = function (eve) { // hear from app, enclave, and workers.
+window.onmessage = function(eve){ // hear from app, enclave, and workers.
   var msg = eve.data;
   if(!msg){ return }
   if(u !== msg.length){ return sr.how.view(msg) }
   //if(msg.length){ return sr.how.run(msg) }
   var tmp = sr.how[msg.how];
   if(!tmp){ return }
+  eve.worker = sr.workers.get(eve.target.id);
   tmp(msg, eve);
 };
 
@@ -37,7 +38,7 @@ sr.run = function(msg, eve){
   var worker = new Worker(url), u;
   sr.workers.set(worker.id = msg.get, worker);
   worker.last = worker.rate = msg.rate || 16; // 1000/60
-
+  worker.send = worker.postMessage;
   worker.addEventListener('message', window.onmessage);
 }
 
@@ -75,14 +76,38 @@ sr.how.store = function (msg, eve) {
   var tmp;
   if(tmp = msg.to){
     if(msg.get){
-      share.set('player_'+msg.get, msg.put);
+      share.set('player.'+msg.get, msg.put);
       return;
     }
-    (tmp = sr.workers.get(tmp)) && tmp.postMessage(msg);
+    (tmp = sr.workers.get(tmp)) && tmp.send(msg);
     return;
   }
-  msg.via = eve.target.id;
+  msg.via = eve.worker.id;
   sr.up(msg);
+}
+
+sr.how.file = function(msg, eve){
+  if(msg.get){
+    var f = files.files[msg.at];
+    if(!f || f.name != msg.get){
+      console.log(f.name, "not found");
+      return;
+    }
+    var r = new FileReader();
+    r.onload = function(e) {
+      var data = e.target.result;
+      eve.worker.send({ack: 'file', get: msg.get, put: data});
+    };
+    r.readAsText(f); // add support for data URL, array buffer, etc.
+    return;
+  }
+  files.ack = eve.worker; // TODO: BUG? Only 1 worker can ask for files at a time.
+  files.click()
+}
+files.onchange = function(eve){
+  if(files.ack){
+    files.ack.send({ack:'file', s: files.files}); // TODO: BUG? Should all workers share file access events?
+  }
 }
 
 sr.how.say = function(msg){
@@ -96,13 +121,16 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   the.aim = the.aim || {};//function(){};
   the.aim.toString = function(){ return this.at }
   the.key = the.key || {};//function(){};
+  the.on = {};
   a = {};
   onmessage = async function(eve){
-    var msg = eve.data;
+    var msg = eve.data, tmp;
     if(view !== the.view){
-      place(stay).into(view);
-      place(the.view).into(stay);
-      the.view = view;
+      eve.view = the.view; the.view = view;
+      if(view.was != (eve.views = eve.view+'')){
+        (tmp = view[typeof eve.view]) && tmp(eve.view);
+        view.was = eve.views;
+      }
     }
     if(!msg){ return }
     if(u !== msg.length){
@@ -113,7 +141,11 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
         t = the;
         p = p.split('.');
         while((k = p.shift()) && p.length){ t = t[k] || (t[k] = {}) }
-        t[k] = v;
+        if('function' == typeof t[k]){
+          t[k](v); // TODO: BUG!!! Replace this with msg.ack system instead?
+        } else {
+          t[k] = v;
+        }
       }
       l = breath.now || -1;
       breath.ago = ((breath.now = perf.now()) - l);
@@ -129,7 +161,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
       return;
     }
     if(msg.ack){
-      map.get(msg.ack).apply(this, msg.ask);
+      map.get(msg.ack).call(this, msg);
     }
   }
 
@@ -142,9 +174,9 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   this.store = new Proxy({}, {get: function(at,has,put){
     if(u !== (put = at[has])){ return put }
     put = new Promise(function(res, rej){
-      var ack = Math.random(), any = function(v){
+      var ack = Math.random(), any = function(msg){ // TODO: BUG/PERF! This could be cleaner by having a universal ack listener replies by `has` not ack, like book.
         clearTimeout(ack);
-        res(at[has] = v);
+        res(at[has] = msg.put);
         map.delete(ack);
       }, to = setTimeout(function(){any(at[has])}, opt.lack || 9000);
       map.set(ack, any);
@@ -210,18 +242,18 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     up.s.push(msg);
     return a;
   };
+  var go = {name:1, size:1, turn:1, grab:1, zoom:1, warp:1, fill:1, away:1, drip:1, flow:1, unit: 1};
   place.ing = {get: function(at,has,put){
-    if(place[has]){ return place(at)[has] }
+    if(place[has]){ return at[has] || place(at)[has] }
     return at[has];
   }, set: function(at,has,put){
     if(put === at[has]){ return }
     if(put instanceof Promise){ return }
+    if(put?.then){ at[has] = u; return }
+    at[has] = put;
+    if(!go[has]){ return }
     var msg = {name: at.name};
-    if(put){
-      if(put.then){ at[has] = u; return }
-      //if('function' == typeof put){ put = put.toString().slice(14, -4) } // TODO: shader support
-    }
-    msg[has] = at[has] = put;
+    msg[has] = put;
     up.s.push(msg);
   }, has: function(at,has){
     return place.has.call(at, has);
@@ -233,29 +265,69 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   place.before = function(on){ return place(was.what, -1, on) }
   place.into = function(on){ return place(was.what, 0.1, on) }
 
-  place.has = function(has){ return (the.view.s[has]||place).via()[this.name] }
-  place.via = function(until){
+  place.has = function(has){ return (view.s[has]||place).via()[this.name] }
+  place.via = function(until, ack){ ack = ack || no;
     var l = [], i=1, up = {up: this.up};
-    while(up = up.up){ l.push(up); l[up.name||''] = i++ }
+    while(up = up.up){ l.push(up); l[up.name||''] = i++; ack(up||'') }
     return l;
   }
   place.on = function(how, as){
-    // see, zip, aim, tap, hop, 
-    // joy0  = see
-    // joy1| = zip
-    // joy1- = aim
-    // tap  = act
-    // tap|
-    //
-    // zip-zip = tap
-    // tap+zip = aim
-    // 
+    if(!as){
+      as = how; how = as.toString();
+      if('async' == how.slice(0,5)){ how = how.slice(6) }
+      var i = '('==how[0]?1:0;
+      return this.on(how.slice(0+i,3+i), as);
+    }
+    the.on[how] = place.on[how];
+    (this.only||(this.only={}))[how] = as;
+    return this;
+  };
+  // see, zip, aim, tap, hop, arc, use, act // joy0 = see // joy1| = zip // joy1- = aim // tap  = act // tap| // zip-zip = tap // tap+zip = aim
+  ['see','zip','aim','tap','hop','arc','use','act'].forEach(how=>{
+    place.on[how] = function(eve){
+      var at = view.s[the.aim.at], ack = at => ((at||'').only||'')[how] && at.only[how](eve);
+      if(!at){ return }
+      ack(at); at.via('', ack);
+    }
+  });
+
+  the.view['string'] = function(see){
+    view.stay = view.stay || view({}).into(view)
+    view.stay.fill = see;
+  }
+  the.view['function'] = function(see){
+    see({});
+  }
+
+  the.file = view.s['file'] = the.view({name:'file'});
+  (the.file.pick = the.file).into = function(){
+    if(the.file.wait){ return this } the.file.wait = 1;
+    up({how: 'file'});
     return this;
   }
+  map.set('file', function(msg){
+    if(msg.get){
+      var file = the.file.s[msg.get]||'';
+      file.ack && file.ack(msg.put);
+      return;
+    }
+    the.file.wait = 0;
+    Object.keys(msg.s||{}).forEach((file,i) => { file = msg.s[i] // TODO: BUG! Make CPU scheduled.
+      Object.defineProperty(file,'data',{get:function(){return new Promise(function(res,rej){
+        file.ack = res; // TODO: BUG! only 1 await can happen at a time.
+        up({how: 'file', get: file.name, at: i});
+      })}}); // TODO: BUG! add support for data url, arraybuffer, etc.
+      the.file.s[file.name] = file;
+      the.aim.at = 'file';
+      the.on.tap && the.on.tap(file);
+    });
+  });
+  the.file.s = {};
 
   the.player = this.store;
   the.words = "english"; // TODO! Do not hardcode.
   the.unit = {cs: 5, ps: 1}; // TODO! Do not hardcode.
+  function no(){};
 }
 
 var breathe = function(){
@@ -285,7 +357,7 @@ setInterval(breathe,0);
   var aim = the.aim = function(){}, tap = the.tap = function(){}, u;
   w.onmousedown = function(eve){
     var key = "M"+eve.button;
-    share.set("key."+key, (keys[key] = perf.now()));
+    share.set("key."+key, (keys[key] = +new Date()));
   }
   w.onmouseup = function(eve){
     var key = "M"+eve.button;
@@ -321,6 +393,9 @@ setInterval(breathe,0);
     key = eve.which;
     share.set("key."+key, (keys[key] = 0));
   };
+  w.onclick = function(eve){
+    share.set("on.tap", +new Date());
+  }
   //w.ontouchstart = 
   function clean(code){ return code.replace('Key','').replace('Arrow','').replace('Digit') }
   /* JOY
@@ -330,7 +405,7 @@ setInterval(breathe,0);
     RS aim: [pointer]
       tap: grab/toss/interact, bash (double tap), crawl/climb
       hold: brace/shield (chargeable),
-    RT/LT fire/use (secondary, grenade) [space/shift]
+    RT/LT fire/use (secondary, grenade) [space/shift] phone accel/gyro 
     RB/LB switch/inventory [cmd/caps]
   */
   // 20dice 7px min.

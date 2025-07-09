@@ -56,7 +56,7 @@ sr.how = {
       localStorage.setItem(msg.get, JSON.stringify(msg.put));
     } else
     if(msg.get){
-      sr.send({to: msg.via, ack: msg.ack, ask: [JSON.parse(localStorage.getItem(msg.get))], how: 'store'});
+      sr.send({to: msg.via, ack: msg.ack, put: [JSON.parse(localStorage.getItem(msg.get))], how: 'store'});
     }
   }
 }
@@ -65,7 +65,7 @@ window.addEventListener('storage', function(msg){
 });
 
 if(!sr.ext){ try{
-  //navigator.serviceWorker.register('./service.js');
+  //navigator.serviceWorker.register('./service.js'); // DEBUG TIP: unregister with `navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => reg.unregister()));` in console top->origin.
   navigator.serviceWorker.addEventListener("message", push);
   (sr.pushed = new BroadcastChannel('service')).onmessage = push;
   function push(msg){
