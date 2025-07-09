@@ -121,7 +121,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   the.aim = the.aim || {};//function(){};
   the.aim.toString = function(){ return this.at }
   the.key = the.key || {};//function(){};
-  the.on = {};
+  the.on = {tag:{}};
   a = {};
   onmessage = async function(eve){
     var msg = eve.data, tmp;
@@ -242,7 +242,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     up.s.push(msg);
     return a;
   };
-  var go = {name:1, size:1, turn:1, grab:1, zoom:1, warp:1, fill:1, away:1, drip:1, flow:1, unit: 1};
+  var go = {name:1, size:1, turn:1, grab:1, zoom:1, warp:1, fill:1, away:1, drip:1, flow:1, unit: 1, tag:1};
   place.ing = {get: function(at,has,put){
     if(place[has]){ return at[has] || place(at)[has] }
     return at[has];
@@ -285,7 +285,14 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   // see, zip, aim, tap, hop, arc, use, act // joy0 = see // joy1| = zip // joy1- = aim // tap  = act // tap| // zip-zip = tap // tap+zip = aim
   ['see','zip','aim','tap','hop','arc','use','act'].forEach(how=>{
     place.on[how] = function(eve){
-      var at = view.s[the.aim.at], ack = at => ((at||'').only||'')[how] && at.only[how](eve);
+      var at = view.s[the.aim.at], ack = at => {
+        ((at||'').only||'')[how] && at.only[how](eve);
+        var i=0, t;
+        if(!at.tags){ return }
+        while(t = at.tags[i++]){
+          ((the.on.tag[t]||'')[how]||'')[how] && the.on.tag[t][how](eve);
+        }
+      };
       if(!at){ return }
       ack(at); at.via('', ack);
     }
@@ -441,6 +448,7 @@ setInterval(breathe,0);
       what.turn = [0,0,0];
       what.grab = [0,0,0];
       what.zoom = [1,1,1];
+      what.tags = [];
       //what.fill = [0,0,0,0];
       what.size = change.size || [[1, '~'], [1, '~'], [1, '~']];
       what.unit = { turn: [], zoom: [], grab: [] };
@@ -575,6 +583,7 @@ class Box {
     this.turn = [0,0,0];
     this.grab = [0,0,0];
     this.zoom = [1,1,1];
+    this.tags = [];
     //this.warp = [0,0,0]; // bend or skew?
     this.fill = [0,0,0,1];
     this.away;
