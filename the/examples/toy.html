@@ -3,17 +3,16 @@
 <script class="SecureRender" src="../content.js">
 the.view = a => {
 
-open = the.view({fill: [0, 0, 0]}).into();
+open = the.view({fill: [0, 0, 0], tag: 'button'}).into();
 the.view({fill: "Open File"}).into(open);
 open.on(tap => the.file.into(the.view));
 the.file.on(async tap => {
   the.toy.see(await tap.data);
 });
 
+the.on.tag.button = { tap: eve => console.log('button tapped!', eve) };
 ;(async function(){
-
 the.toy.see(await the.player.coded);
-
 }());
 
 }

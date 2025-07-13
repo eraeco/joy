@@ -123,7 +123,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   the.aim = the.aim || {};//function(){};
   the.aim.toString = function(){ return this.at }
   the.key = the.key || {};//function(){};
-  the.on = {};
+  the.on = {tag:{}};
   a = {};
   onmessage = async function(eve){
     var msg = eve.data, tmp;
@@ -287,7 +287,14 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   // see, zip, aim, tap, hop, arc, use, act // joy0 = see // joy1| = zip // joy1- = aim // tap  = act // tap| // zip-zip = tap // tap+zip = aim
   ['see','zip','aim','tap','hop','arc','use','act'].forEach(how=>{
     place.on[how] = function(eve){
-      var at = view.s[the.aim.at], ack = at => ((at||'').only||'')[how] && at.only[how](eve);
+      var at = view.s[the.aim.at], ack = at => {
+        ((at||'').only||'')[how] && at.only[how](eve);
+        var i=0, t;
+        if(!at.tags){ return }
+        while(t = at.tags[i++]){
+          ((the.on.tag[t]||'')[how]||'')[how] && the.on.tag[t][how](eve);
+        }
+      };
       if(!at){ return }
       ack(at); at.via('', ack);
     }
