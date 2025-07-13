@@ -10,6 +10,12 @@ the.file.on(async tap => {
   the.toy.see(await tap.data);
 });
 
+;(async function(){
+
+the.toy.see(await the.player.coded);
+
+}());
+
 }
 
 //if(the.key.M0 && the.aim in open){ console.log("BUTTON TAPPED!") }
@@ -18,7 +24,10 @@ the.file.on(async tap => {
 
 toy = the.toy = the.toy || {};
 toy.see = function(text){
+  if(!text){ return }
   var ast, err = "";
+
+  the.player.coded = text;
 
   if('<' == text[0]){try{
     ast = parse5.parse(text);

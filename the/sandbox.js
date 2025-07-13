@@ -178,7 +178,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     put = new Promise(function(res, rej){
       var ack = Math.random(), any = function(msg){ // TODO: BUG/PERF! This could be cleaner by having a universal ack listener replies by `has` not ack, like book.
         clearTimeout(ack);
-        res(at[has] = msg.put);
+        res(at[has] = (msg.put||[])[0]);
         map.delete(ack);
       }, to = setTimeout(function(){any(at[has])}, opt.lack || 9000);
       map.set(ack, any);
