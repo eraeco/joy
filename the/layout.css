@@ -61,6 +61,10 @@ p, text {
   v-ertical-align: baseline;
   max-width: 48em;
   padding: 0 0.4em;
+  overflow-x: auto;
+  w-hite-space: pre-wrap;
+  word-break: break-word;
+  o-verflow-wrap: break-word;
 }
 p + p, text + text {
   padding-top: 0;
