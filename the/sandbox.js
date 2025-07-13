@@ -102,9 +102,11 @@ sr.how.file = function(msg, eve){
     return;
   }
   files.ack = eve.worker; // TODO: BUG? Only 1 worker can ask for files at a time.
-  files.click()
+  if(files.wait){ return this } files.wait = 1;
+  files.click();
 }
 files.onchange = function(eve){
+  files.wait = 0;
   if(files.ack){
     files.ack.send({ack:'file', s: files.files}); // TODO: BUG? Should all workers share file access events?
   }
@@ -176,7 +178,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     put = new Promise(function(res, rej){
       var ack = Math.random(), any = function(msg){ // TODO: BUG/PERF! This could be cleaner by having a universal ack listener replies by `has` not ack, like book.
         clearTimeout(ack);
-        res(at[has] = msg.put);
+        res(at[has] = (msg.put||[])[0]);
         map.delete(ack);
       }, to = setTimeout(function(){any(at[has])}, opt.lack || 9000);
       map.set(ack, any);
@@ -308,7 +310,6 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
 
   the.file = view.s['file'] = the.view({name:'file'});
   (the.file.pick = the.file).into = function(){
-    if(the.file.wait){ return this } the.file.wait = 1;
     up({how: 'file'});
     return this;
   }
@@ -318,7 +319,6 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
       file.ack && file.ack(msg.put);
       return;
     }
-    the.file.wait = 0;
     Object.keys(msg.s||{}).forEach((file,i) => { file = msg.s[i] // TODO: BUG! Make CPU scheduled.
       Object.defineProperty(file,'data',{get:function(){return new Promise(function(res,rej){
         file.ack = res; // TODO: BUG! only 1 await can happen at a time.
@@ -428,7 +428,8 @@ setInterval(breathe,0);
   // size
   // grab
   // sort
-  console.log('**** CSS render(list) ***. List = ', list);
+  // warp
+  //console.log('**** CSS render(list) ***. List = ', list);
 
   var change, i = 0, u;
   while(change = list[i++]){ each(change) }

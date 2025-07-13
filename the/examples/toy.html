@@ -1,16 +1,19 @@
-<script src="https://cdn.jsdelivr.net/npm/acorn@8.14.1/dist/acorn.min.js"></script>
+<script src="https://bundle.run/recast@0.20.5"></script>
 <script src="https://gist.githubusercontent.com/amark/35f27a326a51d085624ea6ff4d291bea/raw/18a67a7d5c86fa366d1340280bde15f34cea1d04/parse5-built.js"></script>
 <script class="SecureRender" src="../content.js">
 the.view = a => {
 
 open = the.view({fill: [0, 0, 0], tag: 'button'}).into();
-the.view({fill: "Open File or URL"}).into(open);
+the.view({fill: "Open File"}).into(open);
 open.on(tap => the.file.into(the.view));
 the.file.on(async tap => {
   the.toy.see(await tap.data);
 });
 
 the.on.tag.button = { tap: eve => console.log('button tapped!', eve) };
+;(async function(){
+the.toy.see(await the.player.coded);
+}());
 
 }
 
@@ -20,22 +23,25 @@ the.on.tag.button = { tap: eve => console.log('button tapped!', eve) };
 
 toy = the.toy = the.toy || {};
 toy.see = function(text){
+  if(!text){ return }
   var ast, err = "";
-  try{
-    ast = acorn.parse(text,{
-      ecmaVersion: 2022, sourceType: 'module',
-      onComment: function(){ }
-    });
-    toy.annotate = toy.js;
-  }catch(e){err += e}
-  if(!ast){try{
+
+  the.player.coded = text;
+
+  if('<' == text[0]){try{
     ast = parse5.parse(text);
     toy.annotate = toy.html;
+  }catch(e){err += e}}
+  if(!ast){try{
+    //ast = acorn.parse(text,{ecmaVersion: 2022, sourceType: 'module',onComment: function(){}});
+    ast = recast.parse(text);
+    toy.annotate = toy.js;
   }catch(e){err += e}}
   if(!ast){
     toy.render({text: err});
     return;
   }
+  console.log('AST', ast);
   toy.render(ast);
 }
 
@@ -85,8 +91,14 @@ toy.js = function(ast){ ast = ast || ''; // built by Natnael, Mars.
   ast.up = ast.up || '';
   ast.$id = ast.$id || toy.id(ast);
   if(!ast.type){ return ast }
+  //console.log('toy', ast);
 
   switch (ast.type) {
+    case 'File':
+      ast.L = {text:''};
+      ast.J = ast.program;
+      ast.fill = [];
+      break;
     case 'Program':
       ast.L = {text:''};
       ast.J = ast.body;
@@ -510,10 +522,8 @@ toy.html = function(ast){ ast = ast || ''; // built by Abenezer, Mars.
     if('script' == ast.tagName){ // TODO: kinda hacky, clean up.
       var code = ast.sub[0]?.value;
       if(code){
-        var js = acorn.parse(code,{
-          ecmaVersion: 2022, sourceType: 'module',
-          onComment: function(){ }
-        });
+        //var js = acorn.parse(code,{ecmaVersion: 2022, sourceType: 'module', onComment: function(){ } });
+        var js = recast.parse(code).program;
         js.up = ast;
         ast.sub = [{js:js}];
       }
