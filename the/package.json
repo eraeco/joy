@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "dev": "vite"
+    "dev": "vite",
+    "serve": "rspack build && rspack preview"
   },
   "repository": {
     "type": "git"
@@ -29,6 +30,10 @@
     "enclave.js": "AvQTHnsHSBKrXrF6Wl359U0xc0f6dim0jB2j8IJUjkc="
   },
   "devDependencies": {
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "@lynx-js/template-webpack-plugin": "^0.6.10",
+    "@rsbuild/core": "^1.4.6",
+    "@rspack/cli": "^1.3.8",
+    "@rspack/core": "^1.4.6"
   }
 }
