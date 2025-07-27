@@ -1,18 +1,18 @@
-<script src="https://bundle.run/recast@0.20.5"></script>
-<script src="https://gist.githubusercontent.com/amark/35f27a326a51d085624ea6ff4d291bea/raw/18a67a7d5c86fa366d1340280bde15f34cea1d04/parse5-built.js"></script>
+<script src="./toy/recast.js"></script>
+<script src="./toy/parse5.js"></script>
 <script class="SecureRender" src="../content.js">
 the.view = a => {
 
-open = the.view({fill: [0, 0, 0], tag: 'button'}).into();
+open = the.view({fill: [0,0,0], tag: 'button'}).into();
 the.view({fill: "Open File"}).into(open);
 open.on(tap => the.file.into(the.view));
 the.file.on(async tap => {
   the.toy.see(await tap.data);
 });
-
 the.on.tag.button = { tap: eve => console.log('button tapped!', eve) };
+
 ;(async function(){
-the.toy.see(await the.player.coded);
+  the.toy.see(await the.player.coded);
 }());
 
 }
@@ -41,7 +41,7 @@ toy.see = function(text){
     toy.render({text: err});
     return;
   }
-  console.log('AST', ast);
+  console.log('AST', ast, err);
   toy.render(ast);
 }
 
@@ -52,36 +52,27 @@ toy.render = function render(ast, stop) { // built by Natnael, Mars.
   //console.log(ast.type||'', ast);
 
   if(ast.up){
-    toy.the({
-      name: ast.up.$id,
-      sort: stop || [0.1, ast.up?.up?.$id],
-      fill: toy.fill(ast.up)
-    });
+    ast.up.view = the.view({name: ast.up.$id, fill: toy.fill(ast.up) });
+    stop || ast.up.view.into(ast.up?.up?.view);
+    //ast.view.on(tap => { console.log("ast view tap", ast) });
   }
 
   if(ast.L){ ast.L.up = ast; toy.render(stop || ast.L) }
   if(ast.sub || ast.length){
     (ast.sub||ast).forEach((sub, i) => {
       if (i > 0 && ast.text) {
-        toy.the({
-          name: ast.$id+'-text-'+i,
-          sort: stop || [0.1, ast.$id],
-          fill: ast.text
-        });
+        sub.view = the.view({name: ast.$id+'-text-'+i, fill: ast.text});
+        stop || sub.view.into(ast.view);
       }
       sub.up = ast;
       toy.render(stop || sub);
     });
   } else
   if(ast.text){
-    toy.the({
-      name: ast.$id,
-      sort: stop || [0.1, ast.up.$id],
-    }).the({
-      name: ast.$id + '-text',
-      sort: stop || [0.1, ast.$id],
-      fill: ast.text
-    })
+    ast.view = the.view({name: ast.$id});
+    stop || ast.view.into(ast.up.view);
+    ast.print = the.view({name: ast.$id + '-text', fill: ast.text});
+    stop || ast.print.into(ast.view);
   }
   if(ast.J){ ast.J.up = ast; toy.render(stop || ast.J) }
 }
@@ -169,6 +160,10 @@ toy.js = function(ast){ ast = ast || ''; // built by Natnael, Mars.
       if(!ast.J){ ast.text = '' }
       var tmp = ast.up?.up?.up?.up?.up||''; // uggh annoying special case!
       //if(tmp.left && tmp.right){ ast.text = ast.op = '' } // TODO: BUG! This is triggering wrong rendering in basic settings, but I forget what it originally fixed.
+      ast.tap = function(){
+        console.log('assignment tap');
+        ast.J.value = 2;
+      }
       break;
 
     case 'BinaryExpression':

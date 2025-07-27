@@ -127,13 +127,6 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   a = {};
   onmessage = async function(eve){
     var msg = eve.data, tmp;
-    if(view !== the.view){
-      eve.view = the.view; the.view = view;
-      if(view.was != (eve.views = eve.view+'')){
-        (tmp = view[typeof eve.view]) && tmp(eve.view);
-        view.was = eve.views;
-      }
-    }
     if(!msg){ return }
     if(u !== msg.length){
       if(breath.ago){ return } // app wants to await an earlier frame, so hold breath. :(
@@ -151,10 +144,14 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
       }
       l = breath.now || -1;
       breath.ago = ((breath.now = perf.now()) - l);
-      if(msg.length){
-
-      }
       await breath();
+      if(view !== the.view){
+        eve.view = the.view; the.view = view;
+        if(view.was != (eve.views = eve.view+'')){
+          (tmp = view[typeof eve.view]) && tmp(eve.view);
+          view.was = eve.views;
+        }
+      }
       breath.was = l;
       breath.ago = 0;
       if (!up.s.length) { return }
@@ -195,9 +192,8 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
   var view = function(what){
     return places.get(what) ||
       (what && place === what.place && what) ||
-      (places.set(what, what = new Proxy(what, place.ing)) && what)
+      (places.set(what, what = places.ify(what)) && what)
   }, was = {}, stay = {fill:''}, places = new Map, place; view.s = {};
-  places.set(the.view = view, {name:'SecureRender'});
   place = view.place = function(what, how, where){
     if(!how){
       was.what = what;
@@ -225,7 +221,7 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
         } else {
           a = msg = what;
         }
-        places.set(what, a = new Proxy(a, place.ing));
+        places.set(what, places.ify(a));
       }
     }
     a.fill = what.fill;
@@ -238,28 +234,35 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
       //a.up = b.up;
       console.warn("unhandled how case in place");
     }
-
-    msg.name = a.name || (msg = JSON.parse(JSON.stringify(what))), (msg.name = what.name = (pid+(++pi))), (view.s[what.name] = a).name; // TODO: BUG!! Don't use JSON to copy :(
-    msg.sort = [how, (b||'').name];
-    up.s.push(msg);
+    a.sort = [how, (b||'').name];
     return a;
   };
-  var go = {name:1, size:1, turn:1, grab:1, zoom:1, warp:1, fill:1, away:1, drip:1, flow:1, unit: 1};
-  place.ing = {get: function(at,has,put){
-    if(place[has]){ return at[has] || place(at)[has] }
-    return at[has];
+  places.set(the.view = view, {name:'SecureRender'});
+  places.ify = function(what, spy){
+    spy = new Proxy(what, places.spy);
+    what.name || (what.name = (pid+(++pi)));
+    view.s[what.name] = spy;
+    var msg = structuredClone(what);
+    up.s.push(msg);
+    return spy;
+  }
+  places.spy = {get: function(at,has,put){
+    return at[has] || place(at)[has];
   }, set: function(at,has,put){
-    if(put === at[has]){ return }
+    if(put === at[has]){ return } // TODO: BUG, ahh, array diffs?
     if(put instanceof Promise){ return }
     if(put?.then){ at[has] = u; return }
     at[has] = put;
     if(!go[has]){ return }
-    var msg = {name: at.name};
+    var last, msg = last = up.s[up.s.length-1]||'';
+    if(at.name != msg.name){ msg = {name: at.name} }
     msg[has] = put;
+    if(last === msg){ return }
     up.s.push(msg);
   }, has: function(at,has){
     return place.has.call(at, has);
   }};
+  var go = {name:1, size:1, turn:1, grab:1, zoom:1, warp:1, fill:1, away:1, drip:1, flow:1, sort: 1, unit: 1};
 
   place.place = place;
   place.begin = function(on){ return place(was.what, -0.1, on) }

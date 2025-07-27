@@ -1,4 +1,4 @@
-function theme(ast) {
+function theme(ast) { ast || (ast = {});
   //if (!ast || !ast.type) return [[0.5, 0.5, 0.5, 0.8], [1, 1, 1, 1]]; // Fallback: gray bg, white text
 
   // Base hues for Lego-like colors (in degrees)
