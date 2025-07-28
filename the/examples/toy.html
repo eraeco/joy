@@ -1,3 +1,14 @@
+<head>
+  <title>TOY</title>
+  <meta name="application-name" content="TOY">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="TOY">
+  <link rel="apple-touch-icon" href="../toy.png">
+  <link rel="icon" type="image/png" href="../toy.png">
+  <meta name="description" content="a game console to play & make games">
+  <link rel="manifest" href="../app.json">
+</head>
 <script src="./toy/recast.js"></script>
 <script src="./toy/parse5.js"></script>
 <script class="SecureRender" src="../content.js">
@@ -42,7 +53,7 @@ toy.see = function(text){
     return;
   }
   console.log('AST', ast, err);
-  toy.render(ast);
+  toy.render(toy.top = ast);
 }
 
 toy.render = function render(ast, stop) { // built by Natnael, Mars.
@@ -108,6 +119,12 @@ toy.js = function(ast){ ast = ast || ''; // built by Natnael, Mars.
     case 'Literal':
     case 'Identifier':
       ast.text = ast.text || ast.op || ast.raw || ast.name;
+      ast?.up?.up && ast.up.up.view.on(tap =>{
+        console.log('assignment tap');
+        console.log("tapped on", ast);
+        ast.view.fill = ''+(++ast.value);
+        //console.log(recast.print(toy.top));
+      });
       break;
 
     case 'ImportExpression':
@@ -160,10 +177,6 @@ toy.js = function(ast){ ast = ast || ''; // built by Natnael, Mars.
       if(!ast.J){ ast.text = '' }
       var tmp = ast.up?.up?.up?.up?.up||''; // uggh annoying special case!
       //if(tmp.left && tmp.right){ ast.text = ast.op = '' } // TODO: BUG! This is triggering wrong rendering in basic settings, but I forget what it originally fixed.
-      ast.tap = function(){
-        console.log('assignment tap');
-        ast.J.value = 2;
-      }
       break;
 
     case 'BinaryExpression':

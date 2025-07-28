@@ -1,0 +1,9 @@
+{
+    "name": "TOY",
+    "short_name": "TOY",
+    "display": "standalone",
+    "description": "a game console to play & make games",
+    "start_url": "./examples/toy.html",
+    "icons": [{"src": "./toy.png", "sizes": "192x192", "type": "image/png"}],
+    "theme_color": "#000000"
+}

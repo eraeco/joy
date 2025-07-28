@@ -174,10 +174,10 @@ function the(){ // THIS CODE RUNS INSIDE THE WEBWORKER!
     if(u !== (put = at[has])){ return put }
     put = new Promise(function(res, rej){
       var ack = Math.random(), any = function(msg){ // TODO: BUG/PERF! This could be cleaner by having a universal ack listener replies by `has` not ack, like book.
-        clearTimeout(ack);
+        clearTimeout(to);
         res(at[has] = (msg.put||[])[0]);
         map.delete(ack);
-      }, to = setTimeout(function(){any(at[has])}, opt.lack || 9000);
+      }, to = setTimeout(function(){any({put:at[has]})}, opt.lack || 9000);
       map.set(ack, any);
       up({how: 'store', get: has, ack: ack});
     });
@@ -1086,5 +1086,4 @@ function render(list){
 // }());
 
 }());
-
 }());
